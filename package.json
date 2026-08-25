@@ -1,0 +1,24 @@
+{
+  "name": "vieclamcongnhan",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.20.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:migrate": "supabase db push",
+    "db:reset": "supabase db reset",
+    "db:seed:remote": "node scripts/run-sql.mjs supabase/seed.sql",
+    "db:types": "supabase gen types typescript --local > apps/web/src/types/database.types.ts"
+  },
+  "devDependencies": {
+    "pg": "^8.23.0",
+    "supabase": "^2.114.0",
+    "turbo": "^2.3.0"
+  }
+}

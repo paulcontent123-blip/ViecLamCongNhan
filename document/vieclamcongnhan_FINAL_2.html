@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ViecLamCongNhan.com — Việc làm công nhân KCN toàn quốc</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F8FC;--bg2:#EEF0F8;--bg3:#E4E8F4;
+  --white:#fff;--ink:#0D1117;
+  --muted:#5A6478;--muted2:#8A96AA;--muted3:#B0BECC;
+  --border:#DDE3F0;--border2:#C8D0E8;
+  /* Orange / primary */
+  --org:#E55822;--org2:#E06428;--org3:#F6A623;--orange:#E55822;
+  --org-light:rgba(229,88,34,.08);--org-border:rgba(229,88,34,.25);
+  --lorg:rgba(229,88,34,.08);--orgb:rgba(229,88,34,.22);
+  --org-dark:#B83D0F;
+  /* Navy */
+  --navy:#0A1428;--navy2:#0F1F3D;--navy3:#162952;
+  --lnavy:rgba(10,20,40,.06);--navyb:rgba(10,20,40,.15);
+  /* Green */
+  --green:#1B7C40;--lgreen:rgba(27,124,64,.08);--greenb:rgba(27,124,64,.22);
+  /* Blue */
+  --blue:#1A4FC4;--lblue:rgba(26,79,196,.08);--blueb:rgba(26,79,196,.2);
+  /* Red */
+  --red:#B82020;--lred:rgba(184,32,32,.08);--redb:rgba(184,32,32,.22);
+  /* Amber */
+  --amber:#9C6B10;--lamber:rgba(156,107,16,.08);--amberb:rgba(156,107,16,.22);
+  /* Teal */
+  --teal:#0F7B6C;
+  /* Gold (for accents) */
+  --gold:#B8860B;--gold3:#F0C040;--goldb:rgba(184,134,11,.3);--lgold:rgba(184,134,11,.08);
+  /* Shadows */
+  --sh:0 2px 14px rgba(13,17,23,.07);--sh2:0 6px 32px rgba(13,17,23,.12);--r:10px;
+  /* Compat aliases */
+  --cream:#F7F8FC;--cream2:#EEF0F8;--cream3:#E4E8F4;
+  --white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden;line-height:1.6;font-size:13.5px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:600;background:rgba(247,248,252,.97);backdrop-filter:blur(16px);border-bottom:3px solid var(--org);display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:60px;box-shadow:var(--sh)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-ico{width:36px;height:36px;background:linear-gradient(135deg,var(--org),var(--org2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.nav-logo{font-size:16px;font-weight:900;color:var(--org-dark)}
+.nav-logo span{color:var(--org)}
+.nav-c{display:flex;gap:1px;align-items:center}
+.nl{padding:5px 9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-radius:7px;transition:all .18s;background:none;border:none;font-family:'Be Vietnam Pro',sans-serif;white-space:nowrap}
+.nl:hover{color:var(--org);background:var(--lorg)}
+.nl.on{color:var(--org);background:var(--lorg);font-weight:700}
+.nav-r{display:flex;gap:8px;align-items:center}
+.btn-org{background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:'Be Vietnam Pro',sans-serif;box-shadow:0 3px 14px rgba(200,84,26,.28);transition:all .18s}
+.btn-org:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-outline-org{background:var(--lorg);color:var(--org);border:1.5px solid var(--orgb);padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;transition:all .18s}
+.btn-outline-org:hover{background:var(--org);color:#fff}
+
+/* ── PAGES ── */
+.page{display:none;animation:fi .3s ease}.page.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(150deg,#F7F8FC 0%,#EEF0F8 40%,#FAF0EB 100%);padding:80px 52px 0;position:relative;overflow:hidden;min-height:560px}
+.hero::before{content:'';position:absolute;top:-40%;right:-10%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(200,84,26,.07) 0%,transparent 65%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-20%;left:20%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(27,124,64,.05) 0%,transparent 65%);pointer-events:none}
+.hero-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;position:relative;z-index:1;padding-bottom:60px}
+.hero-eye{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--org);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.hero-eye::before{content:'';width:20px;height:1.5px;background:var(--org)}
+.hero h1{font-size:50px;font-weight:900;line-height:1.06;letter-spacing:-.6px;color:var(--ink);margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--org)}
+.hero-p{font-size:16px;color:var(--muted);line-height:1.82;max-width:520px;margin-bottom:28px}
+.hero-cta-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.btn-hero{padding:13px 26px;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;transition:all .2s}
+.btn-hero-org{background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;box-shadow:0 4px 20px rgba(200,84,26,.28)}
+.btn-hero-org:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.btn-hero-ghost{background:var(--white);color:var(--org);border:1.5px solid var(--orgb);box-shadow:var(--sh)}
+.btn-hero-ghost:hover{background:var(--lorg)}
+.hero-trust{display:flex;gap:18px;flex-wrap:wrap}
+.ht{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:5px;font-weight:500}
+.ht::before{content:'✓';color:var(--green);font-weight:800}
+
+/* Search card */
+.search-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--sh2)}
+.sc-title{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.sc-field{margin-bottom:11px}
+.sc-field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:4px}
+.sc-field input,.sc-field select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:'Be Vietnam Pro',sans-serif;color:var(--ink);background:var(--bg);outline:none;transition:border .18s}
+.sc-field input:focus,.sc-field select:focus{border-color:var(--orgb);background:var(--white)}
+.sc-field select option{background:var(--white)}
+.sc-btn{width:100%;padding:13px;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;box-shadow:0 4px 16px rgba(200,84,26,.28);transition:all .18s;margin-top:4px}
+.sc-btn:hover{filter:brightness(1.08)}
+.sc-hotkeys{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.sc-hot{font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;cursor:pointer;background:var(--lorg);color:var(--org);border:1px solid var(--orgb);transition:all .18s}
+.sc-hot:hover{background:var(--org);color:#fff}
+
+/* ── SHARED ── */
+.section{padding:68px 52px;max-width:1280px;margin:0 auto}
+.bg-white{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.bg-org{background:linear-gradient(135deg,var(--org),var(--org-dark))}
+.sec-eye{font-size:10.5px;font-weight:700;letter-spacing:2px;color:var(--org);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec-eye::before{content:'';width:18px;height:1.5px;background:var(--org)}
+.sec-h{font-size:36px;font-weight:900;line-height:1.1;letter-spacing:-.4px;color:var(--ink);margin-bottom:12px}
+.sec-h em{font-style:normal;color:var(--org)}
+.sec-p{font-size:15px;color:var(--muted);line-height:1.8;max-width:540px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ── BADGES ── */
+.badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:4px;display:inline-block}
+.badge-org{background:var(--lorg);color:var(--org);border:1px solid var(--orgb)}
+.badge-green{background:var(--lgreen);color:var(--green);border:1px solid var(--greenb)}
+.badge-blue{background:var(--lblue);color:var(--blue);border:1px solid var(--blueb)}
+.badge-red{background:var(--lred);color:var(--red);border:1px solid var(--redb)}
+.badge-amber{background:var(--lamber);color:var(--amber);border:1px solid var(--amberb)}
+
+/* ── KCN FILTER BAR ── */
+.kcn-bar{background:var(--org-dark);padding:13px 52px}
+.kcn-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.kcn-lbl{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
+.kcn-tags{display:flex;gap:7px;flex-wrap:wrap}
+.kcn-tag{font-size:12px;font-weight:700;padding:5px 14px;border-radius:5px;cursor:pointer;background:rgba(255,255,255,.08);color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.12);transition:all .18s;white-space:nowrap}
+.kcn-tag:hover,.kcn-tag.on{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.3)}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--white);border-bottom:1px solid var(--border);padding:20px 52px}
+.stats-inner{max-width:1280px;margin:0 auto;display:flex;gap:0;justify-content:space-between;flex-wrap:wrap}
+.stat{text-align:center;padding:0 20px}
+.stat + .stat{border-left:1px solid var(--border)}
+.stat-n{font-size:24px;font-weight:900;color:var(--org);font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:4px}
+.stat-n.green{color:var(--green)}.stat-n.blue{color:var(--blue)}
+.stat-l{font-size:11.5px;color:var(--muted)}
+
+/* ── JOB CARDS ── */
+.job-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.jf{padding:7px 16px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);color:var(--muted);background:transparent;font-family:'Be Vietnam Pro',sans-serif;transition:all .18s}
+.jf:hover{border-color:var(--orgb);color:var(--org)}
+.jf.on{background:var(--org);color:#fff;border-color:var(--org)}
+.job-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.job-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .22s;box-shadow:var(--sh);position:relative}
+.job-card:hover{border-color:var(--orgb);transform:translateY(-2px);box-shadow:var(--sh2)}
+.job-card.urgent{border-color:var(--redb);background:#FFF8F5}
+.urgent-tag{position:absolute;top:12px;right:12px;font-size:10px;font-weight:800;padding:3px 9px;border-radius:4px;background:var(--lred);color:var(--red);border:1px solid var(--redb)}
+.jc-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.jc-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ico-org{background:var(--lorg)}.ico-blue{background:var(--lblue)}.ico-green{background:var(--lgreen)}.ico-amber{background:var(--lamber)}
+.jc-co{font-size:11.5px;font-weight:700;color:var(--org);margin-bottom:2px}
+.jc-title{font-size:14.5px;font-weight:800;color:var(--ink);margin-bottom:2px;line-height:1.25}
+.jc-loc{font-size:12px;color:var(--muted2)}
+.jc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.jc-foot{display:flex;align-items:center;justify-content:space-between}
+.jc-salary{font-size:16px;font-weight:900;color:var(--green)}
+.jc-btn{padding:8px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--orgb);background:var(--lorg);color:var(--org);font-family:'Be Vietnam Pro',sans-serif;transition:all .18s}
+.jc-btn:hover{background:var(--org);color:#fff}
+
+/* ── CAMPAIGN CARDS (PR nổi bật) ── */
+.campaign-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.camp-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:var(--sh)}
+.camp-card:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
+.camp-thumb{height:140px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative}
+.ct-1{background:linear-gradient(135deg,#FFF0E8,#FFD8B8)}
+.ct-2{background:linear-gradient(135deg,#E8F0FF,#C8D8FF)}
+.ct-3{background:linear-gradient(135deg,#E8F8EE,#B8ECCC)}
+.ct-4{background:linear-gradient(135deg,#FFF8E0,#FFE8A0)}
+.ct-5{background:linear-gradient(135deg,#F0E8FF,#D8C0FF)}
+.ct-6{background:linear-gradient(135deg,#FFE8E8,#FFC8C8)}
+.camp-pr-badge{position:absolute;top:10px;left:10px;font-size:10px;font-weight:800;padding:3px 9px;border-radius:4px;background:var(--org);color:#fff}
+.camp-count-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;padding:3px 9px;border-radius:4px;background:rgba(13,17,23,.7);color:#fff}
+.camp-body{padding:14px 16px}
+.camp-co{font-size:11px;font-weight:700;color:var(--org);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.camp-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:6px;line-height:1.3}
+.camp-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.camp-meta span{font-size:11.5px;color:var(--muted)}
+.camp-foot{display:flex;align-items:center;justify-content:space-between}
+.camp-salary{font-size:14px;font-weight:900;color:var(--green)}
+.camp-view{font-size:12px;font-weight:700;color:var(--org)}
+
+/* ── RECRUITMENT SERVICE ── */
+.rsvc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
+.rsvc-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh)}
+.rsvc-ico{font-size:30px;margin-bottom:12px}
+.rsvc-title{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:8px}
+.rsvc-desc{font-size:13.5px;color:var(--muted);line-height:1.72;margin-bottom:14px}
+.rsvc-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.rf{font-size:13px;color:var(--muted);display:flex;gap:7px;line-height:1.55}
+.rf::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0}
+.rsvc-price{font-size:18px;font-weight:900;color:var(--org);margin-bottom:12px}
+.rsvc-btn{padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;border:none;background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;transition:all .18s}
+.rsvc-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.rsvc-btn-outline{background:var(--lorg);color:var(--org);border:1.5px solid var(--orgb)}
+.rsvc-btn-outline:hover{background:var(--org);color:#fff}
+
+/* ── FULL-PACKAGE ── */
+.pkg-card{background:linear-gradient(135deg,var(--org),var(--org-dark));border-radius:16px;padding:32px;color:#fff;position:relative;overflow:hidden;margin-top:32px}
+.pkg-card::before{content:'⚡';position:absolute;right:-20px;bottom:-30px;font-size:180px;opacity:.06}
+.pkg-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.pkg-badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 12px;font-size:11px;font-weight:800;color:#fff;display:inline-block;margin-bottom:12px;letter-spacing:.5px}
+.pkg-title{font-size:26px;font-weight:900;color:#fff;margin-bottom:8px;line-height:1.2}
+.pkg-desc{font-size:14px;color:rgba(255,255,255,.75);line-height:1.75;max-width:560px}
+.pkg-right{flex-shrink:0}
+.pkg-includes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.pi{display:flex;gap:8px;font-size:13px;color:rgba(255,255,255,.85)}
+.pi::before{content:'✓';color:#FFD080;font-weight:800;flex-shrink:0}
+.pkg-cta{background:#fff;color:var(--org);padding:13px 28px;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer;border:none;font-family:'Be Vietnam Pro',sans-serif;transition:all .2s;margin-top:20px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.pkg-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+
+/* ── KCN MAP ── */
+.kcn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+.kcn-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .22s;box-shadow:var(--sh)}
+.kcn-card:hover{border-color:var(--orgb);transform:translateY(-2px)}
+.kcn-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.kcn-flag{font-size:26px}
+.kcn-prov{font-size:15px;font-weight:800;color:var(--ink)}
+.kcn-sub{font-size:11.5px;color:var(--org);font-weight:700}
+.kcn-list{display:flex;flex-direction:column;gap:5px}
+.kl{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.kl:last-child{border:none;padding-bottom:0}
+.kl-name{color:var(--muted)}
+.kl-jobs{font-size:12px;font-weight:800;color:var(--org);font-family:'JetBrains Mono',monospace}
+
+/* ── CANDIDATE FORM ── */
+.cv-form{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--sh2);margin-top:20px}
+.cvf-title{font-size:18px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.cvf-sub{font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.cvf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.cvf-field{display:flex;flex-direction:column;gap:4px}
+.cvf-field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.cvf-field input,.cvf-field select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Be Vietnam Pro',sans-serif;color:var(--ink);background:var(--bg);outline:none;transition:border .18s}
+.cvf-field input:focus,.cvf-field select:focus{border-color:var(--orgb);background:var(--white)}
+.cvf-full{grid-column:span 2}
+.cvf-submit{width:100%;padding:13px;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;box-shadow:0 4px 14px rgba(200,84,26,.28);margin-top:6px;transition:all .18s}
+.cvf-submit:hover{filter:brightness(1.08)}
+
+/* ── EMPLOYER PLANS ── */
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+.plan-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);position:relative;transition:all .22s}
+.plan-card.featured{border-color:var(--orgb);box-shadow:0 8px 32px rgba(200,84,26,.15)}
+.plan-feat-tag{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--org);color:#fff;font-size:10px;font-weight:800;padding:4px 16px;border-radius:0 0 8px 8px;letter-spacing:.5px}
+.plan-ico{font-size:28px;margin-bottom:12px}
+.plan-name{font-size:14px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.plan-price{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:4px;line-height:1}
+.plan-price span{font-size:13px;font-weight:400;color:var(--muted2)}
+.plan-desc{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.65}
+.plan-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.pf{font-size:13px;color:var(--muted);display:flex;gap:7px}
+.pf::before{content:'✓';color:var(--green);font-weight:800;flex-shrink:0}
+.pf.no::before{content:'—';color:var(--muted3)}
+.pf.no{color:var(--muted3)}
+.plan-btn{width:100%;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;border:none;transition:all .18s}
+.plan-btn-default{background:var(--bg2);color:var(--ink)}
+.plan-btn-default:hover{background:var(--bg3)}
+.plan-btn-org{background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;box-shadow:0 3px 12px rgba(200,84,26,.3)}
+.plan-btn-org:hover{filter:brightness(1.08)}
+
+/* ── RIGHTS Q&A ── */
+.qa-grid{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.qa-item{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--sh)}
+.qa-q{padding:14px 18px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .18s}
+.qa-q:hover{background:var(--bg2)}
+.qa-q::after{content:'▼';font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0;margin-left:8px}
+.qa-item.open .qa-q::after{transform:rotate(180deg)}
+.qa-item.open .qa-q{color:var(--org)}
+.qa-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.qa-item.open .qa-a{max-height:300px}
+.qa-a-inner{padding:0 18px 16px;font-size:13.5px;color:var(--muted);line-height:1.75}
+.qa-a-inner strong{color:var(--org)}
+/* Rights info cards */
+.rights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.right-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--sh)}
+.rc-ico{font-size:26px;margin-bottom:10px}
+.rc-title{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.rc-val{font-size:13px;color:var(--muted);line-height:1.65}
+.rc-val strong{color:var(--org)}
+/* Hotline */
+.hotline-box{background:linear-gradient(135deg,var(--org),var(--org-dark));border-radius:14px;padding:24px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:28px}
+.hl-text h3{font-size:18px;font-weight:800;margin-bottom:4px}
+.hl-text p{font-size:13px;color:rgba(255,255,255,.7)}
+.hl-btn{background:#fff;color:var(--org);padding:12px 24px;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;border:none;font-family:'Be Vietnam Pro',sans-serif;white-space:nowrap;transition:all .18s}
+.hl-btn:hover{transform:scale(1.04)}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);padding:44px 52px 24px}
+.ft-inner{max-width:1280px;margin:0 auto}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px}
+.ft-brand .ft-logo{font-size:20px;font-weight:900;color:#fff;margin-bottom:6px}
+.ft-brand .ft-logo span{color:var(--org2)}
+.ft-brand p{font-size:12.5px;color:rgba(255,255,255,.35);line-height:1.7;max-width:280px;margin-bottom:14px}
+.ft-col-title{font-size:11px;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+.ft-links{display:flex;flex-direction:column;gap:8px}
+.ft-links a{font-size:13px;color:rgba(255,255,255,.45);text-decoration:none;transition:color .18s}
+.ft-links a:hover{color:#fff}
+.ft-div{height:1px;background:rgba(255,255,255,.08);margin-bottom:18px}
+.ft-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.ft-copy{font-size:12px;color:rgba(255,255,255,.22)}
+.ft-vea{font-size:12px;color:rgba(255,255,255,.3)}
+.ft-vea span{color:var(--org2)}
+
+/* ── FEATURED BADGE ── */
+.badge-urgent{background:#E53E3E;color:#fff;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;display:inline-flex;align-items:center;gap:3px}
+.badge-featured{background:linear-gradient(135deg,#D4A017,#F0C040);color:#1a1a1a;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
+.badge-top{background:linear-gradient(135deg,#2B6CB0,#3182CE);color:#fff;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
+.job-card.is-featured{border-color:#D4A017!important;background:linear-gradient(135deg,#FFFBEB,#fff)!important;box-shadow:0 4px 20px rgba(212,160,23,.15)!important}
+.job-card.is-urgent{border-color:#E53E3E!important;border-left:4px solid #E53E3E!important}
+
+/* ── DATABASE ỨNG VIÊN ── */
+.candidate-pool-wrap{background:var(--white);border-radius:14px;box-shadow:var(--sh2);overflow:hidden}
+.cp-header{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:22px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.cp-title{font-size:18px;font-weight:800;color:#fff}
+.cp-credits{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 18px;text-align:center}
+.cp-credits-n{font-size:22px;font-weight:900;color:var(--gold);font-family:monospace}
+.cp-credits-l{font-size:11px;color:rgba(255,255,255,.6)}
+.cp-filters{display:flex;gap:8px;padding:16px 28px;background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.cp-filter{padding:7px 14px;border:1.5px solid var(--border);border-radius:7px;font-size:12.5px;background:var(--white);cursor:pointer;font-family:inherit;transition:all .18s;color:var(--muted)}
+.cp-filter:focus{border-color:var(--orange);outline:none}
+.cp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.cp-card{background:var(--white);padding:16px 18px;transition:background .18s}
+.cp-card:hover{background:var(--bg2)}
+.cp-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.cp-meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.cp-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.cp-phone-hidden{font-size:13px;font-family:monospace;color:var(--muted2);background:var(--bg3);padding:5px 10px;border-radius:6px;letter-spacing:2px}
+.cp-phone-shown{font-size:14px;font-weight:700;color:var(--green);font-family:monospace;padding:5px 10px;background:rgba(56,161,105,.08);border-radius:6px;border:1px solid rgba(56,161,105,.2)}
+.btn-unlock{background:linear-gradient(135deg,var(--orange),#e05800);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:all .2s}
+.btn-unlock:hover{filter:brightness(1.1)}
+.btn-unlock.done{background:var(--bg3);color:var(--muted);cursor:default}
+
+/* ── BLAST CAMPAIGN ── */
+.blast-wrap{background:var(--white);border-radius:14px;box-shadow:var(--sh2);overflow:hidden}
+.blast-header{background:linear-gradient(135deg,#553C9A,#6B46C1);padding:22px 28px}
+.blast-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:24px 28px}
+.blast-full{grid-column:span 2}
+.blast-f label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.blast-f input,.blast-f select,.blast-f textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;background:var(--bg2);color:var(--navy);outline:none;transition:border .2s}
+.blast-f input:focus,.blast-f select:focus,.blast-f textarea:focus{border-color:#6B46C1;background:#fff}
+.blast-estimate{background:linear-gradient(135deg,#553C9A,#6B46C1);border-radius:10px;padding:16px 20px;margin:0 28px 24px;display:none}
+.blast-estimate.on{display:block}
+.blast-est-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.blast-est-n{font-size:22px;font-weight:900;color:#E9D8FD;font-family:monospace}
+.blast-est-l{font-size:11px;color:rgba(255,255,255,.55)}
+.blast-price-total{font-size:24px;font-weight:900;color:#F6E05E;font-family:monospace}
+.blast-channel-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.blast-ch{border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--white)}
+.blast-ch.on{border-color:#6B46C1;background:rgba(107,70,193,.06)}
+.blast-ch-ico{font-size:22px;margin-bottom:4px}
+.blast-ch-name{font-size:12.5px;font-weight:700;color:var(--navy)}
+.blast-ch-price{font-size:11px;color:var(--muted)}
+
+/* ── ONBOARDING ── */
+.onboard-packages{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.obpkg{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:20px;transition:all .25s;cursor:pointer;position:relative}
+.obpkg:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:var(--sh2)}
+.obpkg.popular{border-color:var(--orange)}
+.obpkg-pop{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px;white-space:nowrap}
+.obpkg-ico{font-size:28px;margin-bottom:10px}
+.obpkg-name{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.obpkg-price{font-size:20px;font-weight:900;color:var(--orange);margin-bottom:3px;font-family:monospace}
+.obpkg-per{font-size:11px;color:var(--muted);margin-bottom:12px}
+.obpkg-feats{display:flex;flex-direction:column;gap:5px}
+.obpkg-feat{font-size:12px;color:var(--muted);display:flex;gap:6px}
+.obpkg-feat::before{content:"✓";color:var(--green);font-weight:800;flex-shrink:0}
+
+/* ── LOCAL ADS ── */
+.local-ads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.ad-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;transition:all .22s}
+.ad-card:hover{border-color:var(--orange);box-shadow:var(--sh)}
+.ad-card-thumb{height:100px;background:linear-gradient(135deg,var(--navy),#2d3748);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
+.ad-card-type{position:absolute;top:6px;left:6px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px}
+.ad-card-body{padding:12px 14px}
+.ad-card-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.ad-card-desc{font-size:11.5px;color:var(--muted);margin-bottom:8px;line-height:1.5}
+.ad-cta{font-size:12px;font-weight:700;color:var(--orange);display:flex;align-items:center;gap:4px}
+
+/* ── AFFILIATE ── */
+.aff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+.aff-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .22s;box-shadow:var(--sh)}
+.aff-card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:var(--sh2)}
+.aff-ico{font-size:30px;margin-bottom:8px}
+.aff-name{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.aff-desc{font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+.aff-cta{background:linear-gradient(135deg,var(--orange),#e05800);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
+
+/* ── REVENUE NAV TABS ── */
+.rev-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
+.rev-tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.rev-tab.on{color:var(--orange);border-bottom-color:var(--orange);font-weight:700}
+.rev-tab:hover{color:var(--navy)}
+.rev-sec{display:none}.rev-sec.on{display:block}
+
+/* ── PRICING MODAL ── */
+.price-modal-overlay{position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+.price-modal-overlay.on{display:flex}
+.price-modal{background:var(--white);border-radius:18px;width:100%;max-width:500px;box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.pm-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pm-title{font-size:16px;font-weight:800;color:var(--navy)}
+.pm-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg2);font-size:16px;cursor:pointer}
+.pm-body{padding:20px 24px}
+.pm-price{font-size:32px;font-weight:900;color:var(--orange);font-family:monospace;margin:12px 0}
+.pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.pay-btn{padding:10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;font-size:12px;font-weight:700;transition:all .2s;background:var(--white)}
+.pay-btn.on,.pay-btn:hover{border-color:var(--orange);background:rgba(229,88,34,.06)}
+.pm-submit{width:100%;background:linear-gradient(135deg,var(--orange),#e05800);color:#fff;border:none;padding:13px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
+
+.sec-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sec-tag::before{content:'';width:16px;height:1.5px;background:var(--orange)}
+
+
+/* ── DROPDOWN NAV ── */
+.nav-dropdown{position:relative}
+.nav-dropdown:hover .drop-menu{display:flex}
+.drop-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(10,20,40,.12);padding:8px;min-width:210px;flex-direction:column;gap:2px;z-index:700;margin-top:6px}
+.drop-menu::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:var(--border)}
+.drop-item{padding:9px 14px;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap;text-align:left;border:none;background:none;font-family:inherit;display:flex;align-items:center;gap:8px}
+.drop-item:hover{background:var(--org-light);color:var(--orange)}
+.drop-item span.di-ico{font-size:15px}
+.nl-has-drop{display:flex;align-items:center;gap:4px}
+.nl-has-drop::after{content:'▾';font-size:9px;opacity:.5}
+/* ── TABS (Tìm việc) ── */
+.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tb{padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tb.on{color:var(--orange);border-bottom-color:var(--orange);font-weight:700}
+.tab-sec{display:none}.tab-sec.on{display:block}
+/* ── QUYẾT ĐỊNH (gói tuyển dụng) ── */
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.pkg-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:22px;transition:all .25s;cursor:pointer;position:relative}
+.pkg-card:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:var(--sh2)}
+.pkg-card.pop{border-color:var(--orange)}
+.pkg-pop{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:9.5px;font-weight:800;padding:3px 14px;border-radius:20px;white-space:nowrap}
+.pkg-name{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.pkg-price{font-size:26px;font-weight:900;color:var(--orange);font-family:monospace;margin-bottom:2px}
+.pkg-per{font-size:12px;color:var(--muted);margin-bottom:14px}
+.pkg-feats{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.pkg-feat{font-size:12.5px;color:var(--muted);display:flex;gap:7px}
+.pkg-feat.ok::before{content:"✓";color:var(--green);font-weight:800;flex-shrink:0}
+.pkg-feat.no::before{content:"–";color:var(--border2);font-weight:800;flex-shrink:0}
+.pkg-feat.plus::before{content:"★";color:var(--orange);font-weight:800;flex-shrink:0}
+.pkg-cta{width:100%;padding:11px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all .2s}
+.pkg-cta-main{background:linear-gradient(135deg,var(--org),#e05800);color:#fff}
+.pkg-cta-out{background:var(--org-light);border:1px solid var(--org-border)!important;color:var(--orange)}
+/* ── BLAST ── */
+.blast-ch{border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--white)}
+.blast-ch.on{border-color:#6B46C1;background:rgba(107,70,193,.06)}
+.blast-ch-ico{font-size:22px;margin-bottom:4px}.blast-ch-name{font-size:12.5px;font-weight:700;color:var(--navy)}.blast-ch-price{font-size:11px;color:var(--muted)}
+/* ── QUYỀN LỢI DỊCH VỤ cards ── */
+.svc-benefit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.svc-benefit{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px 16px;display:flex;gap:10px}
+.svc-b-ico{font-size:20px;flex-shrink:0}.svc-b-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}.svc-b-desc{font-size:12px;color:rgba(255,255,255,.55);line-height:1.55}
+/* ── ĐỐI TÁC / HỢP TÁC ── */
+.partner-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.partner-card{background:var(--white);border:1.5px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--sh);transition:all .22s}
+.partner-card:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:var(--sh2)}
+.pc-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.pc-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.pc-name{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:2px}
+.pc-cat{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.pc-body{padding:14px 18px}
+.pc-desc{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:10px}
+.pc-pkgs{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.pc-pkg{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}
+.pc-pkg::before{content:"•";color:var(--orange);font-weight:800;flex-shrink:0}
+.pc-cta{font-size:12px;font-weight:700;color:var(--orange);display:flex;align-items:center;gap:5px;cursor:pointer}
+.pc-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:6px}
+.pc-tag-ins{background:rgba(56,161,105,.1);color:var(--green);border:1px solid rgba(56,161,105,.2)}
+.pc-tag-fin{background:rgba(229,88,34,.1);color:var(--orange);border:1px solid rgba(229,88,34,.2)}
+.pc-tag-dig{background:rgba(107,70,193,.1);color:#6B46C1;border:1px solid rgba(107,70,193,.2)}
+/* ── ADMIN PANEL ── */
+.admin-overlay{position:fixed;inset:0;background:rgba(10,20,40,.88);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.admin-overlay.on{display:flex}
+.login-box{background:var(--white);border-radius:18px;padding:34px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.4);position:relative}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--org),var(--navy));border-radius:18px 18px 0 0}
+.lb-title{font-size:20px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:4px}
+.lb-title em{color:var(--orange);font-style:normal}
+.lb-sub{font-size:12.5px;color:var(--muted);text-align:center;margin-bottom:22px}
+.lb-roles{display:flex;gap:6px;margin-bottom:18px}
+.lb-role{flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);background:transparent;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--muted);transition:all .2s}
+.lb-role.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.lbf{margin-bottom:12px}
+.lbf label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.lbf input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--bg2);color:var(--navy);outline:none;transition:all .2s;box-sizing:border-box}
+.lbf input:focus{border-color:var(--orange);background:#fff}
+.lb-btn{width:100%;background:linear-gradient(135deg,var(--org),#e05800);color:#fff;border:none;padding:13px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
+.lb-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:var(--bg2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.admin-panel{padding-top:60px;min-height:100vh;background:var(--bg2)}
+.admin-topbar{background:var(--navy);padding:13px 32px;display:flex;align-items:center;justify-content:space-between}
+.atb-left{font-size:16px;font-weight:800;color:#fff}
+.atb-left em{color:var(--org3, #F6A623);font-style:normal}
+.atb-right{display:flex;align-items:center;gap:12px}
+.atb-user{font-size:12.5px;color:rgba(255,255,255,.5)}
+.atb-role-badge{font-size:10px;padding:2px 9px;border-radius:4px;background:rgba(229,88,34,.25);color:#F6A623;font-weight:700}
+.atb-logout{font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;border:1px solid rgba(255,255,255,.15);padding:4px 12px;border-radius:5px;background:transparent;font-family:inherit;transition:all .2s}
+.atb-logout:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.admin-layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 110px)}
+.admin-sb{background:var(--white);border-right:1px solid var(--border);padding:16px 0}
+.sb-group-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);padding:0 16px;margin:14px 0 5px;display:block}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;border-left:2px solid transparent;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+.sb-item:hover{color:var(--navy);background:var(--bg2);border-left-color:var(--border)}
+.sb-item.on{color:var(--orange);background:var(--org-light);border-left:2px solid var(--orange);font-weight:700}
+.sb-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--bg2);color:var(--muted)}
+.admin-main{padding:24px 28px;overflow-y:auto}
+.admin-sec{display:none}.admin-sec.on{display:block}
+.admin-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.astat{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:16px;box-shadow:var(--sh)}
+.astat-n{font-size:26px;font-weight:900;color:var(--navy);font-family:monospace;margin-bottom:3px}
+.astat-l{font-size:11.5px;color:var(--muted)}
+.astat-d{font-size:11px;font-weight:700;color:var(--green);margin-top:3px}
+.admin-tbl{width:100%;border-collapse:collapse;background:var(--white);border-radius:11px;overflow:hidden;box-shadow:var(--sh)}
+.admin-tbl th{padding:10px 13px;font-size:10.5px;font-weight:700;text-align:left;color:var(--muted);background:var(--bg2);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+.admin-tbl td{padding:10px 13px;font-size:13px;color:var(--ink,#1a1a2e);border-bottom:1px solid var(--border)}
+.admin-tbl tr:last-child td{border-bottom:none}
+.admin-tbl tr:hover td{background:var(--bg2)}
+.ta-btn{font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;border:none;cursor:pointer;font-family:inherit}
+.ta-edit{background:var(--org-light);color:var(--orange)}.ta-del{background:rgba(220,38,38,.08);color:#DC2626}.ta-view{background:var(--bg2);color:var(--navy)}.ta-approve{background:rgba(56,161,105,.1);color:var(--green)}
+.badge-pub{background:rgba(56,161,105,.1);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(56,161,105,.2)}
+.badge-pend{background:rgba(229,88,34,.1);color:var(--orange);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(229,88,34,.2)}
+.badge-rej{background:rgba(220,38,38,.08);color:#DC2626;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.sec-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.sec-title{font-size:17px;font-weight:800;color:var(--navy)}
+.mini-search{padding:8px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--bg2);outline:none;width:200px}
+.mini-search:focus{border-color:var(--orange)}
+.new-btn{background:linear-gradient(135deg,var(--org),#e05800);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.form-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px;margin-top:16px;display:none}
+.form-panel.on{display:block}
+.fp-title{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select,.fg textarea{padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:inherit;background:var(--bg2);color:var(--navy);outline:none;transition:border .2s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--orange);background:#fff}
+.fg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg-full{grid-column:span 2}
+.ce-wrap{border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.ce-bar{padding:7px 10px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;gap:4px;flex-wrap:wrap}
+.ce-b{padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--white);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--navy)}
+.ce-b:hover{background:var(--org-light);border-color:var(--org-border)}
+.ce-body{min-height:140px;padding:12px;font-size:14px;font-family:inherit;outline:none;line-height:1.7}
+.fp-actions{display:flex;gap:8px;margin-top:14px}
+.fp-save{background:linear-gradient(135deg,var(--org),#e05800);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.fp-draft{background:var(--bg2);border:1px solid var(--border);color:var(--muted);padding:10px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
+.fp-cancel{background:transparent;border:none;color:var(--muted);padding:10px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+/* ── PAYMENT MODAL ── */
+.pay-overlay{position:fixed;inset:0;background:rgba(10,20,40,.6);z-index:900;display:none;align-items:center;justify-content:center;padding:20px}
+.pay-overlay.on{display:flex}
+.pay-modal{background:var(--white);border-radius:16px;width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.pm-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pm-title{font-size:15px;font-weight:800;color:var(--navy)}
+.pm-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg2);font-size:15px;cursor:pointer}
+.pm-body{padding:20px 22px}
+.pm-price{font-size:30px;font-weight:900;color:var(--orange);font-family:monospace;margin:10px 0 14px}
+.pm-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.pm-method{padding:10px 8px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;transition:all .2s;background:var(--white);font-family:inherit}
+.pm-method.on,.pm-method:hover{border-color:var(--orange);background:var(--org-light)}
+.pm-submit{width:100%;background:linear-gradient(135deg,var(--org),#e05800);color:#fff;border:none;padding:13px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+/* ── CHECK LABEL ── */
+.check-label:has(input:checked){border-color:var(--orange);background:var(--lorg)}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--green,#38A169);color:#fff;padding:13px 20px;border-radius:10px;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,.2);display:none;align-items:center;gap:8px}
+.toast.on{display:flex}
+
+/* ── MARQUEE ── */
+.partner-logo-pill{background:var(--lorg);border:1px solid var(--org-border);color:var(--orange);padding:9px 18px;border-radius:30px;font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes marquee-r{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-ico">🏭</div>
+    <div class="nav-logo">ViecLam<span>CongNhan</span>.com</div>
+  </div>
+  <div class="nav-c">
+    <button class="nl on" onclick="nav('home',this)">Trang chủ</button>
+
+    <!-- Tìm việc làm dropdown -->
+    <div class="nav-dropdown">
+      <button class="nl nl-has-drop" onclick="nav('timviec',this)">Tìm việc làm</button>
+      <div class="drop-menu">
+        <button class="drop-item" onclick="nav('timviec',null);switchTab('tab-jobs')"><span class="di-ico">🔍</span>Tìm việc theo ngành / lương</button>
+        <button class="drop-item" onclick="nav('timviec',null);switchTab('tab-kcn')"><span class="di-ico">🏭</span>Khám phá KCN toàn quốc</button>
+      </div>
+    </div>
+
+    <!-- Tuyển dụng dropdown -->
+    <div class="nav-dropdown">
+      <button class="nl nl-has-drop" onclick="nav('tuyendung',this)">Tuyển dụng</button>
+      <div class="drop-menu">
+        <button class="drop-item" onclick="nav('tuyendung',null);switchTDTab('td-dang')"><span class="di-ico">📋</span>Đăng bài tuyển dụng</button>
+        <button class="drop-item" onclick="nav('tuyendung',null);switchTDTab('td-goi')"><span class="di-ico">💼</span>Gói đăng tin tuyển dụng</button>
+        <button class="drop-item" onclick="nav('tuyendung',null);switchTDTab('td-blast')"><span class="di-ico">📲</span>Dịch vụ Blast SMS / Zalo</button>
+      </div>
+    </div>
+
+    <button class="nl" onclick="nav('doitac',this)">Quảng cáo / Hợp tác</button>
+    <button class="nl" onclick="nav('dichvu',this)">Dịch vụ trọn gói</button>
+    <button class="nl" onclick="nav('rights',this)">Tin tức & Quyền lợi</button>
+  </div>
+  <div class="nav-r">
+    <button style="background:rgba(229,88,34,.12);border:1px solid rgba(229,88,34,.3);color:var(--orange);padding:7px 16px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:6px;transition:all .2s;white-space:nowrap" onclick="openAdmin()">⚙ Quản trị</button>
+    <button class="btn-org" onclick="nav('candidate',null)" style="white-space:nowrap">Để lại thông tin →</button>
+  </div>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<div class="page on" id="pg-home">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eye">Nền tảng việc làm công nhân · KCN toàn quốc</div>
+        <h1>Tìm việc <em>công nhân</em><br>gần nhà — lương tốt.</h1>
+        <p class="hero-p">48.000+ tin tuyển dụng từ nhà máy, KCN trên 34 tỉnh thành. Ứng tuyển ngay không cần lập tài khoản — chỉ cần số điện thoại là xong.</p>
+        <div class="hero-cta-row">
+          <button class="btn-hero btn-hero-org" onclick="nav('jobs',null)">🔍 Tìm việc ngay</button>
+          <button class="btn-hero btn-hero-ghost" onclick="nav('candidate',null)">📝 Để lại thông tin</button>
+        </div>
+        <div class="hero-trust">
+          <span class="ht">48.000+ tin tuyển dụng</span>
+          <span class="ht">1.200+ nhà máy & KCN</span>
+          <span class="ht">34 tỉnh thành</span>
+          <span class="ht">Cập nhật hàng ngày</span>
+        </div>
+      </div>
+      <!-- Search box -->
+      <div class="search-card">
+        <div class="sc-title">🔍 Tìm việc làm ngay</div>
+        <div class="sc-field"><label>Vị trí / Ngành nghề</label><input placeholder="Công nhân may, lắp ráp, bốc xếp..."/></div>
+        <div class="sc-field"><label>Tỉnh / Thành phố</label>
+          <select>
+            <option>-- Chọn tỉnh thành --</option>
+            <option>Hà Nội</option><option>Hải Phòng</option><option>Bắc Ninh</option><option>Quảng Ninh</option><option>Hưng Yên</option><option>Ninh Bình</option>
+            <option>Tuyên Quang</option><option>Cao Bằng</option><option>Lai Châu</option><option>Lào Cai</option><option>Thái Nguyên</option><option>Điện Biên</option><option>Lạng Sơn</option><option>Sơn La</option><option>Phú Thọ</option>
+            <option>Thanh Hóa</option><option>Nghệ An</option><option>Hà Tĩnh</option><option>Quảng Trị</option><option>Huế</option>
+            <option>Đà Nẵng</option><option>Quảng Ngãi</option><option>Gia Lai</option><option>Đắk Lắk</option><option>Khánh Hòa</option><option>Lâm Đồng</option>
+            <option>Đồng Nai</option><option>Tây Ninh</option><option>TP. Hồ Chí Minh</option>
+            <option>Đồng Tháp</option><option>An Giang</option><option>Vĩnh Long</option><option>Cần Thơ</option><option>Cà Mau</option>
+          </select>
+        </div>
+        <div class="sc-field"><label>Mức lương mong muốn</label>
+          <select>
+            <option>Tất cả mức lương</option>
+            <option>7 – 10 triệu/tháng</option><option>10 – 15 triệu/tháng</option>
+            <option>15 – 20 triệu/tháng</option><option>Trên 20 triệu/tháng</option>
+          </select>
+        </div>
+        <button class="sc-btn">🔍 Tìm việc ngay</button>
+        <div class="sc-hotkeys">
+          <span class="sc-hot">May mặc</span><span class="sc-hot">Điện tử</span>
+          <span class="sc-hot">Bốc xếp</span><span class="sc-hot">Tuyển gấp</span>
+          <span class="sc-hot">Bình Dương</span><span class="sc-hot">Có nhà ở</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KCN filter -->
+  <div class="kcn-bar">
+    <div class="kcn-inner">
+      <span class="kcn-lbl">Lọc theo KCN</span>
+      <div class="kcn-tags">
+        <div class="kcn-tag on">Tất cả</div>
+        <div class="kcn-tag">KCN Bình Dương</div><div class="kcn-tag">KCN Đồng Nai</div>
+        <div class="kcn-tag">KCX Tân Thuận</div><div class="kcn-tag">KCN Bắc Ninh</div>
+        <div class="kcn-tag">KCN Thăng Long HN</div><div class="kcn-tag">KCN Long An</div>
+        <div class="kcn-tag">KCN Tràng Duệ HP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat"><div class="stat-n">48.000+</div><div class="stat-l">Tin đang tuyển</div></div>
+      <div class="stat"><div class="stat-n green">1.200+</div><div class="stat-l">Nhà máy & KCN</div></div>
+      <div class="stat"><div class="stat-n blue">800K+</div><div class="stat-l">Ứng viên đã đăng ký</div></div>
+      <div class="stat"><div class="stat-n">34</div><div class="stat-l">Tỉnh thành</div></div>
+      <div class="stat"><div class="stat-n">7–18M</div><div class="stat-l">Mức lương phổ biến</div></div>
+    </div>
+  </div>
+
+  <!-- Tin tuyển dụng nổi bật -->
+  <div class="section">
+    <div class="sec-eye">Tin tuyển dụng nổi bật</div>
+    <div class="sec-h"><em>Đang tuyển gấp</em> — lương hấp dẫn</div>
+    <div class="job-filter-row">
+      <button class="jf on">Tất cả</button><button class="jf">Tuyển gấp</button>
+      <button class="jf">Lương cao</button><button class="jf">Có nhà ở</button>
+      <button class="jf">Không cần KN</button><button class="jf">Ca ngày</button>
+      <button class="jf">Ca đêm</button>
+    </div>
+    <div class="job-grid">
+      <div class="job-card urgent">
+        <span class="urgent-tag">⚡ TUYỂN GẤP</span>
+        <div class="jc-top"><div class="jc-ico ico-org">👚</div><div><div class="jc-co">Công ty TNHH May Mặc Phong Phú</div><div class="jc-title">Công nhân May Công nghiệp (200 người)</div><div class="jc-loc">📍 Bình Dương · KCN Sóng Thần 2</div></div></div>
+        <div class="jc-tags"><span class="badge badge-green">Không cần KN</span><span class="badge badge-blue">Bao xe đưa đón</span><span class="badge badge-amber">Nhà ở tập thể</span></div>
+        <div class="jc-foot"><div class="jc-salary">8–12 triệu/tháng</div><button class="jc-btn" onclick="nav('jobs',null)">Ứng tuyển →</button></div>
+      </div>
+      <div class="job-card">
+        <div class="jc-top"><div class="jc-ico ico-blue">📱</div><div><div class="jc-co">Samsung Electronics Vietnam</div><div class="jc-title">Công nhân Lắp ráp Điện tử (500 người)</div><div class="jc-loc">📍 TP. Thủ Đức, TP.HCM</div></div></div>
+        <div class="jc-tags"><span class="badge badge-green">18 tuổi+</span><span class="badge badge-blue">Tăng ca có thưởng</span><span class="badge badge-org">Bảo hiểm đầy đủ</span></div>
+        <div class="jc-foot"><div class="jc-salary">9–14 triệu/tháng</div><button class="jc-btn" onclick="nav('jobs',null)">Ứng tuyển →</button></div>
+      </div>
+      <div class="job-card urgent">
+        <span class="urgent-tag">⚡ TUYỂN GẤP</span>
+        <div class="jc-top"><div class="jc-ico ico-green">📦</div><div><div class="jc-co">Lazada Express Vietnam</div><div class="jc-title">Nhân viên Kho · Bốc xếp · Đóng gói (150 người)</div><div class="jc-loc">📍 Long An · KCN Hải Sơn</div></div></div>
+        <div class="jc-tags"><span class="badge badge-green">Ca ngày/Ca đêm</span><span class="badge badge-amber">Thưởng năng suất</span></div>
+        <div class="jc-foot"><div class="jc-salary">7–10 triệu/tháng</div><button class="jc-btn" onclick="nav('jobs',null)">Ứng tuyển →</button></div>
+      </div>
+      <div class="job-card">
+        <div class="jc-top"><div class="jc-ico ico-amber">⚙️</div><div><div class="jc-co">Tập đoàn Thép Hòa Phát</div><div class="jc-title">Công nhân Vận hành Máy CNC · Hàn CO2</div><div class="jc-loc">📍 Dung Quất, Quảng Ngãi</div></div></div>
+        <div class="jc-tags"><span class="badge badge-blue">Có bằng nghề CNC</span><span class="badge badge-green">Bao ăn ở</span><span class="badge badge-org">Thưởng KPI</span></div>
+        <div class="jc-foot"><div class="jc-salary">12–18 triệu/tháng</div><button class="jc-btn" onclick="nav('jobs',null)">Ứng tuyển →</button></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-org" style="font-size:14px;padding:12px 28px" onclick="nav('jobs',null)">Xem tất cả 48.000+ tin tuyển dụng →</button>
+    </div>
+  </div>
+
+  <!-- Chiến dịch tuyển dụng nổi bật của doanh nghiệp (PR showcase) -->
+  <div class="bg-white">
+    <div class="section">
+      <div class="sec-eye">Chiến dịch tuyển dụng nổi bật</div>
+      <div class="sec-h">Các công ty đang tuyển <em>quy mô lớn</em></div>
+      <p class="sec-p">Những chiến dịch tuyển dụng hàng trăm công nhân — được ViecLamCongNhan.com triển khai PR chuyên sâu, tiếp cận đúng ứng viên trong KCN.</p>
+      <div class="campaign-grid">
+        <div class="camp-card">
+          <div class="camp-thumb ct-1">🏭<span class="camp-pr-badge">⭐ PR Featured</span><span class="camp-count-badge">500 người</span></div>
+          <div class="camp-body">
+            <div class="camp-co">Bitis's · May Bình Tiên</div>
+            <div class="camp-title">Tuyển 500 CN May — Chiến dịch Tết 2027</div>
+            <div class="camp-meta"><span>📍 Bình Dương</span><span>⏳ Còn 14 ngày</span><span>👥 842 đã nộp</span></div>
+            <div class="camp-foot"><div class="camp-salary">9–13 triệu/tháng</div><div class="camp-view">Xem chiến dịch →</div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-thumb ct-2">📱<span class="camp-pr-badge">⭐ PR Featured</span><span class="camp-count-badge">800 người</span></div>
+          <div class="camp-body">
+            <div class="camp-co">LG Electronics Vietnam</div>
+            <div class="camp-title">Mở rộng nhà máy — Tuyển 800 CN Điện tử</div>
+            <div class="camp-meta"><span>📍 Hải Phòng</span><span>⏳ Còn 21 ngày</span><span>👥 1.240 đã nộp</span></div>
+            <div class="camp-foot"><div class="camp-salary">8–13 triệu/tháng</div><div class="camp-view">Xem chiến dịch →</div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-thumb ct-3">🥤<span class="camp-pr-badge">⭐ PR Featured</span><span class="camp-count-badge">300 người</span></div>
+          <div class="camp-body">
+            <div class="camp-co">Tân Hiệp Phát Group</div>
+            <div class="camp-title">Tuyển CN Sản xuất Đồ uống — Nhà máy mới</div>
+            <div class="camp-meta"><span>📍 Bình Dương</span><span>⏳ Còn 7 ngày</span><span>👥 620 đã nộp</span></div>
+            <div class="camp-foot"><div class="camp-salary">8–11 triệu/tháng</div><div class="camp-view">Xem chiến dịch →</div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-thumb ct-4">👟<span class="camp-pr-badge">⭐ PR Featured</span><span class="camp-count-badge">400 người</span></div>
+          <div class="camp-body">
+            <div class="camp-co">Adidas Vendor Vietnam</div>
+            <div class="camp-title">Tuyển 400 CN May Giày — KCN Amata</div>
+            <div class="camp-meta"><span>📍 Đồng Nai</span><span>⏳ Còn 10 ngày</span><span>👥 910 đã nộp</span></div>
+            <div class="camp-foot"><div class="camp-salary">9–13 triệu/tháng</div><div class="camp-view">Xem chiến dịch →</div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-thumb ct-5">🔋<span class="camp-pr-badge">⭐ PR Featured</span><span class="camp-count-badge">600 người</span></div>
+          <div class="camp-body">
+            <div class="camp-co">VinFast Manufacturing</div>
+            <div class="camp-title">Tuyển CN Lắp ráp Ô tô Điện — Hải Phòng</div>
+            <div class="camp-meta"><span>📍 Hải Phòng</span><span>⏳ Còn 30 ngày</span><span>👥 1.820 đã nộp</span></div>
+            <div class="camp-foot"><div class="camp-salary">11–16 triệu/tháng</div><div class="camp-view">Xem chiến dịch →</div></div>
+          </div>
+        </div>
+        <div class="camp-card" style="border:2px dashed var(--orgb);background:var(--lorg);cursor:pointer" onclick="nav('employer',null)">
+          <div class="camp-thumb" style="background:var(--lorg);font-size:36px">➕</div>
+          <div class="camp-body">
+            <div class="camp-co" style="color:var(--org)">Dành cho doanh nghiệp</div>
+            <div class="camp-title" style="color:var(--org)">Đăng chiến dịch tuyển dụng của bạn</div>
+            <div class="camp-meta"><span>Tiếp cận 800K+ ứng viên công nhân</span></div>
+            <div class="camp-foot"><div class="camp-salary" style="font-size:13px;color:var(--org)">Từ 899.000đ/chiến dịch</div><div class="camp-view" style="color:var(--org)">Đăng ngay →</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dịch vụ tuyển dụng trọn gói nhanh preview -->
+
+  <div class="section">
+    <div class="sec-eye">Đối tác & Hợp tác</div>
+    <div class="sec-h">Được tin tưởng bởi<br><em>các doanh nghiệp hàng đầu</em></div>
+    <p class="sec-p" style="margin-bottom:24px">ViecLamCongNhan.com phối hợp với các đối tác tài chính, bảo hiểm, tuyển dụng uy tín để cung cấp giải pháp toàn diện cho công nhân và nhà tuyển dụng.</p>
+
+    <!-- Marquee logos row 1 -->
+    <div style="overflow:hidden;margin-bottom:12px;mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent)">
+      <div class="marquee-track" style="display:flex;gap:16px;animation:marquee 28s linear infinite;width:max-content">
+        <div class="partner-logo-pill">🏭 Samsung VN</div>
+        <div class="partner-logo-pill">🏭 Canon VN</div>
+        <div class="partner-logo-pill">🏭 Foxconn</div>
+        <div class="partner-logo-pill">🏭 LG Electronics</div>
+        <div class="partner-logo-pill">🏭 Pouyuen</div>
+        <div class="partner-logo-pill">🏭 Panasonic</div>
+        <div class="partner-logo-pill">🏭 Hyosung</div>
+        <div class="partner-logo-pill">🏭 Hansae VN</div>
+        <div class="partner-logo-pill">🏭 Jabil VN</div>
+        <div class="partner-logo-pill">🏭 Intel Products VN</div>
+        <!-- Repeat for seamless loop -->
+        <div class="partner-logo-pill">🏭 Samsung VN</div>
+        <div class="partner-logo-pill">🏭 Canon VN</div>
+        <div class="partner-logo-pill">🏭 Foxconn</div>
+        <div class="partner-logo-pill">🏭 LG Electronics</div>
+        <div class="partner-logo-pill">🏭 Pouyuen</div>
+        <div class="partner-logo-pill">🏭 Panasonic</div>
+        <div class="partner-logo-pill">🏭 Hyosung</div>
+        <div class="partner-logo-pill">🏭 Hansae VN</div>
+      </div>
+    </div>
+
+    <!-- Marquee logos row 2 (reverse) -->
+    <div style="overflow:hidden;margin-bottom:28px;mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent)">
+      <div class="marquee-track" style="display:flex;gap:16px;animation:marquee-r 24s linear infinite;width:max-content">
+        <div class="partner-logo-pill" style="background:rgba(56,161,105,.08);border-color:var(--greenb);color:var(--green)">🛡 FWD Bảo hiểm</div>
+        <div class="partner-logo-pill" style="background:rgba(56,161,105,.08);border-color:var(--greenb);color:var(--green)">🛡 Prudential VN</div>
+        <div class="partner-logo-pill" style="background:rgba(56,161,105,.08);border-color:var(--greenb);color:var(--green)">🛡 Bảo Việt</div>
+        <div class="partner-logo-pill" style="background:rgba(107,70,193,.08);border-color:rgba(107,70,193,.3);color:#6B46C1">📱 MoMo</div>
+        <div class="partner-logo-pill" style="background:rgba(107,70,193,.08);border-color:rgba(107,70,193,.3);color:#6B46C1">💬 ZaloPay</div>
+        <div class="partner-logo-pill" style="background:rgba(229,88,34,.08);border-color:var(--org-border);color:var(--orange)">💵 Tima.vn</div>
+        <div class="partner-logo-pill" style="background:rgba(229,88,34,.08);border-color:var(--org-border);color:var(--orange)">💵 MCredit</div>
+        <div class="partner-logo-pill" style="background:rgba(245,158,11,.08);border-color:var(--amberb);color:var(--amber)">🏛 BHXH Tự nguyện</div>
+        <div class="partner-logo-pill" style="background:rgba(26,79,196,.08);border-color:var(--blueb);color:var(--blue)">⚖ VEA Law</div>
+        <div class="partner-logo-pill" style="background:rgba(56,161,105,.08);border-color:var(--greenb);color:var(--green)">🛡 FWD Bảo hiểm</div>
+        <div class="partner-logo-pill" style="background:rgba(56,161,105,.08);border-color:var(--greenb);color:var(--green)">🛡 Prudential VN</div>
+        <div class="partner-logo-pill" style="background:rgba(56,161,105,.08);border-color:var(--greenb);color:var(--green)">🛡 Bảo Việt</div>
+        <div class="partner-logo-pill" style="background:rgba(107,70,193,.08);border-color:rgba(107,70,193,.3);color:#6B46C1">📱 MoMo</div>
+        <div class="partner-logo-pill" style="background:rgba(107,70,193,.08);border-color:rgba(107,70,193,.3);color:#6B46C1">💬 ZaloPay</div>
+      </div>
+    </div>
+
+    <!-- 3 value props -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:var(--sh)">
+        <div style="font-size:28px;margin-bottom:8px">🏭</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px">500+ Doanh nghiệp</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6">Nhà máy, KCN đang sử dụng nền tảng tuyển dụng công nhân của ViecLamCongNhan</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:var(--sh)">
+        <div style="font-size:28px;margin-bottom:8px">🤝</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px">10+ Đối tác tài chính</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6">Bảo hiểm, vay tiêu dùng, ví điện tử hỗ trợ công nhân tiếp cận dịch vụ tài chính phù hợp</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;box-shadow:var(--sh)">
+        <div style="font-size:28px;margin-bottom:8px">⚖</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px">VEA Law & VEA Academy</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.6">Tư vấn pháp lý lao động và đào tạo tay nghề — hệ sinh thái toàn diện của VEA Group</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end home -->
+
+
+<!-- ═══ TÌM VIỆC LÀM ═══ -->
+<div class="page" id="pg-timviec">
+  <div class="section" style="padding-top:88px">
+    <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:16px;height:1.5px;background:var(--orange)"></span>Cơ hội việc làm</div>
+    <h2 class="sec-h">Tìm việc làm <em>công nhân</em> &amp; Khám phá KCN</h2>
+    <p class="sec-p" style="margin-bottom:20px">48.000+ tin tuyển dụng · 300+ KCN toàn quốc · Lọc theo lương, ca làm, ngành nghề</p>
+    <div class="tab-bar">
+      <button class="tb on" id="tab-jobs" onclick="switchTab('tab-jobs')">🔍 Tìm việc theo tin tuyển dụng</button>
+      <button class="tb" id="tab-kcn" onclick="switchTab('tab-kcn')">🏭 KCN toàn quốc</button>
+    </div>
+    <div class="tab-sec on" id="ts-jobs">
+  <div style="padding-top:80px">
+    <div class="section">
+      <div class="sec-eye">Tìm việc làm</div>
+      <div class="sec-h">48.000+ tin tuyển dụng <em>công nhân</em></div>
+      <div style="display:grid;grid-template-columns:260px 1fr;gap:20px;margin-top:24px">
+        <!-- Filter sidebar -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:var(--sh);height:fit-content">
+          <div style="font-size:13px;font-weight:800;color:var(--ink);margin-bottom:14px">🔽 Lọc kết quả</div>
+          <div class="sc-field"><label>Tỉnh / Thành phố</label><select><option>Tất cả</option><option>TP.HCM</option><option>Bình Dương</option><option>Đồng Nai</option><option>Long An</option><option>Hà Nội</option><option>Bắc Ninh</option><option>Hải Phòng</option></select></div>
+          <div class="sc-field"><label>Ngành nghề</label><select><option>Tất cả ngành</option><option>May mặc · Giày da</option><option>Điện tử · Lắp ráp</option><option>Kho vận · Bốc xếp</option><option>Cơ khí · Hàn</option><option>Thực phẩm · Đồ uống</option><option>Xây dựng</option><option>Vận tải · Tài xế</option></select></div>
+          <div class="sc-field"><label>Mức lương</label><select><option>Tất cả</option><option>7–10 triệu</option><option>10–15 triệu</option><option>15–20 triệu</option><option>Trên 20 triệu</option></select></div>
+          <div class="sc-field"><label>Ca làm việc</label><select><option>Tất cả</option><option>Ca ngày</option><option>Ca đêm</option><option>Ca xoay</option></select></div>
+          <div class="sc-field"><label>Phúc lợi</label>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px">
+              <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer"><input type="checkbox"/> Có nhà ở tập thể</label>
+              <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer"><input type="checkbox"/> Bao xe đưa đón</label>
+              <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer"><input type="checkbox"/> Bao bữa ăn</label>
+              <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer"><input type="checkbox"/> Không cần kinh nghiệm</label>
+            </div>
+          </div>
+          <button class="sc-btn" style="margin-top:14px;font-size:13.5px;padding:11px">Lọc kết quả</button>
+        </div>
+        <!-- Job list -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div style="font-size:13px;color:var(--muted)">Tìm thấy <strong style="color:var(--ink)">48.247</strong> tin tuyển dụng</div>
+            <select style="padding:7px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:'Be Vietnam Pro',sans-serif;color:var(--muted);outline:none">
+              <option>Mới nhất</option><option>Lương cao nhất</option><option>Tuyển gấp</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <!-- Job items — full list style -->
+            <div class="job-card urgent" style="grid-column:span 1">
+              <span class="urgent-tag">⚡ TUYỂN GẤP</span>
+              <div class="jc-top"><div class="jc-ico ico-org">👚</div><div><div class="jc-co">May Mặc Phong Phú</div><div class="jc-title">Công nhân May Công nghiệp · 200 người · Nữ ưu tiên</div><div class="jc-loc">📍 KCN Sóng Thần 2, Bình Dương · Đăng 2 giờ trước</div></div></div>
+              <div class="jc-tags"><span class="badge badge-green">Không cần KN</span><span class="badge badge-blue">Xe đưa đón</span><span class="badge badge-amber">Nhà ở tập thể</span><span class="badge badge-org">Bao bữa ăn ca</span></div>
+              <div class="jc-foot"><div class="jc-salary">8 – 12 triệu/tháng</div><button class="jc-btn">Ứng tuyển ngay →</button></div>
+            </div>
+            <div class="job-card">
+              <div class="jc-top"><div class="jc-ico ico-blue">📱</div><div><div class="jc-co">Samsung SEHC Vietnam</div><div class="jc-title">Công nhân Lắp ráp Điện tử · 500 người</div><div class="jc-loc">📍 TP. Thủ Đức, TP.HCM · Đăng hôm nay</div></div></div>
+              <div class="jc-tags"><span class="badge badge-green">18 tuổi+</span><span class="badge badge-blue">Tăng ca 150%</span><span class="badge badge-org">Bảo hiểm đầy đủ</span></div>
+              <div class="jc-foot"><div class="jc-salary">9 – 14 triệu/tháng</div><button class="jc-btn">Ứng tuyển ngay →</button></div>
+            </div>
+            <div class="job-card">
+              <div class="jc-top"><div class="jc-ico ico-amber">⚙️</div><div><div class="jc-co">Hòa Phát Dung Quất</div><div class="jc-title">Công nhân CNC · Hàn CO2 · Tiện · Phay</div><div class="jc-loc">📍 KKT Dung Quất, Quảng Ngãi · Đăng 1 ngày trước</div></div></div>
+              <div class="jc-tags"><span class="badge badge-blue">Bằng nghề CNC</span><span class="badge badge-green">Bao ăn ở</span><span class="badge badge-amber">Thưởng KPI</span></div>
+              <div class="jc-foot"><div class="jc-salary">12 – 18 triệu/tháng</div><button class="jc-btn">Ứng tuyển ngay →</button></div>
+            </div>
+            <div class="job-card">
+              <div class="jc-top"><div class="jc-ico ico-green">📦</div><div><div class="jc-co">Lazada Express Vietnam</div><div class="jc-title">Nhân viên Kho · Bốc xếp · Đóng gói</div><div class="jc-loc">📍 KCN Hải Sơn, Long An · Đăng 3 giờ trước</div></div></div>
+              <div class="jc-tags"><span class="badge badge-green">Ca ngày / Ca đêm</span><span class="badge badge-amber">Thưởng năng suất</span></div>
+              <div class="jc-foot"><div class="jc-salary">7 – 10 triệu/tháng</div><button class="jc-btn">Ứng tuyển ngay →</button></div>
+            </div>
+            <div style="text-align:center;padding:16px 0;color:var(--muted);font-size:13px">Đang hiển thị 4 / 48.247 tin — <a href="#" style="color:var(--org);font-weight:700">Tải thêm →</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    </div>
+    <div class="tab-sec" id="ts-kcn">
+  <div style="padding-top:80px">
+    <div class="section">
+      <div class="sec-eye">Khu công nghiệp toàn quốc</div>
+      <div class="sec-h">Tìm việc tại <em>KCN gần bạn</em></div>
+      <p class="sec-p">34 tỉnh thành · 300+ khu công nghiệp trên cả nước. Bấm vào KCN để xem danh sách tin tuyển dụng đang có.</p>
+      <div class="kcn-grid">
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🏙️</div><div><div class="kcn-prov">Bình Dương</div><div class="kcn-sub">12 KCN · 14.200 tin đang tuyển</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Sóng Thần 1, 2, 3</span><span class="kl-jobs">4.200</span></div><div class="kl"><span class="kl-name">KCN VSIP I, II, III</span><span class="kl-jobs">3.800</span></div><div class="kl"><span class="kl-name">KCN Mỹ Phước 1, 2, 3</span><span class="kl-jobs">2.100</span></div><div class="kl"><span class="kl-name">KCN Đồng An · Việt Hương</span><span class="kl-jobs">1.400</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🌆</div><div><div class="kcn-prov">TP. Hồ Chí Minh</div><div class="kcn-sub">15 KCN/KCX · 12.800 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCX Tân Thuận</span><span class="kl-jobs">3.100</span></div><div class="kl"><span class="kl-name">KCN Tân Bình</span><span class="kl-jobs">2.400</span></div><div class="kl"><span class="kl-name">KCX Linh Trung 1, 2</span><span class="kl-jobs">1.800</span></div><div class="kl"><span class="kl-name">KCN Hiệp Phước · Cát Lái</span><span class="kl-jobs">1.600</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🌳</div><div><div class="kcn-prov">Đồng Nai</div><div class="kcn-sub">14 KCN · 10.400 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Amata</span><span class="kl-jobs">2.800</span></div><div class="kl"><span class="kl-name">KCN Long Bình · Biên Hòa 2</span><span class="kl-jobs">2.100</span></div><div class="kl"><span class="kl-name">KCN Nhơn Trạch 1–6</span><span class="kl-jobs">1.900</span></div><div class="kl"><span class="kl-name">KCN Loteco · Giang Điền</span><span class="kl-jobs">1.200</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🏯</div><div><div class="kcn-prov">Bắc Ninh</div><div class="kcn-sub">10 KCN · 8.600 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Yên Phong 1, 2</span><span class="kl-jobs">2.600</span></div><div class="kl"><span class="kl-name">KCN Quế Võ 1, 2, 3</span><span class="kl-jobs">1.800</span></div><div class="kl"><span class="kl-name">KCN Tiên Sơn</span><span class="kl-jobs">1.400</span></div><div class="kl"><span class="kl-name">KCN VSIP Bắc Ninh</span><span class="kl-jobs">1.100</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🌊</div><div><div class="kcn-prov">Hải Phòng</div><div class="kcn-sub">8 KCN · 6.400 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Tràng Duệ 1, 2</span><span class="kl-jobs">2.100</span></div><div class="kl"><span class="kl-name">KCN VSIP Hải Phòng</span><span class="kl-jobs">1.600</span></div><div class="kl"><span class="kl-name">KCN Nam Cầu Kiền</span><span class="kl-jobs">1.200</span></div><div class="kl"><span class="kl-name">KCN Nomura · Đồ Sơn</span><span class="kl-jobs">900</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🌅</div><div><div class="kcn-prov">Long An</div><div class="kcn-sub">8 KCN · 5.800 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Hải Sơn</span><span class="kl-jobs">1.800</span></div><div class="kl"><span class="kl-name">KCN Tân Đô · Xuyên Á</span><span class="kl-jobs">1.400</span></div><div class="kl"><span class="kl-name">KCN Long Hậu</span><span class="kl-jobs">1.100</span></div><div class="kl"><span class="kl-name">KCN Đức Hòa 1, 2, 3</span><span class="kl-jobs">800</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🏔️</div><div><div class="kcn-prov">Bắc Giang</div><div class="kcn-sub">6 KCN · 5.200 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Vân Trung</span><span class="kl-jobs">1.600</span></div><div class="kl"><span class="kl-name">KCN Đình Trám</span><span class="kl-jobs">1.200</span></div><div class="kl"><span class="kl-name">KCN Song Khê · Nội Hoàng</span><span class="kl-jobs">900</span></div><div class="kl"><span class="kl-name">KCN Hòa Phú</span><span class="kl-jobs">700</span></div></div></div>
+        <div class="kcn-card"><div class="kcn-head"><div class="kcn-flag">🌺</div><div><div class="kcn-prov">Đà Nẵng</div><div class="kcn-sub">5 KCN · 3.600 tin</div></div></div><div class="kcn-list"><div class="kl"><span class="kl-name">KCN Hòa Khánh</span><span class="kl-jobs">1.200</span></div><div class="kl"><span class="kl-name">KCN Liên Chiểu</span><span class="kl-jobs">900</span></div><div class="kl"><span class="kl-name">KCN Hòa Cầm</span><span class="kl-jobs">700</span></div><div class="kl"><span class="kl-name">KCN An Đồn · Dịch vụ</span><span class="kl-jobs">500</span></div></div></div>
+        <div class="kcn-card" style="border:2px dashed var(--orgb);background:var(--lorg);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center" onclick="nav('jobs',null)">
+          <div><div style="font-size:32px;margin-bottom:10px">🗺️</div><div style="font-size:14px;font-weight:800;color:var(--org);margin-bottom:4px">Xem tất cả 34 tỉnh</div><div style="font-size:12px;color:var(--muted)">300+ KCN trên toàn quốc</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ TUYỂN DỤNG ═══ -->
+<div class="page" id="pg-tuyendung">
+  <div class="section" style="padding-top:88px">
+    <!-- Intro -->
+    <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:16px;height:1.5px;background:var(--orange)"></span>Nhà Tuyển Dụng</div>
+    <h2 class="sec-h">Tuyển công nhân <em>nhanh & đúng người</em></h2>
+    <p style="font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:20px;max-width:680px">ViecLamCongNhan.com kết nối nhà tuyển dụng với <strong>48.000+ công nhân</strong> đang tìm việc tại 300+ KCN toàn quốc. Đăng tin miễn phí hoặc chọn gói nâng cao để tiếp cận nhanh hơn.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--orange);font-family:monospace">48K+</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Ứng viên trong database</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--orange);font-family:monospace">300+</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">KCN phủ sóng toàn quốc</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--orange);font-family:monospace">2h</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Tin được duyệt trong vòng</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--orange);font-family:monospace">Free</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">Đăng tin miễn phí 2 tin/ngày</div>
+      </div>
+    </div>
+    <!-- Steps guide -->
+    <div style="background:linear-gradient(135deg,var(--lorg),rgba(255,255,255,0));border:1px solid var(--org-border);border-radius:12px;padding:16px 20px;margin-bottom:24px">
+      <div style="font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Quy trình đăng tin</div>
+      <div style="display:flex;gap:0;align-items:center;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span><span style="font-size:12.5px;color:var(--navy)">Tạo tài khoản Nhà tuyển dụng</span></div>
+        <span style="color:var(--muted2);font-size:12px">→</span>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span><span style="font-size:12.5px;color:var(--navy)">Điền thông tin đơn vị</span></div>
+        <span style="color:var(--muted2);font-size:12px">→</span>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span><span style="font-size:12.5px;color:var(--navy)">Đăng bài tuyển dụng</span></div>
+        <span style="color:var(--muted2);font-size:12px">→</span>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</span><span style="font-size:12.5px;color:var(--navy)">Nhận ứng viên & tuyển</span></div>
+      </div>
+    </div>
+    <div class="tab-bar" style="margin-top:0">
+      <button class="tb on" id="td-dang" onclick="switchTDTab('td-dang')">📋 Đăng bài tuyển dụng</button>
+      <button class="tb" id="td-goi" onclick="switchTDTab('td-goi')">💼 Gói đăng tin</button>
+      <button class="tb" id="td-blast" onclick="switchTDTab('td-blast')">📲 Blast SMS / Zalo</button>
+    </div>
+
+    <div class="tab-sec on" id="ts-td-dang">
+      <div class="form-panel on" style="margin-top:0">
+        <div class="fp-title">📋 Đăng bài tuyển dụng mới</div>
+        <div class="fg-grid">
+          <div class="fg fg-full"><label>Tiêu đề tuyển dụng</label><input placeholder="VD: Tuyển công nhân may mặc — KCN Sóng Thần, Bình Dương"/></div>
+          <div class="fg"><label>Ngành nghề</label><select><option>May mặc / Giày da</option><option>Điện tử / Lắp ráp</option><option>Cơ khí / Hàn</option><option>Thực phẩm / Đồ uống</option><option>Kho vận / Bốc xếp</option><option>Xây dựng</option><option>Khác</option></select></div>
+          <div class="fg"><label>Tỉnh / Thành phố</label><select><option>Hà Nội</option><option>Hải Phòng</option><option>Bắc Ninh</option><option>Quảng Ninh</option><option>Hưng Yên</option><option>Ninh Bình</option><option>Tuyên Quang</option><option>Cao Bằng</option><option>Lai Châu</option><option>Lào Cai</option><option>Thái Nguyên</option><option>Điện Biên</option><option>Lạng Sơn</option><option>Sơn La</option><option>Phú Thọ</option><option>Thanh Hóa</option><option>Nghệ An</option><option>Hà Tĩnh</option><option>Quảng Trị</option><option>Huế</option><option>Đà Nẵng</option><option>Quảng Ngãi</option><option>Gia Lai</option><option>Đắk Lắk</option><option>Khánh Hòa</option><option>Lâm Đồng</option><option>Đồng Nai</option><option>Tây Ninh</option><option>TP. Hồ Chí Minh</option><option>Đồng Tháp</option><option>An Giang</option><option>Vĩnh Long</option><option>Cần Thơ</option><option>Cà Mau</option></select></div>
+          <div class="fg"><label>KCN (nếu có)</label><input placeholder="VD: KCN Sóng Thần 2, Bình Dương"/></div>
+          <div class="fg"><label>Ca làm việc</label><select><option>Ca ngày (6h–14h hoặc 7h–15h)</option><option>Ca đêm (22h–6h)</option><option>Xoay ca 3 ca</option><option>Hành chính (8h–17h)</option></select></div>
+          <div class="fg"><label>Lương tối thiểu (VNĐ/tháng)</label><input placeholder="VD: 8000000" type="number"/></div>
+          <div class="fg"><label>Lương tối đa (VNĐ/tháng)</label><input placeholder="VD: 12000000" type="number"/></div>
+          <div class="fg"><label>Số lượng cần tuyển</label><input placeholder="VD: 50" type="number"/></div>
+          <div class="fg"><label>Yêu cầu giới tính</label><select><option>Không yêu cầu</option><option>Nam</option><option>Nữ</option></select></div>
+          <div class="fg"><label>Kinh nghiệm</label><select><option>Không cần kinh nghiệm</option><option>Có kinh nghiệm ưu tiên</option><option>Yêu cầu kinh nghiệm</option></select></div>
+          <div class="fg fg-full">
+            <label>Mô tả công việc &amp; Quyền lợi</label>
+            <div class="ce-wrap">
+              <div class="ce-bar">
+                <button class="ce-b" onclick="document.execCommand('bold')"><b>B</b></button>
+                <button class="ce-b" onclick="document.execCommand('italic')"><i>I</i></button>
+                <button class="ce-b" onclick="document.execCommand('insertUnorderedList')">• List</button>
+                <button class="ce-b" onclick="document.execCommand('formatBlock','','h3')">Tiêu đề</button>
+              </div>
+              <div class="ce-body" contenteditable="true">Mô tả chi tiết công việc, yêu cầu và quyền lợi...</div>
+            </div>
+          </div>
+          <div class="fg fg-full">
+            <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Đặc điểm nổi bật</label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+              <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--navy);transition:all .18s" class="check-label">
+                <input type="checkbox" style="accent-color:var(--orange);width:15px;height:15px"/> ⚡ Tuyển gấp
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--navy);transition:all .18s" class="check-label">
+                <input type="checkbox" style="accent-color:var(--orange);width:15px;height:15px"/> 🍱 Có bữa ăn ca
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--navy);transition:all .18s" class="check-label">
+                <input type="checkbox" style="accent-color:var(--orange);width:15px;height:15px"/> 🚌 Có xe đưa đón
+              </label>
+              <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--navy);transition:all .18s" class="check-label">
+                <input type="checkbox" style="accent-color:var(--orange);width:15px;height:15px"/> 💵 Lương theo ngày
+              </label>
+            </div>
+          </div>
+          <div class="fg"><label>Gói đăng tin</label><select onchange="updatePostPrice(this)"><option value="0">🎉 Miễn phí — 0đ (1 tin/ngày, 14 ngày)</option><option value="299000">Basic — 299.000đ/tin (30 ngày)</option><option value="899000">Featured 30 ngày — 899.000đ ★</option><option value="1500000">Chiến dịch — 1.500.000đ</option></select></div>
+          <div class="fg"><label>Tổng chi phí</label><input id="post-price-display" value="299.000đ" readonly style="font-weight:700;color:var(--orange);font-size:15px"/></div>
+        </div>
+        <div class="fp-actions">
+          <button class="fp-save" onclick="openPayModal('Đăng tin tuyển dụng','Basic — 30 ngày hiển thị','299.000đ')">💳 Thanh toán &amp; Đăng tin</button>
+          <button class="fp-draft">💾 Lưu nháp</button>
+          <button class="fp-cancel">Hủy</button>
+        </div>
+      </div>
+    </div>
+    <div class="tab-sec" id="ts-td-goi">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Gói <strong style="color:var(--green)">Miễn phí</strong> không cần thanh toán — chỉ cần tạo tài khoản. Các gói trả phí cho phép đăng không giới hạn, tin nổi bật và nhận hồ sơ từ database.</p>
+      <div class="pkg-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="pkg-card" style="border-color:var(--green)">
+          <div class="pkg-pop" style="background:var(--green)">MIỄN PHÍ</div>
+          <div class="pkg-name">🎉 Free</div>
+          <div class="pkg-price" style="color:var(--green)">0đ</div>
+          <div class="pkg-per">Mãi mãi · 1 tin/ngày</div>
+          <div class="pkg-feats">
+            <div class="pkg-feat ok">1 tin tuyển dụng/ngày</div>
+            <div class="pkg-feat ok">Hiển thị 14 ngày/tin</div>
+            <div class="pkg-feat ok">Nhận ứng viên qua form</div>
+            <div class="pkg-feat no">Tin nổi bật</div>
+            <div class="pkg-feat no">DB ứng viên</div>
+            <div class="pkg-feat no">Blast SMS/Zalo</div>
+          </div>
+          <button class="pkg-cta" style="background:var(--green);border:none" onclick="openAdmin()">Tạo tài khoản →</button>
+        </div>
+        <div class="pkg-card">
+          <div class="pkg-name">📋 Basic</div>
+          <div class="pkg-price">299K</div>
+          <div class="pkg-per">/tin · 30 ngày hiển thị</div>
+          <div class="pkg-feats">
+            <div class="pkg-feat ok">1 tin tuyển dụng tiêu chuẩn</div>
+            <div class="pkg-feat ok">Hiển thị 30 ngày</div>
+            <div class="pkg-feat ok">Nhận ứng viên qua form</div>
+            <div class="pkg-feat ok">Gợi ý 5 hồ sơ phù hợp từ DB</div>
+            <div class="pkg-feat no">Tin nổi bật đầu danh sách</div>
+            <div class="pkg-feat no">Blast SMS/Zalo</div>
+          </div>
+          <button class="pkg-cta pkg-cta-out" onclick="openPayModal('Gói Basic','1 tin · 30 ngày · Gợi ý 5 hồ sơ từ DB','299.000đ')">Đăng tin Basic</button>
+        </div>
+        <div class="pkg-card pop">
+          <div class="pkg-pop">✦ PHỔ BIẾN NHẤT</div>
+          <div class="pkg-name">⭐ Featured</div>
+          <div class="pkg-price">899K</div>
+          <div class="pkg-per">/tin · 30 ngày · Nổi bật</div>
+          <div class="pkg-feats">
+            <div class="pkg-feat ok">Tin nổi bật — top danh sách</div>
+            <div class="pkg-feat ok">Badge "NỔI BẬT" màu vàng</div>
+            <div class="pkg-feat ok">30 ngày hiển thị</div>
+            <div class="pkg-feat ok">Nhận ứng viên qua form</div>
+            <div class="pkg-feat plus">25 hồ sơ ứng viên phù hợp từ DB</div>
+            <div class="pkg-feat plus">1 lượt Blast Zalo OA (500 tin)</div>
+          </div>
+          <button class="pkg-cta pkg-cta-main" onclick="openPayModal('Gói Featured','Nổi bật 30 ngày · 25 hồ sơ DB · Blast 500 Zalo','899.000đ')">Đăng tin Featured ★</button>
+        </div>
+        <div class="pkg-card">
+          <div class="pkg-name">🏆 Chiến dịch</div>
+          <div class="pkg-price">1.5M</div>
+          <div class="pkg-per">/chiến dịch · 30 ngày</div>
+          <div class="pkg-feats">
+            <div class="pkg-feat ok">Trang campaign riêng nổi bật</div>
+            <div class="pkg-feat ok">Banner homepage + top danh sách</div>
+            <div class="pkg-feat ok">30 ngày hiển thị</div>
+            <div class="pkg-feat plus">100 hồ sơ ứng viên phù hợp từ DB</div>
+            <div class="pkg-feat plus">Blast SMS + Zalo 2.000 tin</div>
+            <div class="pkg-feat plus">Báo cáo hiệu quả hàng tuần</div>
+          </div>
+          <button class="pkg-cta pkg-cta-out" onclick="openPayModal('Gói Chiến dịch','30 ngày · 100 hồ sơ DB · Blast 2.000 tin SMS+Zalo','1.500.000đ')">Đăng Chiến dịch</button>
+        </div>
+      </div>
+      <div style="margin-top:18px;padding:16px 20px;background:linear-gradient(135deg,rgba(229,88,34,.06),rgba(229,88,34,.02));border:1px solid var(--org-border);border-radius:12px">
+        <div style="font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:6px">📂 Database ứng viên — bảo mật, chỉ dùng nội bộ</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7">Hồ sơ ứng viên <strong>không được public</strong> ra ngoài. Nhà tuyển dụng chỉ nhận danh sách phù hợp theo gói đã mua, qua kênh email/dashboard nội bộ — không có trang tra cứu công khai.</div>
+      </div>
+    </div>
+    <div class="tab-sec" id="ts-td-blast">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:22px">
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:16px;box-shadow:var(--sh)"><div style="font-size:22px;font-weight:900;color:var(--orange);font-family:monospace;margin-bottom:3px">48.372</div><div style="font-size:12px;color:var(--muted)">Ứng viên trong database</div></div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:16px;box-shadow:var(--sh)"><div style="font-size:22px;font-weight:900;color:var(--orange);font-family:monospace;margin-bottom:3px">37%</div><div style="font-size:12px;color:var(--muted)">Tỷ lệ đọc SMS trung bình</div></div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:16px;box-shadow:var(--sh)"><div style="font-size:22px;font-weight:900;color:var(--orange);font-family:monospace;margin-bottom:3px">4h</div><div style="font-size:12px;color:var(--muted)">Thời gian gửi toàn batch</div></div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--sh)">
+        <div style="background:linear-gradient(135deg,#553C9A,#6B46C1);padding:18px 22px"><div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:3px">📤 Tạo chiến dịch Blast</div><div style="font-size:12.5px;color:rgba(255,255,255,.55)">Điền thông tin → Ước tính reach &amp; giá → Thanh toán → Blast trong 4 giờ</div></div>
+        <div style="padding:20px 22px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg" style="grid-column:span 2"><label>Tên chiến dịch</label><input placeholder="VD: Tuyển gấp 300 CN may Bình Dương tháng 9"/></div>
+          <div class="fg" style="grid-column:span 2">
+            <label>Kênh gửi</label>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px">
+              <div class="blast-ch on" onclick="selCh(this)"><div class="blast-ch-ico">📱</div><div class="blast-ch-name">SMS</div><div class="blast-ch-price">500đ/tin</div></div>
+              <div class="blast-ch" onclick="selCh(this)"><div class="blast-ch-ico">💬</div><div class="blast-ch-name">Zalo OA</div><div class="blast-ch-price">300đ/tin</div></div>
+              <div class="blast-ch" onclick="selCh(this)"><div class="blast-ch-ico">🚀</div><div class="blast-ch-name">Combo SMS+Zalo</div><div class="blast-ch-price">700đ/tin</div></div>
+            </div>
+          </div>
+          <div class="fg" style="grid-column:span 2"><label>Nội dung tin nhắn <span style="font-weight:400;color:var(--muted)">(tối đa 160 ký tự)</span></label><textarea rows="3" placeholder="[ViecLamCN] Tuyển gấp 200 CN may mặc tại KCN Sóng Thần, lương 8-12tr, bao ăn ở. Liên hệ: 0909..." oninput="this.nextElementSibling.textContent=this.value.length+'/160'"></textarea><span style="font-size:11px;color:var(--muted);text-align:right;display:block">0/160</span></div>
+          <div class="fg"><label>Tỉnh mục tiêu</label><select><option>Tất cả tỉnh thành</option><option>Hà Nội</option><option>Hải Phòng</option><option>Bắc Ninh</option><option>Quảng Ninh</option><option>Hưng Yên</option><option>Ninh Bình</option><option>Tuyên Quang</option><option>Cao Bằng</option><option>Lai Châu</option><option>Lào Cai</option><option>Thái Nguyên</option><option>Điện Biên</option><option>Lạng Sơn</option><option>Sơn La</option><option>Phú Thọ</option><option>Thanh Hóa</option><option>Nghệ An</option><option>Hà Tĩnh</option><option>Quảng Trị</option><option>Huế</option><option>Đà Nẵng</option><option>Quảng Ngãi</option><option>Gia Lai</option><option>Đắk Lắk</option><option>Khánh Hòa</option><option>Lâm Đồng</option><option>Đồng Nai</option><option>Tây Ninh</option><option>TP. Hồ Chí Minh</option><option>Đồng Tháp</option><option>An Giang</option><option>Vĩnh Long</option><option>Cần Thơ</option><option>Cà Mau</option></select></div>
+          <div class="fg"><label>Ngành mục tiêu</label><select><option>Tất cả ngành</option><option>May mặc</option><option>Điện tử</option><option>Cơ khí</option><option>Kho vận</option></select></div>
+          <div class="fg"><label>Link CTA</label><input placeholder="https://vieclamcongnhan.com/tuyen-dung/..."/></div>
+          <div class="fg"><label>Hẹn giờ gửi</label><input type="datetime-local"/></div>
+        </div>
+        <div style="padding:0 22px 18px;display:flex;gap:8px">
+          <button onclick="estimateBlast()" style="background:linear-gradient(135deg,#553C9A,#6B46C1);color:#fff;border:none;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">🔮 Ước tính reach &amp; giá</button>
+        </div>
+        <div id="blast-result" style="display:none;background:linear-gradient(135deg,#553C9A,#6B46C1);margin:0 22px 22px;border-radius:10px;padding:16px 20px">
+          <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:10px">📊 Ước tính chiến dịch</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+            <div><div id="est-reach" style="font-size:20px;font-weight:900;color:#E9D8FD;font-family:monospace">12.500</div><div style="font-size:11px;color:rgba(255,255,255,.5)">Ứng viên nhận tin</div></div>
+            <div><div style="font-size:20px;font-weight:900;color:#E9D8FD;font-family:monospace">~37%</div><div style="font-size:11px;color:rgba(255,255,255,.5)">Tỷ lệ đọc dự kiến</div></div>
+            <div><div id="est-price" style="font-size:22px;font-weight:900;color:#F6E05E;font-family:monospace">6.250.000đ</div><div style="font-size:11px;color:rgba(255,255,255,.5)">Tổng chi phí</div></div>
+          </div>
+          <button onclick="openPayModal('Blast SMS Campaign','12.500 tin SMS · Bình Dương · May mặc','6.250.000đ')" style="background:#fff;color:#553C9A;border:none;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit">💳 Thanh toán &amp; Blast ngay →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ QUẢNG CÁO / HỢP TÁC ═══ -->
+<div class="page" id="pg-doitac">
+  <div class="section" style="padding-top:88px">
+    <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:8px"><span style="display:inline-block;width:16px;height:1.5px;background:var(--orange)"></span>Hợp tác &amp; Đối tác</div>
+    <h2 class="sec-h">Quảng cáo &amp; <em>Đối tác chiến lược</em></h2>
+    <p class="sec-p" style="margin-bottom:24px">Target đúng 48.000+ công nhân đang tìm việc. CPM thấp, conversion cao hơn Facebook Ads vì đây là tệp đang có nhu cầu thực tế. Ngoài ra, các đối tác dịch vụ tài chính, bảo hiểm có thể tiếp cận tệp lao động phổ thông chất lượng.</p>
+
+    <div class="tab-bar">
+      <button class="tb on" id="dt-kcn" onclick="switchDTTab('dt-kcn')">📍 Quảng cáo theo KCN</button>
+      <button class="tb" id="dt-partner" onclick="switchDTTab('dt-partner')">🤝 Đối tác dịch vụ</button>
+      <button class="tb" id="dt-price" onclick="switchDTTab('dt-price')">💰 Bảng giá quảng cáo</button>
+    </div>
+
+    <!-- Tab KCN Ads -->
+    <div class="tab-sec on" id="ts-dt-kcn">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:18px">Quảng cáo banner, card nhà trọ, dịch vụ xung quanh KCN — hiển thị đúng trang KCN và tin tuyển dụng tại khu vực bạn muốn target.</p>
+      <div class="partner-grid">
+        <div class="partner-card"><div class="pc-head"><div class="pc-ico" style="background:rgba(56,161,105,.1)">🏠</div><div><div class="pc-name">Nhà trọ công nhân</div><div class="pc-cat">Bất động sản · Dịch vụ lưu trú</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">KCN target</span><div class="pc-desc">Chủ nhà trọ gần KCN quảng cáo đến công nhân đang tìm việc tại khu vực. Hiển thị card trong trang KCN + job detail khi ứng viên xem tin có trường "cần nhà ở".</div><div class="pc-pkgs"><div class="pc-pkg">Card nhà trọ: 300.000đ/tháng/KCN</div><div class="pc-pkg">Bundle 5 KCN: 1.200.000đ/tháng</div><div class="pc-pkg">Kèm SĐT hiển thị trực tiếp</div></div><div class="pc-cta" onclick="openPayModal('Quảng cáo Nhà trọ KCN','Card nhà trọ 1 KCN · 30 ngày','300.000đ')">Đặt quảng cáo →</div></div></div>
+        <div class="partner-card"><div class="pc-head"><div class="pc-ico" style="background:rgba(229,88,34,.1)">🍱</div><div><div class="pc-name">Canteen &amp; Cơm ca</div><div class="pc-cat">Thực phẩm · Ẩm thực KCN</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">KCN target</span><div class="pc-desc">Dịch vụ cơm ca, đồ ăn giao đến cổng KCN quảng cáo đến công nhân. Hiển thị trong trang KCN và mục "Quyền lợi CN".</div><div class="pc-pkgs"><div class="pc-pkg">Banner KCN: 500.000đ/tháng/KCN</div><div class="pc-pkg">Card dịch vụ: 300.000đ/tháng</div><div class="pc-pkg">Kèm Zalo/SĐT đặt hàng</div></div><div class="pc-cta" onclick="openPayModal('Quảng cáo Canteen KCN','Banner 1 KCN · 30 ngày','500.000đ')">Đặt quảng cáo →</div></div></div>
+        <div class="partner-card"><div class="pc-head"><div class="pc-ico" style="background:rgba(107,70,193,.1)">🛒</div><div><div class="pc-name">Siêu thị &amp; Tạp hóa</div><div class="pc-cat">Bán lẻ · Hàng tiêu dùng</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">KCN target</span><div class="pc-desc">Siêu thị mini, cửa hàng tiện lợi gần KCN quảng cáo sản phẩm và ưu đãi dành cho công nhân.</div><div class="pc-pkgs"><div class="pc-pkg">Card dịch vụ: 300.000đ/tháng</div><div class="pc-pkg">Banner sidebar: 500.000đ/tháng</div><div class="pc-pkg">Toàn site hoặc theo KCN</div></div><div class="pc-cta" onclick="openPayModal('Quảng cáo Siêu thị KCN','Card dịch vụ 1 KCN · 30 ngày','300.000đ')">Đặt quảng cáo →</div></div></div>
+        <div class="partner-card"><div class="pc-head"><div class="pc-ico" style="background:rgba(16,185,129,.1)">🛵</div><div><div class="pc-name">Xe ôm &amp; Đưa đón KCN</div><div class="pc-cat">Vận chuyển · Di chuyển</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">KCN target</span><div class="pc-desc">Dịch vụ xe ôm, xe hợp đồng đưa đón công nhân đi làm ca. Target theo tuyến đường và KCN cụ thể.</div><div class="pc-pkgs"><div class="pc-pkg">Card dịch vụ: 300.000đ/tháng</div><div class="pc-pkg">Hiển thị SĐT/Zalo liên hệ</div><div class="pc-pkg">Target theo tỉnh + KCN</div></div><div class="pc-cta" onclick="openPayModal('Quảng cáo Xe đưa đón KCN','Card dịch vụ 1 KCN · 30 ngày','300.000đ')">Đặt quảng cáo →</div></div></div>
+        <div class="partner-card"><div class="pc-head"><div class="pc-ico" style="background:rgba(245,158,11,.1)">🏪</div><div><div class="pc-name">Quảng cáo toàn site</div><div class="pc-cat">Sidebar · Banner trang chủ</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-dig">Toàn site</span><div class="pc-desc">Banner sidebar hoặc spot homepage hiển thị toàn bộ site — phù hợp với thương hiệu muốn tiếp cận rộng tệp lao động phổ thông toàn quốc.</div><div class="pc-pkgs"><div class="pc-pkg">Sidebar spot: 800.000đ/tháng</div><div class="pc-pkg">Banner homepage: 1.500.000đ/tháng</div><div class="pc-pkg">Hiển thị 100% trang toàn site</div></div><div class="pc-cta" onclick="openPayModal('Banner Toàn site','Sidebar spot · 30 ngày toàn site','800.000đ')">Đặt quảng cáo →</div></div></div>
+        <div class="partner-card"><div class="pc-head"><div class="pc-ico" style="background:rgba(99,102,241,.1)">📊</div><div><div class="pc-name">Blast SMS/Zalo đến CN</div><div class="pc-cat">Direct Marketing · Database</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-dig">Database</span><div class="pc-desc">Đối tác muốn gửi tin trực tiếp đến công nhân trong database — nhà trọ, khuyến mãi, dịch vụ. Phí theo lượt gửi, target theo tỉnh/KCN.</div><div class="pc-pkgs"><div class="pc-pkg">SMS: 500đ/tin (tối thiểu 500 tin)</div><div class="pc-pkg">Zalo OA: 300đ/tin</div><div class="pc-pkg">Target theo tỉnh + ngành</div></div><div class="pc-cta" onclick="switchTDTab('td-blast');nav('tuyendung',null)">Tạo chiến dịch Blast →</div></div></div>
+      </div>
+
+      <div style="margin-top:20px;background:var(--bg2);border-radius:12px;border:1.5px dashed var(--border2);padding:20px 22px">
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px">📋 Đăng ký slot quảng cáo</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Để lại thông tin, bộ phận kinh doanh sẽ liên hệ trong 2 giờ làm việc.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <input style="flex:1;min-width:180px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--white);color:var(--navy);outline:none" placeholder="Tên doanh nghiệp / cửa hàng"/>
+          <input style="flex:1;min-width:150px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--white);color:var(--navy);outline:none" placeholder="SĐT liên hệ"/>
+          <input style="flex:1;min-width:150px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--white);color:var(--navy);outline:none" placeholder="KCN / Tỉnh muốn target"/>
+          <button style="background:var(--orange);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Đăng ký →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Đối tác dịch vụ -->
+    <div class="tab-sec" id="ts-dt-partner">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:18px">Các đơn vị đang cung cấp dịch vụ tài chính, bảo hiểm, tích lũy dành cho công nhân — phù hợp để tiếp cận tệp lao động phổ thông qua ViecLamCongNhan.</p>
+
+      <div style="margin-bottom:14px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="ta-btn ta-approve" style="font-size:12px;padding:5px 12px" onclick="filterPartner('all',this)">Tất cả</button>
+        <button class="ta-btn" style="background:rgba(56,161,105,.1);color:var(--green);font-size:12px;padding:5px 12px" onclick="filterPartner('bh',this)">🛡 Bảo hiểm</button>
+        <button class="ta-btn" style="background:rgba(229,88,34,.1);color:var(--orange);font-size:12px;padding:5px 12px" onclick="filterPartner('vay',this)">💵 Vay tiêu dùng</button>
+        <button class="ta-btn" style="background:rgba(107,70,193,.1);color:#6B46C1;font-size:12px;padding:5px 12px" onclick="filterPartner('vi',this)">📱 Ví điện tử</button>
+        <button class="ta-btn" style="background:rgba(245,158,11,.1);color:var(--amber,#D97706);font-size:12px;padding:5px 12px" onclick="filterPartner('bhxh',this)">🏛 BHXH &amp; Hưu trí</button>
+      </div>
+
+      <div class="partner-grid" id="partner-list">
+        <!-- BẢO HIỂM -->
+        <div class="partner-card" data-cat="bh"><div class="pc-head"><div class="pc-ico" style="background:rgba(56,161,105,.1)">🛡</div><div><div class="pc-name">FWD Bảo hiểm</div><div class="pc-cat">Bảo hiểm nhân thọ</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">Bảo hiểm</span><div class="pc-desc">Bảo hiểm ung thư, tai nạn mua online không cần khám sức khỏe. Phù hợp công nhân thu nhập thấp với mức phí chỉ từ 99.000đ/năm.</div><div class="pc-pkgs"><div class="pc-pkg">BH Bệnh ung thư: từ 99.000đ/năm</div><div class="pc-pkg">BH Tai nạn lao động: từ 150.000đ/năm</div><div class="pc-pkg">BH Sức khỏe: từ 300.000đ/năm</div><div class="pc-pkg">Hoa hồng affiliate: 50.000–150.000đ/hợp đồng</div></div><div class="pc-cta">Xem gói bảo hiểm →</div></div></div>
+
+        <div class="partner-card" data-cat="bh"><div class="pc-head"><div class="pc-ico" style="background:rgba(56,161,105,.1)">🛡</div><div><div class="pc-name">Prudential Vietnam</div><div class="pc-cat">Bảo hiểm nhân thọ</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">Bảo hiểm</span><div class="pc-desc">Gói bảo hiểm tai nạn 24/7 chi phí thấp, phù hợp lao động sản xuất. PRU-Bảo vệ 24/7 từ 1.000đ/ngày (365.000đ/năm) — không cần khám.</div><div class="pc-pkgs"><div class="pc-pkg">PRU-Bảo vệ 24/7: 365.000đ/năm</div><div class="pc-pkg">PRU-Easy365: tai nạn + bệnh nguy hiểm</div><div class="pc-pkg">PRU-Nhiệt Đới: sốt xuất huyết 80.000đ/năm</div><div class="pc-pkg">Hoa hồng affiliate: 80.000–200.000đ/HĐ</div></div><div class="pc-cta">Xem gói bảo hiểm →</div></div></div>
+
+        <div class="partner-card" data-cat="bh"><div class="pc-head"><div class="pc-ico" style="background:rgba(56,161,105,.1)">🛡</div><div><div class="pc-name">Bảo Việt Nhân thọ</div><div class="pc-cat">Bảo hiểm nhân thọ</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-ins">Bảo hiểm</span><div class="pc-desc">Bảo hiểm tai nạn cá nhân 24/7 với STBH 50 triệu, chi phí y tế tai nạn 10 triệu. Giá từ 150.000đ/năm — phù hợp tệp công nhân.</div><div class="pc-pkgs"><div class="pc-pkg">BH Tai nạn CN 24/7: 150.000đ/năm</div><div class="pc-pkg">BH Sức khỏe cá nhân: từ 42.000đ</div><div class="pc-pkg">BH Du lịch nội địa: từ 17.000đ/chuyến</div><div class="pc-pkg">Hoa hồng affiliate: 50.000–120.000đ/HĐ</div></div><div class="pc-cta">Xem gói bảo hiểm →</div></div></div>
+
+        <!-- VAY TIÊU DÙNG -->
+        <div class="partner-card" data-cat="vay"><div class="pc-head"><div class="pc-ico" style="background:rgba(229,88,34,.1)">💵</div><div><div class="pc-name">Tima.vn</div><div class="pc-cat">Tài chính tiêu dùng</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-fin">Vay tiêu dùng</span><div class="pc-desc">Nền tảng vay tiêu dùng phổ biến với công nhân. Vay 1–50 triệu, giải ngân trong ngày, không cần tài sản thế chấp. Chỉ cần CMND + xác minh thu nhập.</div><div class="pc-pkgs"><div class="pc-pkg">Vay 1–50 triệu: lãi suất từ 1.5%/tháng</div><div class="pc-pkg">Giải ngân trong 24 giờ</div><div class="pc-pkg">Chỉ cần CMND + hợp đồng lao động</div><div class="pc-pkg">Hoa hồng affiliate: 100.000–200.000đ/lead</div></div><div class="pc-cta">Xem gói vay →</div></div></div>
+
+        <div class="partner-card" data-cat="vay"><div class="pc-head"><div class="pc-ico" style="background:rgba(229,88,34,.1)">💵</div><div><div class="pc-name">MCredit</div><div class="pc-cat">MB Finance · Tài chính tiêu dùng</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-fin">Vay tiêu dùng</span><div class="pc-desc">Thành viên MB Group. Vay lương công nhân nhanh 5–70 triệu. Quy trình online, duyệt nhanh, lãi suất cạnh tranh so với tín dụng đen.</div><div class="pc-pkgs"><div class="pc-pkg">Vay 5–70 triệu: lãi từ 1.8%/tháng</div><div class="pc-pkg">Duyệt hồ sơ trong 30 phút</div><div class="pc-pkg">Không cần thế chấp, không cần lịch sử tín dụng</div><div class="pc-pkg">Hoa hồng affiliate: 150.000–250.000đ/lead</div></div><div class="pc-cta">Xem gói vay →</div></div></div>
+
+        <div class="partner-card" data-cat="vay"><div class="pc-head"><div class="pc-ico" style="background:rgba(229,88,34,.1)">💵</div><div><div class="pc-name">SHB Finance</div><div class="pc-cat">Vay tiêu dùng · Ngân hàng SHB</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-fin">Vay tiêu dùng</span><div class="pc-desc">Cho vay tiêu dùng dành cho công nhân có hợp đồng lao động. Thủ tục đơn giản, phê duyệt nhanh. Lãi suất ưu đãi hơn các app vay không chính thống.</div><div class="pc-pkgs"><div class="pc-pkg">Vay 3–100 triệu: lãi từ 1.6%/tháng</div><div class="pc-pkg">HĐLĐ còn hiệu lực là đủ điều kiện</div><div class="pc-pkg">Kỳ hạn 12–60 tháng</div><div class="pc-pkg">Hoa hồng affiliate: 120.000–200.000đ/lead</div></div><div class="pc-cta">Xem gói vay →</div></div></div>
+
+        <!-- VÍ ĐIỆN TỬ -->
+        <div class="partner-card" data-cat="vi"><div class="pc-head"><div class="pc-ico" style="background:rgba(107,70,193,.1)">📱</div><div><div class="pc-name">Ví MoMo</div><div class="pc-cat">Thanh toán điện tử</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-dig">Ví điện tử</span><div class="pc-desc">Nhận lương qua MoMo, chuyển tiền về quê miễn phí, thanh toán tiền nhà trọ và mua sắm không cần tài khoản ngân hàng. Phù hợp công nhân ngoại tỉnh.</div><div class="pc-pkgs"><div class="pc-pkg">Kích hoạt ví miễn phí</div><div class="pc-pkg">Chuyển tiền nội địa: 0đ phí</div><div class="pc-pkg">Nhận lương không cần tài khoản ngân hàng</div><div class="pc-pkg">Hoa hồng affiliate: 30.000–80.000đ/kích hoạt</div></div><div class="pc-cta">Kích hoạt MoMo →</div></div></div>
+
+        <div class="partner-card" data-cat="vi"><div class="pc-head"><div class="pc-ico" style="background:rgba(107,70,193,.1)">💬</div><div><div class="pc-name">ZaloPay</div><div class="pc-cat">Thanh toán · Zalo ecosystem</div></div></div><div class="pc-body"><span class="pc-tag pc-tag-dig">Ví điện tử</span><div class="pc-desc">Thanh toán tiền nhà trọ, mua đồ ăn, chuyển tiền về quê ngay trong ứng dụng Zalo — không cần cài thêm app. Phù hợp nhất vì CN đã dùng Zalo sẵn.</div><div class="pc-pkgs"><div class="pc-pkg">Kích hoạt trong 2 phút qua Zalo</div><div class="pc-pkg">Liên kết trực tiếp ngân hàng hoặc không cần TK</div><div class="pc-pkg">Ưu đãi hoàn tiền định kỳ</div><div class="pc-pkg">Hoa hồng affiliate: 20.000–60.000đ/kích hoạt</div></div><div class="pc-cta">Kích hoạt ZaloPay →</div></div></div>
+
+        <!-- BHXH -->
+        <div class="partner-card" data-cat="bhxh"><div class="pc-head"><div class="pc-ico" style="background:rgba(245,158,11,.1)">🏛</div><div><div class="pc-name">BHXH Tự nguyện</div><div class="pc-cat">Bảo hiểm xã hội Nhà nước</div></div></div><div class="pc-body"><span class="pc-tag" style="background:rgba(245,158,11,.1);color:#D97706;border:1px solid rgba(245,158,11,.2)">BHXH Nhà nước</span><div class="pc-desc">Công nhân làm việc tự do hoặc hết HĐLĐ có thể đóng BHXH tự nguyện để nhận lương hưu. Từ 1/7/2025 có thêm quyền lợi thai sản. Nhà nước hỗ trợ 30% mức đóng tối thiểu.</div><div class="pc-pkgs"><div class="pc-pkg">Mức đóng tối thiểu: ~515.000đ/tháng</div><div class="pc-pkg">Hỗ trợ nhà nước: 30% (hộ nghèo 100%)</div><div class="pc-pkg">Quyền lợi: lương hưu + thai sản (từ 7/2025)</div><div class="pc-pkg">Đăng ký qua cổng BHXH hoặc đại lý</div></div><div class="pc-cta">Tìm hiểu đăng ký →</div></div></div>
+
+        <div class="partner-card" data-cat="bhxh"><div class="pc-head"><div class="pc-ico" style="background:rgba(245,158,11,.1)">📈</div><div><div class="pc-name">Quỹ Hưu trí Bổ sung</div><div class="pc-cat">DCVFM · VCBF · SSI · MBC</div></div></div><div class="pc-body"><span class="pc-tag" style="background:rgba(245,158,11,.1);color:#D97706;border:1px solid rgba(245,158,11,.2)">Đầu tư hưu trí</span><div class="pc-desc">Quỹ hưu trí bổ sung tự nguyện theo NĐ 85/2026. Đầu tư thêm ngoài BHXH bắt buộc. Ưu đãi thuế TNCN. 4 quỹ đã được cấp phép: DCVFM, VCBF, SSI, MBC.</div><div class="pc-pkgs"><div class="pc-pkg">Mức đóng: linh hoạt tự chọn</div><div class="pc-pkg">Đầu tư 40%+ vào trái phiếu CP</div><div class="pc-pkg">Ưu đãi thuế TNCN theo quy định</div><div class="pc-pkg">Hoa hồng affiliate: 50.000–100.000đ/tài khoản</div></div><div class="pc-cta">Tìm hiểu đăng ký →</div></div></div>
+      </div>
+
+      <div style="margin-top:20px;background:linear-gradient(135deg,rgba(229,88,34,.06),rgba(10,20,40,.04));border:1.5px solid var(--org-border);border-radius:12px;padding:20px 22px">
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px">🤝 Trở thành đối tác của ViecLamCongNhan</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Doanh nghiệp cung cấp dịch vụ tài chính, bảo hiểm, ví điện tử muốn tiếp cận tệp 48.000+ công nhân — liên hệ để thảo luận mô hình hợp tác và mức hoa hồng affiliate.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <input style="flex:1;min-width:180px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--white);color:var(--navy);outline:none" placeholder="Tên công ty / dịch vụ"/>
+          <input style="flex:1;min-width:160px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--white);color:var(--navy);outline:none" placeholder="Email liên hệ"/>
+          <button style="background:linear-gradient(135deg,var(--org),#e05800);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Gửi đề xuất hợp tác →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Bảng giá -->
+    <div class="tab-sec" id="ts-dt-price">
+      <table style="width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;box-shadow:var(--sh)">
+        <thead><tr style="background:var(--navy);color:#fff"><th style="padding:12px 14px;text-align:left;font-size:11px;font-weight:700">Định dạng</th><th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700">Vị trí</th><th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700">Giá</th><th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700">Đơn vị</th><th style="padding:12px 14px;text-align:center;font-size:11px;font-weight:700"></th></tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 14px;font-size:13px;font-weight:600">Banner KCN</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">Trang KCN + Job list của KCN</td><td style="padding:11px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--orange)">800.000đ</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">1 KCN · 30 ngày</td><td style="padding:11px 14px;text-align:center"><button class="ta-btn ta-approve" onclick="openPayModal('Banner KCN','Trang KCN + job list · 30 ngày','800.000đ')">Đặt ngay</button></td></tr>
+          <tr style="border-bottom:1px solid var(--border);background:var(--bg2)"><td style="padding:11px 14px;font-size:13px;font-weight:600">Bundle 5 KCN</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">5 KCN tự chọn</td><td style="padding:11px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--orange)">2.500.000đ</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">5 KCN · 30 ngày</td><td style="padding:11px 14px;text-align:center"><button class="ta-btn ta-approve" onclick="openPayModal('Bundle 5 KCN','5 KCN tự chọn · 30 ngày','2.500.000đ')">Đặt ngay</button></td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px 14px;font-size:13px;font-weight:600">Card nhà trọ / dịch vụ</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">Trang KCN + Job detail</td><td style="padding:11px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--orange)">300.000đ</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">1 KCN · 30 ngày</td><td style="padding:11px 14px;text-align:center"><button class="ta-btn ta-approve" onclick="openPayModal('Card Nhà trọ / Dịch vụ','Job detail + trang KCN · 30 ngày','300.000đ')">Đặt ngay</button></td></tr>
+          <tr style="border-bottom:1px solid var(--border);background:var(--bg2)"><td style="padding:11px 14px;font-size:13px;font-weight:600">Sidebar toàn site</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">Sidebar trang Tìm việc</td><td style="padding:11px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--orange)">800.000đ</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">30 ngày · Toàn site</td><td style="padding:11px 14px;text-align:center"><button class="ta-btn ta-approve" onclick="openPayModal('Sidebar Toàn site','Sidebar trang Tìm việc · 30 ngày','800.000đ')">Đặt ngay</button></td></tr>
+          <tr><td style="padding:11px 14px;font-size:13px;font-weight:600">Banner Homepage</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">Trang chủ · vị trí nổi bật</td><td style="padding:11px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--orange)">1.500.000đ</td><td style="padding:11px 14px;text-align:center;font-size:12.5px;color:var(--muted)">30 ngày</td><td style="padding:11px 14px;text-align:center"><button class="ta-btn ta-approve" onclick="openPayModal('Banner Homepage','Trang chủ vị trí nổi bật · 30 ngày','1.500.000đ')">Đặt ngay</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ DỊCH VỤ TRỌN GÓI ═══ -->
+<div class="page" id="pg-dichvu">
+  <div style="padding-top:80px">
+    <div class="section">
+      <div class="sec-eye">Dịch vụ trọn gói</div>
+      <div class="sec-h">Một đầu mối —<br><em>toàn bộ nhân sự công nhân</em></div>
+      <p class="sec-p">Từ tuyển dụng đến quản lý hồ sơ, thuế, BHXH và tư vấn pháp lý lao động — ViecLamCongNhan.com phối hợp với VEA Law và DichVuThue.net để xử lý trọn gói.</p>
+      <div class="rsvc-grid">
+        <div class="rsvc-card">
+          <div class="rsvc-ico">🎯</div>
+          <div class="rsvc-title">Tuyển dụng theo yêu cầu (RPO)</div>
+          <div class="rsvc-desc">Thay vì đăng tin tự quản, đội ngũ ViecLamCongNhan.com chủ động tìm kiếm, sàng lọc và cung cấp danh sách ứng viên đạt tiêu chuẩn. Phù hợp khi cần tuyển gấp số lượng lớn.</div>
+          <div class="rsvc-feats">
+            <div class="rf">Đăng tin + chủ động tiếp cận ứng viên trong vùng KCN mục tiêu</div>
+            <div class="rf">Sàng lọc hồ sơ theo tiêu chí doanh nghiệp</div>
+            <div class="rf">Tổ chức ngày phỏng vấn tại chỗ hoặc online</div>
+            <div class="rf">Cam kết tỉ lệ ứng viên đạt yêu cầu ≥ 80%</div>
+          </div>
+          <div class="rsvc-price">Từ 3.000.000đ / chiến dịch</div>
+          <button class="rsvc-btn">Tư vấn ngay</button>
+        </div>
+        <div class="rsvc-card">
+          <div class="rsvc-ico">📋</div>
+          <div class="rsvc-title">Hợp đồng lao động & Hồ sơ nhân sự</div>
+          <div class="rsvc-desc">Soạn thảo và kiểm tra hợp đồng lao động đúng luật, phù hợp đặc thù công nhân nhà máy. Lưu trữ hồ sơ số hóa, tra cứu nhanh.</div>
+          <div class="rsvc-feats">
+            <div class="rf">Soạn thảo HĐLĐ chuẩn theo ngành sản xuất</div>
+            <div class="rf">Kiểm tra tính hợp pháp trước khi ký</div>
+            <div class="rf">Số hóa hồ sơ toàn bộ nhân sự</div>
+            <div class="rf">Cảnh báo hợp đồng sắp hết hạn</div>
+          </div>
+          <div class="rsvc-price">Từ 500.000đ / 10 hợp đồng</div>
+          <button class="rsvc-btn rsvc-btn-outline">Tư vấn ngay</button>
+        </div>
+        <div class="rsvc-card" style="border-color:var(--greenb)">
+          <div class="rsvc-ico">🏥</div>
+          <div class="rsvc-title">Đăng ký BHXH · BHYT · BHTN</div>
+          <div class="rsvc-desc">Phối hợp DichVuThue.net xử lý toàn bộ thủ tục đăng ký bảo hiểm cho nhân viên mới, tăng/giảm lao động, quyết toán năm.</div>
+          <div class="rsvc-feats">
+            <div class="rf">Đăng ký BHXH cho công nhân mới tuyển</div>
+            <div class="rf">Xử lý tăng/giảm lao động hàng tháng</div>
+            <div class="rf">Báo cáo BHXH định kỳ cho cơ quan BHXH</div>
+            <div class="rf">Hỗ trợ giải quyết chế độ ốm đau, thai sản</div>
+          </div>
+          <div class="rsvc-price">Từ 200.000đ / người / năm</div>
+          <button class="rsvc-btn rsvc-btn-outline">Tư vấn ngay</button>
+        </div>
+        <div class="rsvc-card" style="border-color:var(--amberb)">
+          <div class="rsvc-ico">💰</div>
+          <div class="rsvc-title">Khai thuế TNCN cho công nhân</div>
+          <div class="rsvc-desc">Phối hợp DichVuThue.net khai và quyết toán thuế TNCN cho toàn bộ công nhân — đúng hạn, không phát sinh phạt.</div>
+          <div class="rsvc-feats">
+            <div class="rf">Khai thuế TNCN hàng tháng/quý</div>
+            <div class="rf">Quyết toán thuế TNCN năm cho từng CN</div>
+            <div class="rf">Tư vấn giảm trừ gia cảnh hợp pháp</div>
+            <div class="rf">Đại diện nộp hồ sơ tại cơ quan thuế</div>
+          </div>
+          <div class="rsvc-price">Từ 150.000đ / người / tháng</div>
+          <button class="rsvc-btn rsvc-btn-outline">Tư vấn ngay</button>
+        </div>
+        <div class="rsvc-card" style="border-color:var(--redb)">
+          <div class="rsvc-ico">⚖️</div>
+          <div class="rsvc-title">Tư vấn & Xử lý pháp lý lao động</div>
+          <div class="rsvc-desc">Phối hợp VEA Law xử lý tranh chấp lao động, kỷ luật sa thải, khiếu nại, khởi kiện — bảo vệ quyền lợi cả hai phía.</div>
+          <div class="rsvc-feats">
+            <div class="rf">Tư vấn quy trình kỷ luật, sa thải đúng luật</div>
+            <div class="rf">Soạn thảo nội quy lao động</div>
+            <div class="rf">Xử lý khiếu nại, tranh chấp lao động</div>
+            <div class="rf">Đại diện tại Hội đồng trọng tài lao động</div>
+          </div>
+          <div class="rsvc-price">Từ 500.000đ / giờ tư vấn</div>
+          <button class="rsvc-btn rsvc-btn-outline">Liên hệ VEA Law</button>
+        </div>
+        <div class="rsvc-card" style="background:linear-gradient(135deg,var(--org),var(--org-dark));border-color:var(--org)">
+          <div class="rsvc-ico">⚡</div>
+          <div class="rsvc-title" style="color:#fff">Gói Full-Package (Trọn gói)</div>
+          <div class="rsvc-desc" style="color:rgba(255,255,255,.75)">Kết hợp toàn bộ 5 dịch vụ trên — 1 đầu mối, 1 hóa đơn, 1 account manager. Tiết kiệm 30% so với mua riêng lẻ.</div>
+          <div class="rsvc-feats">
+            <div class="rf" style="color:rgba(255,255,255,.85);"><span style="color:#FFD080">✓</span> Tuyển dụng theo yêu cầu</div>
+            <div class="rf" style="color:rgba(255,255,255,.85);"><span style="color:#FFD080">✓</span> Hợp đồng + Hồ sơ nhân sự</div>
+            <div class="rf" style="color:rgba(255,255,255,.85);"><span style="color:#FFD080">✓</span> BHXH + Thuế TNCN</div>
+            <div class="rf" style="color:rgba(255,255,255,.85);"><span style="color:#FFD080">✓</span> Pháp lý lao động</div>
+          </div>
+          <div class="rsvc-price" style="color:#FFD080">Liên hệ nhận báo giá</div>
+          <button class="rsvc-btn" style="background:#fff;color:var(--org);font-weight:800">Nhận báo giá ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FORM ỨNG VIÊN ═══ -->
+<div class="page" id="pg-candidate">
+  <div style="padding-top:80px">
+    <div style="max-width:680px;margin:0 auto;padding:40px 24px">
+      <div class="sec-eye">Tìm việc nhanh</div>
+      <div class="sec-h">Để lại thông tin —<br><em>nhà tuyển dụng liên hệ bạn</em></div>
+      <p class="sec-p" style="margin-bottom:24px">Chỉ cần điền 4 thông tin bên dưới — đội ngũ của chúng tôi sẽ kết nối bạn với nhà tuyển dụng phù hợp trong vòng 24 giờ.</p>
+      <div class="cv-form">
+        <div class="cvf-title">📝 Thông tin tìm việc</div>
+        <div class="cvf-sub">Điền thông tin để nhà tuyển dụng chủ động liên hệ bạn qua Zalo/điện thoại — hoàn toàn miễn phí.</div>
+        <div class="cvf-row">
+          <div class="cvf-field"><label>Họ và tên</label><input placeholder="Nguyễn Thị A"/></div>
+          <div class="cvf-field"><label>Số điện thoại / Zalo</label><input placeholder="090 xxx xxxx"/></div>
+          <div class="cvf-field"><label>Tỉnh thành đang cư trú</label>
+            <select>
+              <option>-- Chọn tỉnh thành --</option>
+              <option>Hà Nội</option><option>Hải Phòng</option><option>Bắc Ninh</option><option>Quảng Ninh</option><option>Hưng Yên</option><option>Ninh Bình</option>
+              <option>Tuyên Quang</option><option>Cao Bằng</option><option>Lai Châu</option><option>Lào Cai</option><option>Thái Nguyên</option><option>Điện Biên</option><option>Lạng Sơn</option><option>Sơn La</option><option>Phú Thọ</option>
+              <option>Thanh Hóa</option><option>Nghệ An</option><option>Hà Tĩnh</option><option>Quảng Trị</option><option>Huế</option>
+              <option>Đà Nẵng</option><option>Quảng Ngãi</option><option>Gia Lai</option><option>Đắk Lắk</option><option>Khánh Hòa</option><option>Lâm Đồng</option>
+              <option>Đồng Nai</option><option>Tây Ninh</option><option>TP. Hồ Chí Minh</option>
+              <option>Đồng Tháp</option><option>An Giang</option><option>Vĩnh Long</option><option>Cần Thơ</option><option>Cà Mau</option>
+            </select>
+          </div>
+          <div class="cvf-field"><label>Ngành nghề mong muốn</label>
+            <select>
+              <option>-- Chọn ngành --</option>
+              <option>May mặc · Giày da</option><option>Điện tử · Lắp ráp</option>
+              <option>Kho vận · Bốc xếp</option><option>Cơ khí · Hàn</option>
+              <option>Thực phẩm · Đồ uống</option><option>Xây dựng</option>
+              <option>Vận tải · Tài xế</option><option>Khác</option>
+            </select>
+          </div>
+          <div class="cvf-field"><label>Mức lương mong muốn</label>
+            <select>
+              <option>Tất cả mức lương</option>
+              <option>7 – 10 triệu/tháng</option><option>10 – 15 triệu/tháng</option>
+              <option>15 – 20 triệu/tháng</option><option>Trên 20 triệu</option>
+            </select>
+          </div>
+          <div class="cvf-field"><label>Ca làm việc</label>
+            <select><option>Linh hoạt</option><option>Ca ngày</option><option>Ca đêm</option><option>Ca xoay</option></select>
+          </div>
+        </div>
+        <button class="cvf-submit">✅ Gửi thông tin tìm việc — Miễn phí</button>
+        <div style="font-size:12px;color:var(--muted2);text-align:center;margin-top:10px">🔒 Thông tin được bảo mật · Không chia sẻ cho bên thứ 3</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ QUYỀN LỢI CN ═══ -->
+<div class="page" id="pg-rights">
+  <div style="padding-top:80px">
+    <div class="section">
+      <div class="sec-eye">Tin tức & Quyền lợi công nhân</div>
+      <div class="sec-h">Cập nhật tin tức —<br><em>bảo vệ quyền lợi</em></div>
+      <p class="sec-p">Bài viết pháp lý, tin tức lao động và thông tin quyền lợi người lao động theo Bộ luật Lao động 2019. Cập nhật liên tục từ đội ngũ chuyên gia VEA.</p>
+
+      <!-- Tab: Bài viết / Quyền lợi -->
+      <div class="tab-bar" style="margin-bottom:18px">
+        <button class="tb on" id="tb-news" onclick="switchNewsTab('news')">📰 Tin tức & Bài viết</button>
+        <button class="tb" id="tb-rights" onclick="switchNewsTab('rights')">⚖ Quyền lợi & Pháp lý</button>
+        <button class="tb" id="tb-qa" onclick="switchNewsTab('qa')">❓ Hỏi đáp</button>
+      </div>
+
+      <!-- Tab: Tin tức -->
+      <div class="ts on" id="ts-news">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;box-shadow:var(--sh)" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:130px;background:linear-gradient(135deg,var(--navy),var(--navy2));display:flex;align-items:center;justify-content:center;font-size:40px">📋</div>
+            <div style="padding:14px">
+              <div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;margin-bottom:5px">Lương & Thưởng</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:6px">Mức lương tối thiểu vùng 2026 — Tất cả 4 vùng cập nhật mới nhất</div>
+              <div style="font-size:11.5px;color:var(--muted)">📅 10/08/2026 · ⏱ 5 phút đọc</div>
+            </div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;box-shadow:var(--sh)" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:130px;background:linear-gradient(135deg,#1B7C40,#0f5a2e);display:flex;align-items:center;justify-content:center;font-size:40px">🏥</div>
+            <div style="padding:14px">
+              <div style="font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:5px">BHXH & Bảo hiểm</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:6px">BHXH tự nguyện 2025: Thêm quyền lợi thai sản từ tháng 7</div>
+              <div style="font-size:11.5px;color:var(--muted)">📅 05/08/2026 · ⏱ 7 phút đọc</div>
+            </div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;box-shadow:var(--sh)" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:130px;background:linear-gradient(135deg,#B82020,#8a1515);display:flex;align-items:center;justify-content:center;font-size:40px">⚖</div>
+            <div style="padding:14px">
+              <div style="font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;margin-bottom:5px">Pháp lý lao động</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:6px">Bị sa thải trái luật — 5 điều công nhân cần làm ngay</div>
+              <div style="font-size:11.5px;color:var(--muted)">📅 01/08/2026 · ⏱ 6 phút đọc</div>
+            </div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;box-shadow:var(--sh)" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:130px;background:linear-gradient(135deg,#9C6B10,#7a5208);display:flex;align-items:center;justify-content:center;font-size:40px">💰</div>
+            <div style="padding:14px">
+              <div style="font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;margin-bottom:5px">Phúc lợi</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:6px">Thưởng Tết 2026: Mức thưởng trung bình và cách tính</div>
+              <div style="font-size:11.5px;color:var(--muted)">📅 28/07/2026 · ⏱ 4 phút đọc</div>
+            </div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;box-shadow:var(--sh)" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:130px;background:linear-gradient(135deg,var(--blue),#122fa0);display:flex;align-items:center;justify-content:center;font-size:40px">🏭</div>
+            <div style="padding:14px">
+              <div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:5px">Tin KCN</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:6px">KCN Yên Phong mở rộng giai đoạn 3 — thêm 15.000 việc làm mới</div>
+              <div style="font-size:11.5px;color:var(--muted)">📅 20/07/2026 · ⏱ 3 phút đọc</div>
+            </div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s;box-shadow:var(--sh)" onmouseover="this.style.borderColor='var(--orange)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:130px;background:linear-gradient(135deg,#553C9A,#3d2a73);display:flex;align-items:center;justify-content:center;font-size:40px">🛡</div>
+            <div style="padding:14px">
+              <div style="font-size:10px;font-weight:700;color:#6B46C1;text-transform:uppercase;margin-bottom:5px">An toàn lao động</div>
+              <div style="font-size:14px;font-weight:700;color:var(--navy);line-height:1.35;margin-bottom:6px">An toàn vệ sinh lao động 2026: Quy định mới nhà tuyển dụng phải biết</div>
+              <div style="font-size:11.5px;color:var(--muted)">📅 15/07/2026 · ⏱ 8 phút đọc</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center"><button style="background:var(--lorg);border:1px solid var(--org-border);color:var(--orange);padding:10px 24px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit">Xem thêm bài viết →</button></div>
+      </div>
+
+      <!-- Tab: Quyền lợi (original content moved here) -->
+      <div class="ts" id="ts-rights">
+      <div class="rights-grid" style="margin-top:28px">
+        <div class="right-card"><div class="rc-ico">💰</div><div class="rc-title">Lương tối thiểu vùng 2026</div><div class="rc-val"><strong>Vùng 1 (HCM, HN, HP...): 4.960.000đ/tháng</strong><br>Vùng 2: 4.410.000đ · Vùng 3: 3.860.000đ<br>Vùng 4: 3.450.000đ<br><em style="font-size:11.5px;color:var(--muted2)">Hiệu lực từ 01/07/2026</em></div></div>
+        <div class="right-card"><div class="rc-ico">🌙</div><div class="rc-title">Phụ cấp làm thêm giờ</div><div class="rc-val"><strong>Ngày thường: 150% lương</strong><br>Ngày nghỉ tuần: 200%<br>Ngày lễ, Tết: 300%<br>Nếu công ty trả thấp hơn → có quyền khiếu nại</div></div>
+        <div class="right-card"><div class="rc-ico">🏥</div><div class="rc-title">Bảo hiểm xã hội bắt buộc</div><div class="rc-val"><strong>CN đóng: 10,5% lương</strong><br>Công ty đóng: 21,5% lương<br>Quyền lợi: ốm đau, thai sản, TNLĐ, hưu trí, tử tuất<br>Nếu công ty không đóng → báo cơ quan BHXH</div></div>
+        <div class="right-card"><div class="rc-ico">📋</div><div class="rc-title">Hợp đồng lao động</div><div class="rc-val"><strong>Có quyền yêu cầu ký HĐ từ ngày đầu</strong><br>Được nhận 1 bản gốc HĐ<br>Thử việc: tối đa 60 ngày, ≥ 85% lương<br>Không ký HĐ → vi phạm luật LĐ</div></div>
+        <div class="right-card"><div class="rc-ico">🤰</div><div class="rc-title">Chế độ thai sản</div><div class="rc-val"><strong>Nghỉ sinh: 6 tháng (nữ) có hưởng lương</strong><br>Trợ cấp = 100% lương bình quân 6 tháng trước sinh<br>Chồng nghỉ hưởng: 5–14 ngày<br>Điều kiện: đóng BHXH ≥ 6 tháng trong 12 tháng</div></div>
+        <div class="right-card" style="border-color:var(--orgb);background:var(--lorg)"><div class="rc-ico">📞</div><div class="rc-title" style="color:var(--org)">Cần tư vấn quyền lợi?</div><div class="rc-val">Tư vấn miễn phí · Bảo mật thông tin<br>Kết nối với luật sư lao động VEA Law<br><strong style="color:var(--org)">Hotline: 1800 6888</strong><br>8:00 – 18:00 Thứ 2 – Thứ 7</div></div>
+      </div>
+
+      <!-- Q&A -->
+      <div style="margin-top:44px">
+        <div class="sec-eye">Hỏi & Đáp</div>
+        <div class="sec-h">Câu hỏi thường gặp<br><em>về quyền lợi NLĐ</em></div>
+        <div class="qa-grid">
+          <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Công ty không đóng BHXH cho tôi, tôi phải làm gì?</div><div class="qa-a"><div class="qa-a-inner">Bạn có quyền khiếu nại lên <strong>Cơ quan BHXH tỉnh/huyện</strong> nơi doanh nghiệp đăng ký. Bước 1: Thu thập bằng chứng (phiếu lương, HĐLĐ). Bước 2: Gửi đơn khiếu nại tới BHXH. Bước 3: Nếu không giải quyết, khởi kiện ra Tòa án lao động. VEA Law hỗ trợ miễn phí tư vấn bước đầu — gọi 1800 6888.</div></div></div>
+          <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Bị sa thải không có lý do, tôi có được bồi thường không?</div><div class="qa-a"><div class="qa-a-inner">Có. Nếu bị sa thải <strong>không đúng quy trình</strong> hoặc không có căn cứ hợp pháp, bạn được bồi thường: <strong>2 tháng lương × số năm làm việc</strong>. Ngoài ra, công ty phải trả đủ trợ cấp thôi việc (0.5 tháng lương/năm). Liên hệ VEA Law để được hỗ trợ cụ thể.</div></div></div>
+          <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Công ty trả lương thấp hơn lương tối thiểu vùng, tôi làm gì?</div><div class="qa-a"><div class="qa-a-inner">Đây là vi phạm nghiêm trọng. Bạn có thể <strong>tố cáo lên Phòng Lao động - Thương binh và Xã hội</strong> (Phòng LĐTBXH) cấp huyện/tỉnh. Cơ quan này có thẩm quyền xử phạt hành chính và buộc công ty hoàn trả tiền lương chênh lệch. Mức phạt với công ty: 20–75 triệu đồng.</div></div></div>
+          <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Tôi đang thử việc, có được ký HĐLĐ không?</div><div class="qa-a"><div class="qa-a-inner">Có. Trong thời gian thử việc, công ty có thể ký HĐLĐ có điều khoản thử việc bên trong, hoặc ký hợp đồng thử việc riêng. <strong>Thời gian thử việc tối đa: 60 ngày với công việc đòi hỏi trình độ chuyên môn, và 6 ngày với công việc phổ thông</strong>. Lương thử việc ≥ 85% lương chính thức.</div></div></div>
+          <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Tôi bị tai nạn lao động, được hưởng những gì?</div><div class="qa-a"><div class="qa-a-inner">Nếu bị TNLĐ do lỗi của công ty, bạn được hưởng: <strong>100% chi phí y tế điều trị TNLĐ, trợ cấp TNLĐ từ BHXH</strong> (tỷ lệ theo mức độ thương tật từ 5% trở lên), và bồi thường từ công ty ít nhất 1,5 tháng lương (nếu lỗi thuộc công ty). Liên hệ ngay khi xảy ra tai nạn — đừng ký bất kỳ văn bản nào trước khi tư vấn pháp lý.</div></div></div>
+          <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)">Công ty nợ lương, không trả, tôi cần làm gì ngay?</div><div class="qa-a"><div class="qa-a-inner">Bước 1: Ghi lại toàn bộ bằng chứng (tin nhắn, phiếu lương, lịch sử chuyển khoản). Bước 2: Khiếu nại nội bộ bằng văn bản. Bước 3: Nếu không giải quyết trong 5 ngày làm việc → tố cáo lên <strong>Phòng LĐTBXH</strong> hoặc <strong>Tòa án nhân dân</strong>. Bạn có thể tự thực hiện hoặc nhờ VEA Law hỗ trợ — thủ tục đơn giản, không mất nhiều chi phí.</div></div></div>
+        </div>
+      </div>
+
+      <!-- Hotline box -->
+      <div class="hotline-box">
+        <div class="hl-text">
+          <h3>📞 Tư vấn miễn phí quyền lợi NLĐ</h3>
+          <p>Luật sư lao động VEA Law sẵn sàng hỗ trợ · 8:00–18:00 Thứ 2 – Thứ 7 · Bảo mật 100%</p>
+        </div>
+        <button class="hl-btn">Gọi ngay 1800 6888</button>
+      </div>
+    </div>
+  </div>
+      </div><!-- /ts-rights -->
+      <div class="ts" id="ts-qa">
+        <div style="max-width:680px;margin:0 auto;padding-top:8px">
+          <p style="font-size:14px;color:var(--muted);margin-bottom:18px;line-height:1.7">Gửi câu hỏi về quyền lợi lao động — đội ngũ VEA Law phản hồi trong 24 giờ.</p>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--sh)">
+            <div class="fg" style="margin-bottom:10px"><label>Câu hỏi</label><textarea rows="4" placeholder="VD: Tôi bị chủ không đóng BHXH 2 năm, phải làm gì?"></textarea></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div class="fg"><label>Họ tên</label><input placeholder="Nguyễn Văn A"/></div>
+              <div class="fg"><label>SĐT / Email</label><input placeholder="090..."/></div>
+            </div>
+            <button style="background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;padding:11px 22px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit">Gửi câu hỏi →</button>
+          </div>
+        </div>
+      </div>
+</div><!-- /pg-rights -->
+
+<!-- ═══ LOGIN MODAL ═══ -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="login-box">
+    <button class="lb-close" onclick="closeAdmin()">✕</button>
+    <div class="lb-title">ViecLam<em>CongNhan</em></div>
+    <div class="lb-sub">Đăng nhập hệ thống quản trị</div>
+    <div class="lb-roles">
+      <button class="lb-role on" onclick="setRole('admin',this)">🔒 Nội bộ</button>
+      <button class="lb-role" onclick="setRole('employer',this)">🏢 Nhà tuyển dụng</button>
+    </div>
+    <div id="lb-ntd-note" style="display:none;font-size:12px;color:var(--muted);background:var(--lorg);border:1px solid var(--org-border);border-radius:7px;padding:8px 12px;margin-bottom:10px">
+      Chưa có tài khoản? <span onclick="showRegister()" style="color:var(--orange);font-weight:700;cursor:pointer">Đăng ký ngay →</span>
+    </div>
+    <div id="lb-login-form">
+      <div class="lbf" id="lb-field-email">
+        <label id="lb-email-label">Email</label>
+        <input type="email" id="lb-email" placeholder="admin@vieclamcongnhan.com"/>
+      </div>
+      <div class="lbf"><label>Mật khẩu</label><input type="password" id="lb-pw" placeholder="••••••••"/></div>
+      <button class="lb-btn" onclick="doLogin()">Đăng nhập →</button>
+      <div style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px">Nội bộ: admin@demo.vn / 123456 · Nhà TD: ntd@demo.vn / 123456</div>
+    </div>
+    <div id="lb-register-form" style="display:none">
+      <div class="lbf"><label>Tên đơn vị / Công ty</label><input id="reg-company" placeholder="VD: Công ty TNHH ABC"/></div>
+      <div class="lbf"><label>Số điện thoại liên hệ</label><input id="reg-phone" type="tel" placeholder="0909 123 456"/></div>
+      <div class="lbf"><label>Email đăng nhập</label><input id="reg-email" type="email" placeholder="hr@congty.com"/></div>
+      <div class="lbf"><label>Mật khẩu</label><input id="reg-pw" type="password" placeholder="Tối thiểu 8 ký tự"/></div>
+      <button class="lb-btn" onclick="doRegister()">Tạo tài khoản →</button>
+      <div style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:10px;cursor:pointer" onclick="showLogin()">← Đã có tài khoản? Đăng nhập</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div class="admin-panel page" id="admin-panel">
+  <div class="admin-topbar">
+    <div class="atb-left">ViecLam<em>CongNhan</em> — Quản trị</div>
+    <div class="atb-right">
+      <span class="atb-user" id="atb-name">Admin</span>
+      <span class="atb-role-badge" id="atb-role">Admin</span>
+      <button class="atb-logout" onclick="doLogout()">Đăng xuất</button>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <div class="admin-sb">
+      <span class="sb-group-label">Tổng quan</span>
+      <button class="sb-item on sb-admin-only" onclick="adSec('dashboard',this)"><span class="sb-ico">📊</span>Dashboard</button>
+      <span class="sb-group-label">Nội dung</span>
+      <button class="sb-item sb-admin-only" onclick="adSec('jobs-mgr',this)"><span class="sb-ico">📋</span>Tin tuyển dụng<span class="sb-badge" id="bd-jobs">2.038</span></button>
+      <button class="sb-item" onclick="adSec('news-mgr',this)"><span class="sb-ico">📰</span>Tin tức / Bài viết<span class="sb-badge" id="bd-news">14</span></button>
+      <button class="sb-item" onclick="adSec('rights-mgr',this)"><span class="sb-ico">⚖</span>Tin tức & Quyền lợi</button>
+      <span class="sb-group-label">Tuyển dụng</span>
+      <button class="sb-item" onclick="adSec('candidates-mgr',this)"><span class="sb-ico">👥</span>Database ứng viên<span class="sb-badge">48.372</span></button>
+      <button class="sb-item sb-admin-only" onclick="adSec('blast-mgr',this)"><span class="sb-ico">📲</span>Blast campaigns</button>
+      <button class="sb-item sb-ntd-only" style="display:none" onclick="adSec('employers-mgr',this)"><span class="sb-ico">🏢</span>Tài khoản của tôi</button>
+      <span class="sb-group-label">Hệ thống</span>
+      <button class="sb-item" onclick="adSec('orders-mgr',this)"><span class="sb-ico">💳</span>Đơn hàng / Thanh toán</button>
+      <button class="sb-item" onclick="adSec('ads-mgr',this)"><span class="sb-ico">📢</span>Quảng cáo / Đối tác</button>
+      <button class="sb-item" onclick="adSec('users-mgr',this)"><span class="sb-ico">👤</span>Người dùng</button>
+      <button class="sb-item" onclick="adSec('settings',this)"><span class="sb-ico">⚙️</span>Cài đặt</button>
+    </div>
+
+    <div class="admin-main">
+
+      <!-- DASHBOARD -->
+      <div class="admin-sec on" id="sec-dashboard">
+        <div class="admin-stat-grid">
+          <div class="astat"><div class="astat-n">2.038</div><div class="astat-l">Tin tuyển dụng đang chạy</div><div class="astat-d">+47 tuần này</div></div>
+          <div class="astat"><div class="astat-n">48.372</div><div class="astat-l">Hồ sơ ứng viên trong DB</div><div class="astat-d">+312 tuần này</div></div>
+          <div class="astat"><div class="astat-n">14</div><div class="astat-l">Bài viết đã đăng</div><div class="astat-d">2 bản nháp</div></div>
+          <div class="astat"><div class="astat-n">87.5M</div><div class="astat-l">Doanh thu tháng này</div><div class="astat-d">↑ 23% so tháng trước</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:18px;box-shadow:var(--sh)">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px">⏳ Cần xử lý ngay</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="padding:9px 12px;background:rgba(229,88,34,.06);border:1px solid var(--org-border);border-radius:8px;font-size:12.5px;color:var(--navy);display:flex;justify-content:space-between"><span>📋 Tin tuyển dụng chờ duyệt</span><strong style="color:var(--orange)">12</strong></div>
+              <div style="padding:9px 12px;background:rgba(229,88,34,.06);border:1px solid var(--org-border);border-radius:8px;font-size:12.5px;color:var(--navy);display:flex;justify-content:space-between"><span>📰 Bài viết chờ duyệt</span><strong style="color:var(--orange)">3</strong></div>
+              <div style="padding:9px 12px;background:rgba(56,161,105,.06);border:1px solid rgba(56,161,105,.2);border-radius:8px;font-size:12.5px;color:var(--navy);display:flex;justify-content:space-between"><span>💳 Đơn hàng mới chưa xử lý</span><strong style="color:var(--green)">5</strong></div>
+            </div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:18px;box-shadow:var(--sh)">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px">⚡ Truy cập nhanh</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button onclick="adSec('jobs-mgr',null)" style="text-align:left;background:var(--org-light);border:1px solid var(--org-border);color:var(--orange);padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">📋 Duyệt tin tuyển dụng (12 chờ)</button>
+              <button onclick="adSec('news-mgr',null);setTimeout(()=>showNewsForm(),100)" style="text-align:left;background:var(--bg2);border:1px solid var(--border);color:var(--navy);padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">✏ Viết bài tin tức mới</button>
+              <button onclick="adSec('candidates-mgr',null)" style="text-align:left;background:var(--bg2);border:1px solid var(--border);color:var(--navy);padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">👥 Xem database ứng viên (48.372)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUẢN LÝ TIN TUYỂN DỤNG -->
+      <div class="admin-sec" id="sec-jobs-mgr">
+        <div class="sec-toolbar">
+          <div class="sec-title">📋 Tin tuyển dụng</div>
+          <div style="display:flex;gap:8px"><input class="mini-search" placeholder="Tìm theo tên, công ty..."/><select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--bg2);color:var(--navy);outline:none"><option>Tất cả trạng thái</option><option>Chờ duyệt</option><option>Đã duyệt</option><option>Từ chối</option></select></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <span style="font-size:12px;padding:4px 12px;border-radius:20px;background:rgba(229,88,34,.1);color:var(--orange);font-weight:700;cursor:pointer">Tất cả (2038)</span>
+          <span style="font-size:12px;padding:4px 12px;border-radius:20px;background:rgba(245,158,11,.1);color:#D97706;font-weight:700;cursor:pointer">Chờ duyệt (12)</span>
+          <span style="font-size:12px;padding:4px 12px;border-radius:20px;background:rgba(56,161,105,.1);color:var(--green);font-weight:700;cursor:pointer">Đã duyệt (2019)</span>
+          <span style="font-size:12px;padding:4px 12px;border-radius:20px;background:var(--bg2);color:var(--muted);font-weight:700;cursor:pointer">Hết hạn (7)</span>
+        </div>
+        <table class="admin-tbl">
+          <thead><tr><th>Tiêu đề</th><th>Công ty</th><th>Ngành / Tỉnh</th><th>Gói</th><th>Trạng thái</th><th>Ngày đăng</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Tuyển CN may mặc gấp 200 người</strong><div style="font-size:11px;color:var(--muted)">KCN Sóng Thần 2, Bình Dương</div></td><td>Cty TNHH Pacific</td><td>May mặc · Bình Dương</td><td><span class="badge-pub">Featured</span></td><td><span class="badge-pend">Chờ duyệt</span></td><td style="font-size:12px;color:var(--muted)">15/08/2026</td><td style="display:flex;gap:4px"><button class="ta-btn ta-approve">✓ Duyệt</button><button class="ta-btn ta-view">Xem</button><button class="ta-btn ta-del">Từ chối</button></td></tr>
+            <tr><td><strong>Tuyển công nhân điện tử Samsung</strong><div style="font-size:11px;color:var(--muted)">KCN Yên Phong, Bắc Ninh</div></td><td>Samsung Electronics VN</td><td>Điện tử · Bắc Ninh</td><td><span style="background:rgba(107,70,193,.1);color:#6B46C1;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">Chiến dịch</span></td><td><span class="badge-pend">Chờ duyệt</span></td><td style="font-size:12px;color:var(--muted)">14/08/2026</td><td style="display:flex;gap:4px"><button class="ta-btn ta-approve">✓ Duyệt</button><button class="ta-btn ta-view">Xem</button><button class="ta-btn ta-del">Từ chối</button></td></tr>
+            <tr style="background:var(--bg2)"><td><strong>Tuyển thợ hàn CNC tay nghề cao</strong><div style="font-size:11px;color:var(--muted)">KCN Amata, Đồng Nai</div></td><td>Cty CP Cơ khí Việt Mỹ</td><td>Cơ khí · Đồng Nai</td><td><span class="badge-pub" style="background:var(--bg2);color:var(--muted);border:1px solid var(--border)">Basic</span></td><td><span class="badge-pub">Đã duyệt</span></td><td style="font-size:12px;color:var(--muted)">10/08/2026</td><td style="display:flex;gap:4px"><button class="ta-btn ta-edit">Sửa</button><button class="ta-btn ta-view">Xem</button><button class="ta-btn ta-del">Ẩn</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- QUẢN LÝ BÀI VIẾT / TIN TỨC -->
+      <div class="admin-sec" id="sec-news-mgr">
+        <div class="sec-toolbar">
+          <div class="sec-title">📰 Bài viết &amp; Tin tức quyền lợi CN</div>
+          <button class="new-btn" onclick="showNewsForm()">✏ Viết bài mới</button>
+        </div>
+        <table class="admin-tbl">
+          <thead><tr><th>Tiêu đề</th><th>Danh mục</th><th>Tác giả</th><th>Trạng thái</th><th>Ngày</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Mức lương tối thiểu vùng 2026 — Cập nhật mới nhất</strong></td><td>Quyền lợi</td><td>Admin</td><td><span class="badge-pub">Đã đăng</span></td><td style="font-size:12px;color:var(--muted)">10/08/2026</td><td style="display:flex;gap:4px"><button class="ta-btn ta-edit" onclick="showNewsForm()">Sửa</button><button class="ta-btn ta-del">Ẩn</button></td></tr>
+            <tr style="background:var(--bg2)"><td><strong>Quy trình đăng BHXH tự nguyện 2025 — Hướng dẫn chi tiết</strong></td><td>BHXH</td><td>Biên tập Linh</td><td><span class="badge-pub">Đã đăng</span></td><td style="font-size:12px;color:var(--muted)">05/08/2026</td><td style="display:flex;gap:4px"><button class="ta-btn ta-edit" onclick="showNewsForm()">Sửa</button><button class="ta-btn ta-del">Ẩn</button></td></tr>
+            <tr><td><strong>Bị sa thải trái luật — 5 điều công nhân cần làm ngay</strong></td><td>Pháp lý</td><td>Admin</td><td><span class="badge-pend">Bản nháp</span></td><td style="font-size:12px;color:var(--muted)">12/08/2026</td><td style="display:flex;gap:4px"><button class="ta-btn ta-edit" onclick="showNewsForm()">Sửa</button><button class="ta-btn ta-approve">Đăng</button></td></tr>
+          </tbody>
+        </table>
+        <div class="form-panel" id="news-form-panel">
+          <div class="fp-title">✏ Viết bài viết mới</div>
+          <div class="fg-grid">
+            <div class="fg fg-full"><label>Tiêu đề bài viết</label><input placeholder="VD: Mức lương tối thiểu vùng 2026 — Cập nhật mới nhất"/></div>
+            <div class="fg"><label>Đường dẫn (slug)</label><input placeholder="/tin-tuc/luong-toi-thieu-2026"/></div>
+            <div class="fg"><label>Danh mục</label><select><option>Quyền lợi công nhân</option><option>BHXH &amp; Bảo hiểm</option><option>Lương &amp; Thưởng</option><option>Pháp lý lao động</option><option>Kỹ năng nghề</option><option>Tin KCN</option></select></div>
+            <div class="fg fg-full"><label>Mô tả ngắn</label><textarea rows="2" placeholder="Tóm tắt bài viết hiển thị trên kết quả tìm kiếm và danh sách bài viết..."></textarea></div>
+            <div class="fg fg-full"><label>Ảnh đại diện (URL)</label><input placeholder="https://..."/></div>
+            <div class="fg fg-full">
+              <label>Nội dung bài viết</label>
+              <div class="ce-wrap">
+                <div class="ce-bar">
+                  <button class="ce-b" onclick="document.execCommand('bold')"><b>B</b></button>
+                  <button class="ce-b" onclick="document.execCommand('italic')"><i>I</i></button>
+                  <button class="ce-b" onclick="document.execCommand('insertUnorderedList')">• List</button>
+                  <button class="ce-b" onclick="document.execCommand('formatBlock','','h2')">H2</button>
+                  <button class="ce-b" onclick="document.execCommand('formatBlock','','h3')">H3</button>
+                  <button class="ce-b" onclick="insImgEditor()">📷 Chèn ảnh</button>
+                </div>
+                <div class="ce-body" contenteditable="true">Bắt đầu viết nội dung...</div>
+              </div>
+            </div>
+            <div class="fg"><label>Trạng thái</label><select><option>Bản nháp</option><option>Đã đăng</option></select></div>
+            <div class="fg"><label>Tác giả</label><input value="Admin"/></div>
+          </div>
+          <div class="fp-actions">
+            <button class="fp-save">🚀 Đăng ngay</button>
+            <button class="fp-draft">💾 Lưu nháp</button>
+            <button class="fp-cancel" onclick="document.getElementById('news-form-panel').classList.remove('on')">Hủy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATABASE ỨNG VIÊN (nội bộ) -->
+      <div class="admin-sec" id="sec-candidates-mgr">
+        <div class="sec-toolbar">
+          <div class="sec-title">👥 Database Ứng viên — Nội bộ</div>
+          <div style="display:flex;gap:8px">
+            <input class="mini-search" placeholder="Tìm theo tên, tỉnh, ngành..."/>
+            <select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--bg2);color:var(--navy);outline:none"><option>Tất cả tỉnh</option><option>Hà Nội</option><option>Hải Phòng</option><option>Bắc Ninh</option><option>Quảng Ninh</option><option>Hưng Yên</option><option>Ninh Bình</option><option>Tuyên Quang</option><option>Cao Bằng</option><option>Lai Châu</option><option>Lào Cai</option><option>Thái Nguyên</option><option>Điện Biên</option><option>Lạng Sơn</option><option>Sơn La</option><option>Phú Thọ</option><option>Thanh Hóa</option><option>Nghệ An</option><option>Hà Tĩnh</option><option>Quảng Trị</option><option>Huế</option><option>Đà Nẵng</option><option>Quảng Ngãi</option><option>Gia Lai</option><option>Đắk Lắk</option><option>Khánh Hòa</option><option>Lâm Đồng</option><option>Đồng Nai</option><option>Tây Ninh</option><option>TP. Hồ Chí Minh</option><option>Đồng Tháp</option><option>An Giang</option><option>Vĩnh Long</option><option>Cần Thơ</option><option>Cà Mau</option></select>
+          </div>
+        </div>
+        <div style="padding:12px 14px;background:linear-gradient(135deg,rgba(229,88,34,.06),rgba(10,20,40,.03));border:1px solid var(--org-border);border-radius:9px;font-size:13px;color:var(--muted);margin-bottom:14px">
+          🔒 <strong style="color:var(--navy)">Thông tin ứng viên được bảo mật.</strong> Chỉ Admin và nhân sự được phân quyền mới thấy SĐT đầy đủ. Nhà tuyển dụng nhận danh sách phù hợp theo gói đăng tin, không có quyền tra cứu trực tiếp.
+        </div>
+        <table class="admin-tbl">
+          <thead><tr><th>Ứng viên</th><th>Tỉnh cư trú</th><th>Ngành mong muốn</th><th>Ca làm</th><th>Lương kỳ vọng</th><th>Trạng thái</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Nguyễn Thị Hoa</strong><div style="font-size:11px;color:var(--muted)">090 *** ***4 · Zalo: 090...4</div></td><td>Bình Dương</td><td>May mặc</td><td>Ca ngày</td><td>8–10 triệu</td><td><span class="badge-pub">Đang tìm việc</span></td><td style="display:flex;gap:4px"><button class="ta-btn ta-view">Xem đủ</button><button class="ta-btn ta-edit">Gợi ý</button></td></tr>
+            <tr style="background:var(--bg2)"><td><strong>Trần Văn Nam</strong><div style="font-size:11px;color:var(--muted)">098 *** ***7 · Zalo: 098...7</div></td><td>Đồng Nai</td><td>Điện tử</td><td>Ca đêm</td><td>9–12 triệu</td><td><span class="badge-pub">Đang tìm việc</span></td><td style="display:flex;gap:4px"><button class="ta-btn ta-view">Xem đủ</button><button class="ta-btn ta-edit">Gợi ý</button></td></tr>
+            <tr><td><strong>Lê Thị Mai</strong><div style="font-size:11px;color:var(--muted)">091 *** ***2 · Zalo: 091...2</div></td><td>TP.HCM</td><td>Thực phẩm</td><td>Xoay ca</td><td>7–9 triệu</td><td><span class="badge-pend">Đã có việc</span></td><td style="display:flex;gap:4px"><button class="ta-btn ta-view">Xem đủ</button><button class="ta-btn ta-del">Ẩn</button></td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:12px;color:var(--muted);margin-top:10px;text-align:right">Hiển thị 3/48.372 hồ sơ</div>
+      </div>
+
+      <!-- NGƯỜI DÙNG -->
+      <div class="admin-sec" id="sec-users-mgr">
+        <div class="sec-toolbar"><div class="sec-title">👤 Người dùng</div><button class="new-btn">+ Thêm người dùng</button></div>
+        <table class="admin-tbl">
+          <thead><tr><th>Tên</th><th>Email</th><th>Vai trò</th><th>Đăng nhập gần nhất</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Nguyễn Châu Phong</strong></td><td>phong@veagroup.vn</td><td><span class="badge-pend">Admin</span></td><td>Hôm nay 09:14</td><td><button class="ta-btn ta-edit">Sửa</button></td></tr>
+            <tr style="background:var(--bg2)"><td><strong>Trần Thị Linh</strong></td><td>linh@veagroup.vn</td><td><span class="badge-pub">Biên tập viên</span></td><td>Hôm qua 14:22</td><td><button class="ta-btn ta-edit">Sửa</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SETTINGS placeholder -->
+      <div class="admin-sec" id="sec-settings">
+        <div class="sec-title" style="margin-bottom:16px">⚙️ Cài đặt hệ thống</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:18px;box-shadow:var(--sh)">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px">Thông tin website</div>
+            <div class="fg" style="margin-bottom:10px"><label>Tên website</label><input value="ViecLamCongNhan.com"/></div>
+            <div class="fg"><label>Email hỗ trợ</label><input value="support@vieclamcongnhan.com"/></div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:11px;padding:18px;box-shadow:var(--sh)">
+            <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px">Tích hợp SMS / Zalo</div>
+            <div class="fg" style="margin-bottom:10px"><label>ESMS API Key</label><input type="password" placeholder="esms_..."/></div>
+            <div class="fg"><label>Zalo OA Token</label><input type="password" placeholder="zoa_token_..."/></div>
+          </div>
+        </div>
+        <button style="margin-top:14px;background:linear-gradient(135deg,var(--org),#e05800);color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit">💾 Lưu cài đặt</button>
+      </div>
+
+      <!-- Placeholder for other sections -->
+      <!-- NTD DASHBOARD (shown when logged in as employer) -->
+      <div class="admin-sec" id="sec-employers-mgr">
+        <div class="sec-title" style="margin-bottom:16px">🏢 Tài khoản Nhà tuyển dụng</div>
+
+        <!-- Thông tin đơn vị -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;box-shadow:var(--sh)">
+          <div style="font-size:13.5px;font-weight:800;color:var(--navy);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">📋 Thông tin đơn vị tuyển dụng</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg"><label>Tên đơn vị / Công ty</label><input value="Công ty TNHH Pacific Garment" placeholder="Tên công ty..."/></div>
+            <div class="fg"><label>Mã số thuế</label><input value="0312345678" placeholder="MST..."/></div>
+            <div class="fg"><label>Số điện thoại liên hệ</label><input value="0909 123 456" placeholder="SĐT..."/></div>
+            <div class="fg"><label>Email liên hệ</label><input value="hr@pacific.com.vn" placeholder="Email..."/></div>
+            <div class="fg fg-full"><label>Địa chỉ văn phòng / trụ sở</label><input value="Số 10 Đường D1, KCN Sóng Thần 2, Bình Dương" placeholder="Địa chỉ..."/></div>
+            <div class="fg fg-full"><label>Địa chỉ tuyển dụng (KCN / nhà máy)</label><input value="KCN Sóng Thần 2, Dĩ An, Bình Dương" placeholder="Nơi làm việc thực tế..."/></div>
+            <div class="fg"><label>Người phụ trách tuyển dụng</label><input value="Nguyễn Thị Hương" placeholder="Họ tên..."/></div>
+            <div class="fg"><label>SĐT người phụ trách</label><input value="0912 345 678" placeholder="SĐT..."/></div>
+          </div>
+          <button style="margin-top:14px;background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit">💾 Lưu thông tin</button>
+        </div>
+
+        <!-- Gói dịch vụ -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;box-shadow:var(--sh)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+            <div style="font-size:13.5px;font-weight:800;color:var(--navy)">💳 Gói dịch vụ hiện tại</div>
+            <span style="background:var(--lorg);border:1px solid var(--org-border);color:var(--orange);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px">Gói Miễn phí</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+            <div style="padding:12px;background:var(--bg2);border-radius:9px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:var(--navy);font-family:monospace">2/2</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Tin đã đăng hôm nay</div>
+            </div>
+            <div style="padding:12px;background:var(--bg2);border-radius:9px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:var(--navy);font-family:monospace">0</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Hồ sơ ứng viên nhận được</div>
+            </div>
+            <div style="padding:12px;background:var(--bg2);border-radius:9px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:var(--navy);font-family:monospace">14 ngày</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">Thời hạn hiển thị mỗi tin</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Nâng cấp để đăng không giới hạn, tin nổi bật và nhận hồ sơ ứng viên phù hợp:</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Basic</div>
+              <div style="font-size:18px;font-weight:800;color:var(--orange);font-family:monospace">299K</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:10px">/tin · 30 ngày</div>
+              <button onclick="openPayModal('Gói Basic','1 tin · 30 ngày · Gợi ý 5 hồ sơ','299.000đ')" style="width:100%;background:var(--lorg);border:1px solid var(--org-border);color:var(--orange);padding:7px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Mua ngay</button>
+            </div>
+            <div style="border:2px solid var(--orange);border-radius:10px;padding:14px;text-align:center;position:relative">
+              <div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:9px;font-weight:700;padding:2px 10px;border-radius:10px;white-space:nowrap">PHỔ BIẾN</div>
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Featured</div>
+              <div style="font-size:18px;font-weight:800;color:var(--orange);font-family:monospace">899K</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:10px">/tin · Nổi bật</div>
+              <button onclick="openPayModal('Gói Featured','Tin nổi bật 30 ngày · 25 hồ sơ DB','899.000đ')" style="width:100%;background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;padding:7px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Mua ngay ★</button>
+            </div>
+            <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Chiến dịch</div>
+              <div style="font-size:18px;font-weight:800;color:var(--orange);font-family:monospace">1.5M</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:10px">/chiến dịch</div>
+              <button onclick="openPayModal('Gói Chiến dịch','30 ngày · 100 hồ sơ · Blast 2000 tin','1.500.000đ')" style="width:100%;background:var(--lorg);border:1px solid var(--org-border);color:var(--orange);padding:7px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Mua ngay</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tin đã đăng -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--sh)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="font-size:13.5px;font-weight:800;color:var(--navy)">📋 Tin tuyển dụng của tôi</div>
+            <button onclick="nav('tuyendung',null);switchTDTab('td-dang')" style="background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">+ Đăng tin mới</button>
+          </div>
+          <table class="admin-tbl">
+            <thead><tr><th>Tiêu đề</th><th>Trạng thái</th><th>Lượt xem</th><th>Ứng viên</th><th>Hết hạn</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Tuyển CN may mặc gấp 200 người</strong><div style="font-size:11px;color:var(--muted)">KCN Sóng Thần 2 · Bình Dương</div></td><td><span class="badge-pend">Chờ duyệt</span></td><td style="font-family:monospace">—</td><td style="font-family:monospace">—</td><td style="font-size:12px;color:var(--muted)">14/09/2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="admin-sec" id="sec-blast-mgr"><div class="sec-title">📲 Blast Campaigns</div><div style="margin-top:14px;color:var(--muted)">Lịch sử và quản lý các chiến dịch Blast SMS/Zalo.</div></div>
+      <!-- NTD SECTIONS -->
+      <div class="admin-sec" id="sec-ntd-post">
+        <div class="sec-title" style="margin-bottom:16px">📋 Đăng tin tuyển dụng mới</div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fg fg-full"><label>Tiêu đề tuyển dụng</label><input placeholder="VD: Tuyển công nhân may mặc — KCN Sóng Thần 2"/></div>
+            <div class="fg"><label>Ngành nghề</label><select><option>May mặc / Giày da</option><option>Điện tử</option><option>Cơ khí</option><option>Thực phẩm</option><option>Kho vận</option></select></div>
+            <div class="fg"><label>Tỉnh / KCN</label><input placeholder="VD: KCN Sóng Thần 2, Bình Dương"/></div>
+            <div class="fg"><label>Ca làm việc</label><select><option>Ca ngày</option><option>Ca đêm</option><option>Xoay ca</option></select></div>
+            <div class="fg"><label>Lương từ (VNĐ)</label><input type="number" placeholder="8000000"/></div>
+            <div class="fg"><label>Lương đến (VNĐ)</label><input type="number" placeholder="12000000"/></div>
+            <div class="fg fg-full"><label>Mô tả công việc & Quyền lợi</label><textarea rows="4" placeholder="Mô tả chi tiết..."></textarea></div>
+            <div class="fg fg-full">
+              <label style="margin-bottom:8px;display:block">Đặc điểm nổi bật</label>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+                <label style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--orange)"/> ⚡ Tuyển gấp</label>
+                <label style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--orange)"/> 🍱 Có bữa ăn ca</label>
+                <label style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--orange)"/> 🚌 Có xe đưa đón</label>
+                <label style="display:flex;align-items:center;gap:7px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--orange)"/> 💵 Lương theo ngày</label>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button style="background:linear-gradient(135deg,var(--org),var(--org2));color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit">🚀 Đăng tin (Gói Free)</button>
+            <button onclick="openPayModal('Nâng cấp tin nổi bật','Tin Featured · Nổi bật 30 ngày · 25 hồ sơ DB','899.000đ')" style="background:var(--lorg);border:1px solid var(--org-border);color:var(--orange);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">⭐ Nâng lên Featured — 899K</button>
+          </div>
+        </div>
+      </div>
+      <div class="admin-sec" id="sec-ntd-orders">
+        <div class="sec-title" style="margin-bottom:16px">💳 Đơn hàng của tôi</div>
+        <table class="admin-tbl">
+          <thead><tr><th>Đơn hàng</th><th>Gói</th><th>Số tiền</th><th>Thanh toán</th><th>Trạng thái</th></tr></thead>
+          <tbody>
+            <tr><td><strong>#ORD-2026081501</strong><div style="font-size:11px;color:var(--muted)">15/08/2026</div></td><td>Featured</td><td style="font-weight:700;color:var(--orange);font-family:monospace">899.000đ</td><td>Chuyển khoản</td><td><span class="badge-pub">Đã thanh toán</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-sec" id="sec-orders-mgr">
+        <div class="sec-toolbar"><div class="sec-title">💳 Đơn hàng & Thanh toán</div><input class="mini-search" placeholder="Tìm theo tên, gói..."/></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+          <div class="astat"><div class="astat-n">87.5M</div><div class="astat-l">Doanh thu tháng 8</div><div class="astat-d">↑ 23%</div></div>
+          <div class="astat"><div class="astat-n">142</div><div class="astat-l">Đơn hàng tháng này</div><div class="astat-d">+18 tuần này</div></div>
+          <div class="astat"><div class="astat-n">5</div><div class="astat-l">Chờ xác nhận</div><div class="astat-d" style="color:var(--orange)">Cần xử lý</div></div>
+          <div class="astat"><div class="astat-n">3</div><div class="astat-l">Đơn hoàn tiền</div><div class="astat-d">Tháng này</div></div>
+        </div>
+        <table class="admin-tbl">
+          <thead><tr><th>Đơn hàng</th><th>Nhà tuyển dụng</th><th>Gói</th><th>Số tiền</th><th>Thanh toán</th><th>Trạng thái</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><strong>#ORD-2026081501</strong><div style="font-size:11px;color:var(--muted)">15/08/2026 · 09:14</div></td><td>Cty TNHH Pacific</td><td>Featured</td><td style="font-weight:700;color:var(--orange);font-family:monospace">899.000đ</td><td>Chuyển khoản</td><td><span class="badge-pub">Đã thanh toán</span></td><td><button class="ta-btn ta-view">Chi tiết</button></td></tr>
+            <tr style="background:var(--bg2)"><td><strong>#ORD-2026081502</strong><div style="font-size:11px;color:var(--muted)">15/08/2026 · 10:32</div></td><td>Samsung VN</td><td>Chiến dịch</td><td style="font-weight:700;color:var(--orange);font-family:monospace">1.500.000đ</td><td>MoMo</td><td><span class="badge-pend">Chờ xác nhận</span></td><td><button class="ta-btn ta-approve">Xác nhận</button></td></tr>
+            <tr><td><strong>#ORD-2026081503</strong><div style="font-size:11px;color:var(--muted)">14/08/2026 · 16:05</div></td><td>Cty Cơ khí Việt Mỹ</td><td>Blast SMS 5K</td><td style="font-weight:700;color:var(--orange);font-family:monospace">2.500.000đ</td><td>VNPay</td><td><span class="badge-pub">Đã thanh toán</span></td><td><button class="ta-btn ta-view">Chi tiết</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="admin-sec" id="sec-ads-mgr"><div class="sec-title">📢 Quảng cáo</div><div style="margin-top:14px;color:var(--muted)">Quản lý slot quảng cáo KCN và đối tác.</div></div>
+      <div class="admin-sec" id="sec-rights-mgr"><div class="sec-title">⚖ Tin tức & Quyền lợi</div><div style="margin-top:14px;color:var(--muted)">Quản lý nội dung Q&amp;A quyền lợi công nhân.</div></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="pay-overlay" id="pay-overlay" onclick="if(event.target===this)closePayModal()">
+  <div class="pay-modal">
+    <div class="pm-head"><div class="pm-title" id="pm-title">Thanh toán</div><button class="pm-close" onclick="closePayModal()">✕</button></div>
+    <div class="pm-body">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px" id="pm-desc"></div>
+      <div class="pm-price" id="pm-price"></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Phương thức thanh toán:</div>
+      <div class="pm-methods">
+        <button class="pm-method on" onclick="selPay(this)">🏦<br>Chuyển khoản</button>
+        <button class="pm-method" onclick="selPay(this)">📱<br>MoMo</button>
+        <button class="pm-method" onclick="selPay(this)">💳<br>VNPay</button>
+      </div>
+      <button class="pm-submit" onclick="doPayment()">Xác nhận thanh toán →</button>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">🔒 Bảo mật SSL · Hóa đơn VAT theo yêu cầu</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ <span id="toast-msg">Thành công!</span></div>
+
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-inner">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <div class="ft-logo">ViecLam<span>CongNhan</span>.com</div>
+        <p>Nền tảng việc làm công nhân lớn nhất Việt Nam. 48.000+ tin tuyển dụng từ nhà máy và KCN trên 34 tỉnh thành. Thành viên VEA Group.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)">VEA Group</span>
+          <span style="font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)">VEA Law</span>
+          <span style="font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)">DichVuThue.net</span>
+        </div>
+      </div>
+      <div>
+        <div class="ft-col-title">Tìm việc</div>
+        <div class="ft-links">
+          <a href="#" onclick="nav('jobs',null)">Tất cả tin tuyển dụng</a>
+          <a href="#" onclick="nav('kcn',null)">KCN toàn quốc</a>
+          <a href="#" onclick="nav('candidate',null)">Để lại thông tin</a>
+          <a href="#">Việc làm theo ngành</a>
+          <a href="#">Việc làm theo tỉnh</a>
+        </div>
+      </div>
+      <div>
+        <div class="ft-col-title">Doanh nghiệp</div>
+        <div class="ft-links">
+          <a href="#" onclick="nav('employer',null)">Đăng tin tuyển dụng</a>
+          <a href="#" onclick="nav('dichvu',null)">Dịch vụ trọn gói</a>
+          <a href="#">Tuyển dụng theo yêu cầu</a>
+          <a href="#">Bảng giá đăng tin</a>
+          <a href="#">Liên hệ hợp tác</a>
+        </div>
+      </div>
+      <div>
+        <div class="ft-col-title">Hỗ trợ</div>
+        <div class="ft-links">
+          <a href="#" onclick="nav('rights',null)">Quyền lợi người lao động</a>
+          <a href="#">Lịch nghỉ lễ 2026</a>
+          <a href="#">Lương tối thiểu vùng</a>
+          <a href="#">Tư vấn pháp lý · VEA Law</a>
+          <a href="#">Hotline: 1800 6888</a>
+        </div>
+      </div>
+    </div>
+    <div class="ft-div"></div>
+    <div class="ft-bottom">
+      <div class="ft-copy">© 2026 ViecLamCongNhan.com · Thành viên VEA Group</div>
+      <div class="ft-vea">Powered by <span>VEA Group</span> · veagroup.global</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ─── NAVIGATION ───
+let currentRole = 'admin';
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelector('.page.on') && null;
+  document.querySelectorAll('.nl, .nav-dropdown').forEach(b => {
+    if(b.classList.contains('nl')) b.classList.remove('on');
+  });
+  const pg = document.getElementById('pg-' + id);
+  if (pg) pg.classList.add('on');
+  if (el && el.classList.contains('nl')) el.classList.add('on');
+  window.scrollTo(0, 0);
+  // close admin if open
+  document.getElementById('admin-panel').classList.remove('on');
+}
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.tab-bar .tb').forEach(b => b.classList.remove('on'));
+  const s = document.getElementById('ts-' + id.replace('tab-',''));
+  if(s) s.classList.add('on');
+  const b = document.getElementById(id);
+  if(b) b.classList.add('on');
+}
+
+function switchTDTab(id) {
+  const ids = ['td-dang','td-goi','td-blast'];
+  ids.forEach(i => {
+    const b = document.getElementById(i);
+    const s = document.getElementById('ts-' + i);
+    if(b) b.classList.remove('on');
+    if(s) s.classList.remove('on');
+  });
+  const b = document.getElementById(id);
+  const s = document.getElementById('ts-' + id);
+  if(b) b.classList.add('on');
+  if(s) s.classList.add('on');
+}
+
+function switchDTTab(id) {
+  ['dt-kcn','dt-partner','dt-price'].forEach(i => {
+    const b = document.getElementById(i);
+    const s = document.getElementById('ts-' + i);
+    if(b) b.classList.remove('on');
+    if(s) s.classList.remove('on');
+  });
+  const b = document.getElementById(id);
+  const s = document.getElementById('ts-' + id);
+  if(b) b.classList.add('on');
+  if(s) s.classList.add('on');
+}
+
+// ─── ADMIN ───
+function openAdmin() { document.getElementById('admin-overlay').classList.add('on'); }
+function closeAdmin() { document.getElementById('admin-overlay').classList.remove('on'); }
+function setRole(r, el) {
+  currentRole = r;
+  document.querySelectorAll('.lb-role').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  const ntdNote = document.getElementById('lb-ntd-note');
+  const emailLabel = document.getElementById('lb-email-label');
+  if(ntdNote) ntdNote.style.display = r === 'employer' ? 'block' : 'none';
+  if(emailLabel) emailLabel.textContent = r === 'employer' ? 'Email / SĐT' : 'Email';
+  showLogin();
+}
+function doLogin() {
+  const em = document.getElementById('lb-email').value.trim();
+  const pw = document.getElementById('lb-pw').value.trim();
+
+  // Employer: accept any email/phone + password (or demo ntd@demo.vn / 123456)
+  const isEmployer = currentRole === 'employer';
+  const isAdmin = currentRole === 'admin' || currentRole === 'editor';
+
+  const adminOk = isAdmin && (em === 'admin@demo.vn' || em === '') && (pw === '123456' || pw === '');
+  const employerOk = isEmployer && em.length > 0 && pw.length >= 6;
+  const employerDemo = isEmployer && (em === 'ntd@demo.vn' || em === '') && (pw === '123456' || pw === '');
+
+  if (adminOk || employerOk || employerDemo) {
+    closeAdmin();
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+    document.getElementById('admin-panel').classList.add('on');
+
+    if (isEmployer) {
+      document.getElementById('atb-name').textContent = em || 'Pacific Garment Co.';
+      document.getElementById('atb-role').textContent = 'Nhà tuyển dụng';
+      // Show employer-only sidebar, hide admin-only items
+      document.querySelectorAll('.sb-admin-only').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.sb-ntd-only').forEach(el => el.style.display = 'flex');
+      adSec('employers-mgr', null);
+    } else {
+      document.getElementById('atb-name').textContent = currentRole === 'admin' ? 'Nguyễn Châu Phong' : 'Biên tập viên';
+      document.getElementById('atb-role').textContent = currentRole === 'admin' ? 'Admin' : 'Biên tập viên';
+      document.querySelectorAll('.sb-ntd-only').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.sb-admin-only').forEach(el => el.style.display = 'flex');
+      adSec('dashboard', null);
+    }
+    window.scrollTo(0, 0);
+  } else if (isEmployer && em.length > 0 && pw.length < 6) {
+    alert('Mật khẩu tối thiểu 6 ký tự.');
+  } else if (isEmployer && em.length === 0) {
+    alert('Vui lòng nhập email hoặc số điện thoại.');
+  } else {
+    alert('Sai thông tin đăng nhập.\nNội bộ: admin@demo.vn / 123456 · Nhà TD: ntd@demo.vn / 123456\nDemo nhà TD: ntd@demo.vn / 123456');
+  }
+}
+function doLogout() {
+  document.getElementById('admin-panel').classList.remove('on');
+  document.querySelectorAll('.sb-admin-only').forEach(el => el.style.display = '');
+  document.querySelectorAll('.sb-ntd-only').forEach(el => el.style.display = 'none');
+  nav('home', document.querySelector('.nl'));
+}
+function adSec(id, el) {
+  document.querySelectorAll('.admin-sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('on'));
+  const s = document.getElementById('sec-' + id);
+  if (s) s.classList.add('on');
+  if (el) el.classList.add('on');
+  // Scroll admin content to top
+  const main = document.querySelector('.admin-main');
+  if (main) main.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+// ─── FORMS ───
+function showNewsForm() {
+  const p = document.getElementById('news-form-panel');
+  p.classList.add('on');
+  p.scrollIntoView({ behavior: 'smooth' });
+}
+function insImgEditor() {
+  const url = prompt('URL ảnh:');
+  if (url) document.execCommand('insertHTML', false, `<img src="${url}" style="max-width:100%;border-radius:8px;margin:10px 0"/>`);
+}
+function updatePostPrice(sel) {
+  const v = parseInt(sel.value);
+  if (v === 0) {
+    document.getElementById('post-price-display').value = 'Miễn phí';
+  } else {
+    document.getElementById('post-price-display').value = v.toLocaleString('vi-VN') + 'đ';
+  }
+}
+
+// ─── BLAST ───
+function selCh(el) {
+  document.querySelectorAll('.blast-ch').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+function estimateBlast() {
+  const reach = Math.floor(Math.random() * 8000) + 8000;
+  const price = reach * 500;
+  document.getElementById('est-reach').textContent = reach.toLocaleString();
+  document.getElementById('est-price').textContent = price.toLocaleString('vi-VN') + 'đ';
+  document.getElementById('blast-result').style.display = 'block';
+  document.getElementById('blast-result').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ─── PARTNER FILTER ───
+function filterPartner(cat, el) {
+  document.querySelectorAll('#partner-list .partner-card').forEach(card => {
+    card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+// ─── PAYMENT ───
+function openPayModal(title, desc, price) {
+  document.getElementById('pm-title').textContent = title;
+  document.getElementById('pm-desc').textContent = desc;
+  document.getElementById('pm-price').textContent = price;
+  document.getElementById('pay-overlay').classList.add('on');
+}
+function closePayModal() { document.getElementById('pay-overlay').classList.remove('on'); }
+function selPay(el) {
+  document.querySelectorAll('.pm-method').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+}
+function doPayment() {
+  closePayModal();
+  showToast('Thanh toán thành công! Đơn hàng đang được xử lý.');
+}
+
+// ─── QA ───
+function toggleQA(el) { el.closest('.qa-item').classList.toggle('open'); }
+
+function switchNewsTab(id) {
+  ['news','rights','qa'].forEach(i => {
+    const b = document.getElementById('tb-' + i);
+    const s = document.getElementById('ts-' + i);
+    if(b) b.classList.remove('on');
+    if(s) s.classList.remove('on');
+  });
+  const b = document.getElementById('tb-' + id);
+  const s = document.getElementById('ts-' + id);
+  if(b) b.classList.add('on');
+  if(s) s.classList.add('on');
+}
+
+function showRegister() {
+  document.getElementById('lb-login-form').style.display = 'none';
+  document.getElementById('lb-register-form').style.display = 'block';
+  document.getElementById('lb-ntd-note').style.display = 'none';
+}
+function showLogin() {
+  document.getElementById('lb-login-form').style.display = 'block';
+  document.getElementById('lb-register-form').style.display = 'none';
+}
+function doRegister() {
+  const company = document.getElementById('reg-company').value;
+  const phone = document.getElementById('reg-phone').value;
+  if(!company || !phone) { alert('Vui lòng điền đủ tên đơn vị và SĐT.'); return; }
+  closeAdmin();
+  showToast('Tạo tài khoản thành công! Đăng nhập để đăng tin.');
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3500);
+}
+
+// ─── SCROLL ───
+window.addEventListener('scroll', () => {
+  document.querySelector('nav') && document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+</script>
+</body>
+</html>

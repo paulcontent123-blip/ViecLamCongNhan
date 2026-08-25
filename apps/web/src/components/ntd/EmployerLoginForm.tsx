@@ -1,0 +1,93 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
+
+export function EmployerLoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const form = new FormData(e.currentTarget);
+
+    try {
+      const res = await fetch("/api/auth/employer/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier: form.get("identifier"),
+          password: form.get("password"),
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Đăng nhập thất bại.");
+        setLoading(false);
+        return;
+      }
+
+      router.push(searchParams.get("from") || ROUTES.ntdDashboard);
+      router.refresh();
+    } catch {
+      setError("Không kết nối được máy chủ, thử lại sau.");
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl border border-black/5 bg-white p-6 shadow-lg">
+      <div className="text-center">
+        <div className="text-[26px]">🏢</div>
+        <div className="mt-1 text-[16px] font-extrabold text-brand-navy">Đăng nhập Nhà tuyển dụng</div>
+        <p className="mt-1 text-[12.5px] text-brand-navy/45">Quản lý tin đăng, hồ sơ ứng viên và gói dịch vụ.</p>
+      </div>
+
+      <label className="mt-5 block text-[12px] font-semibold text-brand-navy/60">
+        Email / SĐT
+        <input
+          name="identifier"
+          required
+          autoComplete="username"
+          className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange"
+        />
+      </label>
+      <label className="mt-3 block text-[12px] font-semibold text-brand-navy/60">
+        Mật khẩu
+        <input
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+          className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange"
+        />
+      </label>
+
+      {error && (
+        <div className="mt-3 rounded-lg bg-red-50 px-3 py-2.5 text-[13px] font-medium text-red-700">{error}</div>
+      )}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="mt-5 w-full rounded-lg bg-brand-orange py-3 text-[14px] font-bold text-white shadow-sm transition hover:brightness-105 disabled:opacity-60"
+      >
+        {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+      </button>
+
+      <div className="mt-4 text-center text-[12px] text-brand-navy/45">
+        Chưa có tài khoản?{" "}
+        <Link href={ROUTES.tuyenDung} className="font-bold text-brand-orange">
+          Đăng ký ngay
+        </Link>
+      </div>
+    </form>
+  );
+}

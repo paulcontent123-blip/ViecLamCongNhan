@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  /* Brand colors — TechSpec */
+  --brand-orange: #e8541a;
+  --brand-orange-2: #c8541a;
+  --brand-orange-light: #fdf1ea;
+  --brand-navy: #0f172a;
+  --brand-white: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-orange-2: var(--brand-orange-2);
+  --color-brand-orange-light: var(--brand-orange-light);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-white: var(--brand-white);
+  --font-sans: var(--font-be-vietnam-pro);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Marquee đối tác — 2 hàng chạy ngược chiều nhau (trang chủ) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+.animate-marquee-reverse {
+  animation: marquee-reverse 24s linear infinite;
+}
