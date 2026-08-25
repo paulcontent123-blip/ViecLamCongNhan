@@ -377,8 +377,7 @@ export function PostJobForm({
             <p className="text-[12px] text-brand-navy/50">
               Đăng tin xong hệ thống sẽ tạo đơn hàng {JOB_ADDONS.campaign.priceVnd.toLocaleString("vi-VN")}đ ở
               trạng thái chờ Admin xác nhận đã nhận thanh toán — tin chỉ được nâng lên gói Chiến dịch và tự
-              động gửi tin nhắn Zalo cho ứng viên cùng ngành nghề/tỉnh thành (trong hạn mức 1.000.000đ) SAU KHI
-              Admin xác nhận, không phải ngay lúc đăng tin.
+              động gửi tin nhắn Zalo cho ứng viên cùng ngành nghề/tỉnh thành.
             </p>
             <label className="mt-2 block text-[12px] font-semibold text-brand-navy/60">
               Nội dung gửi tin nhắn Zalo cho ứng viên *

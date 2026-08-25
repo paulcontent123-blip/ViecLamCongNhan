@@ -88,7 +88,7 @@ export function Footer() {
               <Link href={ROUTES.hoiDap} className={footerLinkClass}>
                 Tư vấn pháp lý · VEA Law
               </Link>
-              <a href="tel:18006888" className={footerLinkClass}>
+              <a href="tel:0767977415" className={footerLinkClass}>
                 Hotline: 0767977415
               </a>
             </div>
