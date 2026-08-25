@@ -192,7 +192,6 @@ export function AuthModal({
                 name="identifier"
                 required
                 autoComplete="username"
-                placeholder={role === "admin" ? "admin@vieclamcongnhan.com" : undefined}
                 className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange"
               />
             </label>
