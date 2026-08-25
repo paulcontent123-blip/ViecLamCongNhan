@@ -54,7 +54,7 @@ export default async function HoiDapPage() {
                 href="tel:18006888"
                 className="shrink-0 rounded-xl bg-brand-orange px-6 py-3 text-[14px] font-bold text-white transition hover:brightness-105"
               >
-                Gọi ngay 1800 6888
+                Gọi ngay 0767977415
               </a>
             </div>
           </div>

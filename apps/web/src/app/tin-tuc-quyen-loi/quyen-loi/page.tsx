@@ -67,7 +67,7 @@ export default async function QuyenLoiPage({
           <div className="mb-2 text-[14px] font-bold text-brand-orange">Cần tư vấn quyền lợi?</div>
           <div className="text-[12.5px] leading-relaxed text-brand-navy/60">
             Tư vấn miễn phí · Bảo mật thông tin · Kết nối với luật sư lao động VEA Law ·{" "}
-            <strong className="text-brand-orange">Hotline: 1800 6888</strong> · 8:00 – 18:00 Thứ 2 – Thứ 7
+            <strong className="text-brand-orange">Hotline: 0767977415</strong> · 8:00 – 18:00 Thứ 2 – Thứ 7
           </div>
         </div>
 
@@ -79,10 +79,10 @@ export default async function QuyenLoiPage({
             </p>
           </div>
           <a
-            href="tel:18006888"
+            href="tel:0767977415"
             className="shrink-0 rounded-xl bg-brand-orange px-6 py-3 text-[14px] font-bold text-white transition hover:brightness-105"
           >
-            Gọi ngay 1800 6888
+            Gọi ngay 0767977415
           </a>
         </div>
       </div>

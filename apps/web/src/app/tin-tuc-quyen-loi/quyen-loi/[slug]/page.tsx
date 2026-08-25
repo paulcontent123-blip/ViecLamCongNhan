@@ -34,7 +34,7 @@ export default async function RightCardDetailPage({ params }: { params: Promise<
             <Link href={ROUTES.hoiDap} className="font-bold text-brand-orange">
               Gửi câu hỏi →
             </Link>{" "}
-            hoặc gọi <strong>1800 6888</strong>.
+            hoặc gọi <strong>0767977415</strong>.
           </p>
         </div>
       </div>
