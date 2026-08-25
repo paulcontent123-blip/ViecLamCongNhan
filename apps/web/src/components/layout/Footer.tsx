@@ -89,7 +89,7 @@ export function Footer() {
                 Tư vấn pháp lý · VEA Law
               </Link>
               <a href="tel:18006888" className={footerLinkClass}>
-                Hotline: 1800 6888
+                Hotline: 0767977415
               </a>
             </div>
           </div>
