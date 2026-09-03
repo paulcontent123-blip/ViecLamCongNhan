@@ -45,3 +45,7 @@ next-env.d.ts
 
 .claude/
 tmp/
+# Bản đóng gói deploy lên cPanel
+dist-cpanel/
+dist-cpanel-app/
+*.deploy.zip

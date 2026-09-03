@@ -4,3 +4,6 @@ packages:
 allowBuilds:
   sharp: true
   unrs-resolver: true
+# Cài node_modules dạng phẳng (không symlink) để `next build` với output "standalone"
+# chạy được trên Windows khi chưa bật Developer Mode.
+nodeLinker: hoisted
