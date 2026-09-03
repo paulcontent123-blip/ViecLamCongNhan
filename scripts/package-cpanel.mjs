@@ -38,6 +38,15 @@ if (appOnly) {
     path.join(out, "apps", "web", ".next"),
     { recursive: true }
   );
+  // Phải kèm cả server.js và package.json của apps/web: quy trình cập nhật
+  // xoá nguyên thư mục apps/ trước khi giải nén, nếu gói thiếu 2 file này thì
+  // server.js ở gốc require không ra và app chết với MODULE_NOT_FOUND.
+  for (const f of ["server.js", "package.json"]) {
+    await cp(
+      path.join(standalone, "apps", "web", f),
+      path.join(out, "apps", "web", f)
+    );
+  }
 } else {
   console.log("Copy standalone server + node_modules...");
   await cp(standalone, out, { recursive: true });
