@@ -52,3 +52,113 @@ body {
 .animate-marquee-reverse {
   animation: marquee-reverse 24s linear infinite;
 }
+
+/* ───────── Nội dung bài viết soạn bằng RichTextEditor (trang Quản trị) ─────────
+   Dùng chung cho khung soạn thảo ở Admin và trang bài viết công khai để nội dung
+   hiển thị y hệt lúc soạn. */
+.article-rich {
+  color: var(--brand-navy);
+  font-size: 15px;
+  line-height: 1.85;
+  word-break: break-word;
+}
+.article-rich > *:first-child {
+  margin-top: 0;
+}
+.article-rich p {
+  margin: 0 0 14px;
+}
+.article-rich h1,
+.article-rich h2,
+.article-rich h3,
+.article-rich h4 {
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--brand-navy);
+  margin: 26px 0 10px;
+  scroll-margin-top: 90px;
+}
+.article-rich h1 {
+  font-size: 24px;
+}
+.article-rich h2 {
+  font-size: 20px;
+}
+.article-rich h3 {
+  font-size: 17px;
+}
+.article-rich h4 {
+  font-size: 15.5px;
+}
+.article-rich ul,
+.article-rich ol {
+  margin: 0 0 14px;
+  padding-left: 24px;
+}
+.article-rich ul {
+  list-style: disc;
+}
+.article-rich ol {
+  list-style: decimal;
+}
+.article-rich li {
+  margin: 4px 0;
+}
+.article-rich a {
+  color: var(--brand-orange);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.article-rich strong,
+.article-rich b {
+  font-weight: 700;
+}
+.article-rich blockquote {
+  margin: 0 0 14px;
+  border-left: 3px solid var(--brand-orange);
+  background: var(--brand-orange-light);
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+.article-rich img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 6px 0 14px;
+}
+.article-rich hr {
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 22px 0;
+}
+.article-rich pre {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-size: 13px;
+  margin: 0 0 14px;
+}
+.article-rich table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+.article-rich th,
+.article-rich td {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 8px 10px;
+  vertical-align: top;
+  min-width: 48px;
+}
+.article-rich th {
+  background: rgba(0, 0, 0, 0.035);
+  font-weight: 700;
+  text-align: left;
+}
+/* Bảng rộng không phá vỡ layout trang trên mobile. */
+.article-rich-scroll {
+  overflow-x: auto;
+}

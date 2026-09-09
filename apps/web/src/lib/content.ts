@@ -9,11 +9,20 @@ export interface ArticleRow {
   title: string;
   excerpt: string | null;
   content: string;
+  /** "html" = soạn bằng trình soạn thảo ở Admin, "text" = bài cũ dạng văn bản thuần. */
+  content_format: "text" | "html";
+  seo_description: string | null;
+  cover_image_url: string | null;
+  author_name: string | null;
+  show_toc: boolean;
   category: ArticleCategory;
   read_minutes: number;
   published_at: string | null;
   view_count: number;
 }
+
+const ARTICLE_SELECT =
+  "id, slug, title, excerpt, content, content_format, seo_description, cover_image_url, author_name, show_toc, category, read_minutes, published_at, view_count";
 
 export const ARTICLES_PAGE_SIZE = 6;
 
@@ -23,7 +32,7 @@ export async function getPublishedArticles(
   const supabase = await createSupabaseServerClient();
   let query = supabase
     .from("articles")
-    .select("id, slug, title, excerpt, content, category, read_minutes, published_at, view_count", {
+    .select(ARTICLE_SELECT, {
       count: "exact",
     })
     .eq("status", "published")
@@ -47,7 +56,7 @@ export async function getArticleBySlug(slug: string): Promise<ArticleRow | null>
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("articles")
-    .select("id, slug, title, excerpt, content, category, read_minutes, published_at, view_count")
+    .select(ARTICLE_SELECT)
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();

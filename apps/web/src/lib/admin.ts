@@ -6,6 +6,7 @@ import { activateCampaignFromOrder } from "@/lib/employer";
 import { hashPassword } from "@/lib/auth";
 import { slugify } from "@/lib/slug";
 import { isArticleCategory, type ArticleCategory } from "@/lib/article-categories";
+import { htmlToPlainText, sanitizeArticleHtml } from "@/lib/sanitize-html";
 import { PROVINCES, provinceName } from "@/lib/provinces";
 import { ORDER_TYPE_LABEL } from "@/lib/order-labels";
 import {
@@ -926,6 +927,11 @@ export interface AdminArticleRow {
   title: string;
   excerpt: string | null;
   content: string;
+  content_format: "text" | "html";
+  seo_description: string | null;
+  cover_image_url: string | null;
+  author_name: string | null;
+  show_toc: boolean;
   category: string;
   read_minutes: number;
   status: "draft" | "published";
@@ -936,7 +942,7 @@ export interface AdminArticleRow {
 }
 
 const ADMIN_ARTICLE_SELECT =
-  "id, slug, title, excerpt, content, category, read_minutes, status, published_at, view_count, created_at, updated_at";
+  "id, slug, title, excerpt, content, content_format, seo_description, cover_image_url, author_name, show_toc, category, read_minutes, status, published_at, view_count, created_at, updated_at";
 
 export async function getAdminArticles(): Promise<AdminArticleRow[]> {
   const supabase = createSupabaseAdminClient();
@@ -952,6 +958,12 @@ export interface ArticleInput {
   title: string;
   excerpt?: string;
   content: string;
+  /** "html" = soạn bằng RichTextEditor, "text" = bài cũ soạn bằng textarea. */
+  contentFormat?: "text" | "html";
+  seoDescription?: string;
+  coverImageUrl?: string;
+  authorName?: string;
+  showToc?: boolean;
   category: ArticleCategory;
   readMinutes: number;
   status: "draft" | "published";
@@ -963,9 +975,29 @@ export type AdminArticleMutationResult = { ok: true; article: AdminArticleRow } 
 
 function validateArticleInput(input: ArticleInput): AdminContentMutationFailure | null {
   if (input.title.trim().length < 5) return { ok: false, error: "Tiêu đề tối thiểu 5 ký tự.", status: 400 };
-  if (input.content.trim().length < 20) return { ok: false, error: "Nội dung tối thiểu 20 ký tự.", status: 400 };
+  const plainContent =
+    input.contentFormat === "html" ? htmlToPlainText(input.content) : input.content.trim();
+  if (plainContent.length < 20) return { ok: false, error: "Nội dung tối thiểu 20 ký tự.", status: 400 };
   if (!isArticleCategory(input.category)) return { ok: false, error: "Danh mục không hợp lệ.", status: 400 };
   return null;
+}
+
+/** Chuẩn hoá phần dùng chung khi tạo/sửa: HTML luôn được sanitize trước khi ghi DB. */
+function toArticleColumns(input: ArticleInput) {
+  const contentFormat = input.contentFormat === "html" ? "html" : "text";
+  return {
+    title: input.title.trim(),
+    excerpt: input.excerpt?.trim() || null,
+    content: contentFormat === "html" ? sanitizeArticleHtml(input.content) : input.content.trim(),
+    content_format: contentFormat,
+    seo_description: input.seoDescription?.trim() || null,
+    cover_image_url: input.coverImageUrl?.trim() || null,
+    author_name: input.authorName?.trim() || null,
+    show_toc: input.showToc ?? false,
+    category: input.category,
+    read_minutes: input.readMinutes,
+    status: input.status,
+  };
 }
 
 export async function createArticle(input: ArticleInput): Promise<AdminArticleMutationResult> {
@@ -978,12 +1010,7 @@ export async function createArticle(input: ArticleInput): Promise<AdminArticleMu
     .from("articles")
     .insert({
       slug,
-      title: input.title.trim(),
-      excerpt: input.excerpt?.trim() || null,
-      content: input.content.trim(),
-      category: input.category,
-      read_minutes: input.readMinutes,
-      status: input.status,
+      ...toArticleColumns(input),
       published_at: input.status === "published" ? new Date().toISOString() : null,
     })
     .select(ADMIN_ARTICLE_SELECT)
@@ -1014,12 +1041,7 @@ export async function updateArticle(articleId: string, input: ArticleInput): Pro
   const { data, error } = await supabase
     .from("articles")
     .update({
-      title: input.title.trim(),
-      excerpt: input.excerpt?.trim() || null,
-      content: input.content.trim(),
-      category: input.category,
-      read_minutes: input.readMinutes,
-      status: input.status,
+      ...toArticleColumns(input),
       published_at: nowPublishing ? new Date().toISOString() : existing.published_at,
       updated_at: new Date().toISOString(),
     })
