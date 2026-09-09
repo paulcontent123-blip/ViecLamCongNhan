@@ -36,6 +36,67 @@ const TABLE_HTML =
 
 const SAFE_LINK = /^(https?:\/\/|mailto:|tel:|\/|#)/i;
 
+const FORMAT_BLOCK_TAGS = new Set(["P", "H1", "H2", "H3", "H4", "BLOCKQUOTE", "PRE", "DIV"]);
+const CLEAR_FORMAT_WRAPPERS = new Set(["A", "B", "CODE", "EM", "I", "S", "SPAN", "STRONG", "SUB", "SUP", "U"]);
+
+/** Tìm block gần nhất chứa một điểm đầu/cuối của Range trong editor. */
+function findBlockAtBoundary(root: HTMLElement, node: Node, offset: number): HTMLElement | null {
+  let current: Node | null = node;
+
+  // Khi boundary nằm ở chính editor (ví dụ chọn nguyên một đoạn), lấy node ở
+  // ngay sau boundary hoặc node ngay trước nó để tìm block tương ứng.
+  if (current === root) {
+    current = root.childNodes[offset] ?? root.childNodes[offset - 1] ?? null;
+  }
+
+  if (current && current.nodeType !== 1) current = current.parentNode;
+  while (current && current !== root) {
+    if (current.nodeType === 1 && FORMAT_BLOCK_TAGS.has((current as HTMLElement).tagName)) {
+      return current as HTMLElement;
+    }
+    current = current.parentNode;
+  }
+  return null;
+}
+
+function fragmentHasContent(fragment: DocumentFragment): boolean {
+  return Boolean(fragment.textContent?.trim() || fragment.querySelector("img, table, hr, br"));
+}
+
+function rangeCoversWholeBlock(range: Range, block: HTMLElement): boolean {
+  const fullRange = document.createRange();
+  fullRange.selectNodeContents(block);
+  return (
+    range.compareBoundaryPoints(Range.START_TO_START, fullRange) === 0 &&
+    range.compareBoundaryPoints(Range.END_TO_END, fullRange) === 0
+  );
+}
+
+function createBlockWithContent(source: HTMLElement, tagName: string, content: DocumentFragment): HTMLElement {
+  const block = document.createElement(tagName);
+  for (const attribute of Array.from(source.attributes)) {
+    // id của heading chỉ được thêm khi render trang công khai; không nhân bản id
+    // cũ trong editor khi tách một đoạn thành nhiều block.
+    if (attribute.name !== "id") block.setAttribute(attribute.name, attribute.value);
+  }
+  block.append(content);
+  return block;
+}
+
+/** Bỏ các thẻ/thuộc tính định dạng trong một fragment nhưng giữ lại nội dung, ảnh và xuống dòng. */
+function stripInlineFormatting(fragment: DocumentFragment): DocumentFragment {
+  for (const element of Array.from(fragment.querySelectorAll("*"))) {
+    element.removeAttribute("style");
+    element.removeAttribute("class");
+
+    if (!CLEAR_FORMAT_WRAPPERS.has(element.tagName) || !element.parentNode) continue;
+    const parent = element.parentNode;
+    while (element.firstChild) parent.insertBefore(element.firstChild, element);
+    element.remove();
+  }
+  return fragment;
+}
+
 function ToolbarButton({
   label,
   title,
@@ -152,6 +213,181 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
     },
     [disabled, emit, restoreRange, saveRange],
   );
+
+  /**
+   * formatBlock mặc định của trình duyệt luôn đổi toàn bộ block chứa vùng chọn.
+   * Với H1/H2/H3, nếu người dùng chỉ bôi một phần câu thì tách block thành phần
+   * trước — heading — phần sau để chỉ phần đã chọn được đổi cấp.
+   */
+  function setHeading(tagName: "h1" | "h2" | "h3") {
+    if (disabled) return;
+    restoreRange();
+
+    const root = editorRef.current;
+    const range = savedRangeRef.current;
+    const startBlock = root && range ? findBlockAtBoundary(root, range.startContainer, range.startOffset) : null;
+    const endBlock = root && range ? findBlockAtBoundary(root, range.endContainer, range.endOffset) : null;
+
+    if (
+      root &&
+      range &&
+      !range.collapsed &&
+      startBlock &&
+      startBlock === endBlock &&
+      !rangeCoversWholeBlock(range, startBlock)
+    ) {
+      const beforeRange = document.createRange();
+      beforeRange.selectNodeContents(startBlock);
+      beforeRange.setEnd(range.startContainer, range.startOffset);
+
+      const afterRange = document.createRange();
+      afterRange.selectNodeContents(startBlock);
+      afterRange.setStart(range.endContainer, range.endOffset);
+
+      const before = beforeRange.cloneContents();
+      const selected = range.cloneContents();
+      const after = afterRange.cloneContents();
+      const hasBefore = fragmentHasContent(before);
+      const hasSelected = fragmentHasContent(selected);
+      const hasAfter = fragmentHasContent(after);
+
+      if (hasSelected && startBlock.parentNode) {
+        const heading = createBlockWithContent(startBlock, tagName, selected);
+        const replacement = document.createDocumentFragment();
+        if (hasBefore) replacement.append(createBlockWithContent(startBlock, startBlock.tagName.toLowerCase(), before));
+        replacement.append(heading);
+        if (hasAfter) replacement.append(createBlockWithContent(startBlock, startBlock.tagName.toLowerCase(), after));
+        startBlock.replaceWith(replacement);
+
+        const nextRange = document.createRange();
+        nextRange.selectNodeContents(heading);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(nextRange);
+        savedRangeRef.current = nextRange.cloneRange();
+        setInTable(Boolean(findAncestor(nextRange.startContainer, "table")));
+        emit();
+        return;
+      }
+    }
+
+    // Không có vùng chọn riêng (hoặc đang chọn nhiều block): dùng hành vi block
+    // chuẩn của trình duyệt để đổi tất cả block giao với vùng chọn.
+    exec("formatBlock", `<${tagName}>`);
+  }
+
+  /**
+   * Đưa vùng chọn về đoạn văn thường, không chỉ xoá đậm/nghiêng.
+   * removeFormat của trình duyệt chỉ xử lý định dạng inline và bỏ lại H1/H2/H3,
+   * nên phải tách block khi vùng chọn chỉ là một phần của heading.
+   */
+  function clearFormatting() {
+    if (disabled) return;
+    restoreRange();
+
+    const root = editorRef.current;
+    const range = savedRangeRef.current;
+    const startBlock = root && range ? findBlockAtBoundary(root, range.startContainer, range.startOffset) : null;
+    const endBlock = root && range ? findBlockAtBoundary(root, range.endContainer, range.endOffset) : null;
+
+    if (root && range && !range.collapsed && startBlock && startBlock === endBlock) {
+      const coversWholeBlock = rangeCoversWholeBlock(range, startBlock);
+
+      if (coversWholeBlock) {
+        const paragraph = document.createElement("p");
+        paragraph.append(stripInlineFormatting(range.cloneContents()));
+        startBlock.replaceWith(paragraph);
+
+        const nextRange = document.createRange();
+        nextRange.selectNodeContents(paragraph);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(nextRange);
+        savedRangeRef.current = nextRange.cloneRange();
+        setInTable(Boolean(findAncestor(nextRange.startContainer, "table")));
+        emit();
+        return;
+      }
+
+      // Trong một đoạn văn thường, chỉ cần thay fragment đã chọn để không tạo
+      // thêm các dòng mới không cần thiết.
+      if (startBlock.tagName === "P" || startBlock.tagName === "DIV") {
+        const cleaned = stripInlineFormatting(range.cloneContents());
+        if (fragmentHasContent(cleaned)) {
+          range.deleteContents();
+          const wrapper = document.createElement("span");
+          wrapper.append(cleaned);
+          range.insertNode(wrapper);
+
+          const first = wrapper.firstChild;
+          const last = wrapper.lastChild;
+          const parent = wrapper.parentNode;
+          if (first && last && parent) {
+            const nextRange = document.createRange();
+            nextRange.setStartBefore(first);
+            nextRange.setEndAfter(last);
+            while (wrapper.firstChild) parent.insertBefore(wrapper.firstChild, wrapper);
+            wrapper.remove();
+
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(nextRange);
+            savedRangeRef.current = nextRange.cloneRange();
+            setInTable(Boolean(findAncestor(nextRange.startContainer, "table")));
+            emit();
+            return;
+          }
+        }
+      } else {
+        // Một phần H1/H2/H3/blockquote/pre được chọn: giữ phần trước và sau,
+        // nhưng đưa riêng phần đã chọn vào <p> bình thường.
+        const beforeRange = document.createRange();
+        beforeRange.selectNodeContents(startBlock);
+        beforeRange.setEnd(range.startContainer, range.startOffset);
+
+        const afterRange = document.createRange();
+        afterRange.selectNodeContents(startBlock);
+        afterRange.setStart(range.endContainer, range.endOffset);
+
+        const before = beforeRange.cloneContents();
+        const selected = stripInlineFormatting(range.cloneContents());
+        const after = afterRange.cloneContents();
+
+        if (fragmentHasContent(selected) && startBlock.parentNode) {
+          const replacement = document.createDocumentFragment();
+          if (fragmentHasContent(before)) {
+            replacement.append(createBlockWithContent(startBlock, startBlock.tagName.toLowerCase(), before));
+          }
+          const paragraph = document.createElement("p");
+          paragraph.append(selected);
+          replacement.append(paragraph);
+          if (fragmentHasContent(after)) {
+            replacement.append(createBlockWithContent(startBlock, startBlock.tagName.toLowerCase(), after));
+          }
+          startBlock.replaceWith(replacement);
+
+          const nextRange = document.createRange();
+          nextRange.selectNodeContents(paragraph);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(nextRange);
+          savedRangeRef.current = nextRange.cloneRange();
+          setInTable(Boolean(findAncestor(nextRange.startContainer, "table")));
+          emit();
+          return;
+        }
+      }
+    }
+
+    // Với vùng chọn trải qua nhiều block, dùng hành vi chuẩn để xoá inline
+    // format và đổi các block liên quan về <p>.
+    restoreRange();
+    document.execCommand("styleWithCSS", false, "false");
+    document.execCommand("removeFormat", false);
+    document.execCommand("formatBlock", false, "<p>");
+    saveRange();
+    emit();
+  }
 
   function currentCell(): HTMLTableCellElement | null {
     const range = savedRangeRef.current;
@@ -362,9 +598,24 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
         <ToolbarButton label="I" title="In nghiêng (Ctrl+I)" className="italic" onClick={() => exec("italic")} disabled={richDisabled} />
         <ToolbarButton label="U" title="Gạch chân (Ctrl+U)" className="underline" onClick={() => exec("underline")} disabled={richDisabled} />
         <span className="mx-1 h-5 w-px bg-black/10" />
-        <ToolbarButton label="H1" title="Tiêu đề lớn" onClick={() => exec("formatBlock", "<h1>")} disabled={richDisabled} />
-        <ToolbarButton label="H2" title="Tiêu đề mục — hiện trong mục lục" onClick={() => exec("formatBlock", "<h2>")} disabled={richDisabled} />
-        <ToolbarButton label="H3" title="Tiêu đề phụ — hiện trong mục lục" onClick={() => exec("formatBlock", "<h3>")} disabled={richDisabled} />
+        <ToolbarButton
+          label="H1"
+          title="Tiêu đề lớn — chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
+          onClick={() => setHeading("h1")}
+          disabled={richDisabled}
+        />
+        <ToolbarButton
+          label="H2"
+          title="Tiêu đề mục — chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
+          onClick={() => setHeading("h2")}
+          disabled={richDisabled}
+        />
+        <ToolbarButton
+          label="H3"
+          title="Tiêu đề phụ — chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
+          onClick={() => setHeading("h3")}
+          disabled={richDisabled}
+        />
         <ToolbarButton label="¶" title="Đoạn văn thường" onClick={() => exec("formatBlock", "<p>")} disabled={richDisabled} />
         <span className="mx-1 h-5 w-px bg-black/10" />
         <ToolbarButton label="• List" title="Danh sách gạch đầu dòng" onClick={() => exec("insertUnorderedList")} disabled={richDisabled} />
@@ -390,7 +641,12 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
         />
         <ToolbarButton label="❝ Quote" title="Trích dẫn" onClick={() => exec("formatBlock", "<blockquote>")} disabled={richDisabled} />
         <ToolbarButton label="— Kẻ ngang" title="Chèn đường kẻ ngang" onClick={() => exec("insertHTML", "<hr /><p><br></p>")} disabled={richDisabled} />
-        <ToolbarButton label="✕ Xoá định dạng" title="Xoá định dạng của phần đang chọn" onClick={() => exec("removeFormat")} disabled={richDisabled} />
+        <ToolbarButton
+          label="✕ Xoá định dạng"
+          title="Đưa phần đang chọn về đoạn văn thường và xoá định dạng chữ"
+          onClick={clearFormatting}
+          disabled={richDisabled}
+        />
         <div className="ml-auto flex gap-1.5">
           <ToolbarButton label="↶" title="Hoàn tác (Ctrl+Z)" onClick={() => exec("undo")} disabled={richDisabled} />
           <ToolbarButton label="↷" title="Làm lại (Ctrl+Y)" onClick={() => exec("redo")} disabled={richDisabled} />
@@ -428,6 +684,7 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
             onInput={emit}
             onBlur={emit}
             onPaste={handlePaste}
+            onSelect={saveRange}
             onKeyUp={saveRange}
             onMouseUp={saveRange}
             onFocus={saveRange}

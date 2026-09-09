@@ -4,11 +4,12 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { AdminArticleRow } from "@/lib/admin";
 import { ARTICLE_CATEGORIES, type ArticleCategory } from "@/lib/article-categories";
-import { estimateReadMinutes } from "@/lib/article-html";
+import { buildArticleToc, estimateReadMinutes } from "@/lib/article-html";
 import { htmlToPlainText } from "@/lib/sanitize-html";
 import { slugify } from "@/lib/slug";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
+import { ArticleToc } from "@/components/tintuc/ArticleToc";
 
 interface ArticleFormState {
   title: string;
@@ -81,12 +82,14 @@ export function ArticleManagement({ articles }: { articles: AdminArticleRow[] })
 
   const isEditing = editing !== null;
 
+  const toc = useMemo(() => buildArticleToc(form.content), [form.content]);
+
   const contentStats = useMemo(() => {
     const plain = htmlToPlainText(form.content);
     const words = plain.split(/\s+/).filter(Boolean).length;
-    const headings = (form.content.match(/<h[23][\s>]/gi) ?? []).length;
+    const headings = toc.headings.length;
     return { chars: plain.length, words, headings, suggestedMinutes: estimateReadMinutes(form.content) };
-  }, [form.content]);
+  }, [form.content, toc.headings.length]);
 
   const slugPreview = useMemo(() => (isEditing ? editing.slug : slugify(form.title)), [form.title, isEditing, editing]);
 
@@ -395,6 +398,14 @@ export function ArticleManagement({ articles }: { articles: AdminArticleRow[] })
                       disabled={saving}
                       placeholder="Nhập nội dung bài viết… Dùng H2 / H3 để chia mục cho bài dễ đọc và tạo mục lục."
                     />
+                    <div className="mt-3">
+                      <ArticleToc headings={toc.headings} preview title="🔎 Xem trước mục lục" />
+                      {!form.showToc && (
+                        <p className="mt-1.5 text-[11px] font-normal text-brand-navy/40">
+                          Mục lục đang tắt ở phần cài đặt bên phải nên sẽ không hiển thị trên bài đã đăng.
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <label className="block text-[12px] font-semibold text-brand-navy/60">

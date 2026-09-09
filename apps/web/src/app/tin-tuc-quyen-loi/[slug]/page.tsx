@@ -6,6 +6,7 @@ import { buildArticleToc } from "@/lib/article-html";
 import { htmlToPlainText } from "@/lib/sanitize-html";
 import { ROUTES } from "@/lib/routes";
 import { ArticleCard } from "@/components/tintuc/ArticleCard";
+import { ArticleToc } from "@/components/tintuc/ArticleToc";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -46,7 +47,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
   const { html: contentHtml, headings } = isHtml
     ? buildArticleToc(article.content)
     : { html: "", headings: [] };
-  const showToc = isHtml && article.show_toc && headings.length > 1;
+  const showToc = isHtml && article.show_toc && headings.length > 0;
 
   return (
     <div className="px-4 pb-20 pt-10 sm:px-8 lg:px-[52px]">
@@ -89,21 +90,9 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
         )}
 
         {showToc && (
-          <nav className="mt-6 rounded-xl border border-black/5 bg-black/[0.02] p-4">
-            <div className="mb-2 text-[12.5px] font-extrabold text-brand-navy">📑 Nội dung bài viết</div>
-            <ol className="grid gap-1.5">
-              {headings.map((heading) => (
-                <li key={heading.id} className={heading.level === 3 ? "pl-4" : ""}>
-                  <a
-                    href={`#${heading.id}`}
-                    className="text-[13px] leading-snug text-brand-navy/70 transition hover:text-brand-orange"
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <div className="mt-6">
+            <ArticleToc headings={headings} />
+          </div>
         )}
 
         {isHtml ? (

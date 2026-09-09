@@ -8,7 +8,7 @@
 // .next/static và public/ vào bundle — thiếu 2 thư mục đó thì site vẫn chạy
 // nhưng mất toàn bộ CSS/JS/ảnh.
 
-import { cp, rm, mkdir, writeFile, access } from "node:fs/promises";
+import { cp, rm, mkdir, writeFile, access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,6 +25,30 @@ if (!(await exists(standalone))) {
   console.error("Chưa có .next/standalone — chạy `pnpm build` trước.");
   process.exit(1);
 }
+
+const buildIdPath = path.join(web, ".next", "BUILD_ID");
+const cssDir = path.join(web, ".next", "static", "css");
+if (!(await exists(buildIdPath))) {
+  console.error("Thiếu .next/BUILD_ID — build Next.js chưa hoàn chỉnh.");
+  process.exit(1);
+}
+if (!(await exists(cssDir))) {
+  console.error("Thiếu .next/static/css — build đang thiếu CSS.");
+  process.exit(1);
+}
+
+const buildId = (await readFile(buildIdPath, "utf8")).trim();
+const cssFiles = (await readdir(cssDir)).filter((file) => file.endsWith(".css"));
+if (!buildId) {
+  console.error(".next/BUILD_ID đang rỗng — build Next.js chưa hợp lệ.");
+  process.exit(1);
+}
+if (cssFiles.length === 0) {
+  console.error(".next/static/css không có file CSS — dừng đóng gói để tránh deploy mất giao diện.");
+  process.exit(1);
+}
+
+console.log(`Kiểm tra build: BUILD_ID=${buildId}; CSS=${cssFiles.length} file.`);
 
 console.log("Xoá bản đóng gói cũ...");
 await rm(out, { recursive: true, force: true });
@@ -66,6 +90,15 @@ if (await exists(publicDir)) {
   await cp(publicDir, path.join(out, "apps", "web", "public"), { recursive: true });
 }
 
+const packagedBuildId = (await readFile(path.join(out, "apps", "web", ".next", "BUILD_ID"), "utf8")).trim();
+const packagedCssFiles = (await readdir(path.join(out, "apps", "web", ".next", "static", "css")))
+  .filter((file) => file.endsWith(".css"));
+if (packagedBuildId !== buildId || packagedCssFiles.length === 0) {
+  console.error("Kiểm tra gói thất bại: BUILD_ID hoặc CSS không được copy đầy đủ.");
+  process.exit(1);
+}
+console.log(`Kiểm tra gói: BUILD_ID=${packagedBuildId}; CSS=${packagedCssFiles.length} file.`);
+
 if (!appOnly) {
   // standalone copy nguyên package.json của monorepo (có turbo/supabase) ra gốc.
   // Thay bằng bản tối giản để cPanel không cài thừa nếu bấm "Run NPM Install" —
@@ -104,15 +137,23 @@ await rm(zip, { force: true });
 if (process.platform === "win32") {
   console.log("Nén thành .zip...");
   const { execFileSync } = await import("node:child_process");
-  execFileSync(
-    "powershell.exe",
-    [
-      "-NoProfile",
-      "-Command",
-      `Set-Location -LiteralPath '${out}'; Compress-Archive -Path '*' -DestinationPath '${zip}' -CompressionLevel Optimal`,
-    ],
-    { stdio: "inherit" }
-  );
+  try {
+    // tar.exe có sẵn trên Windows 10/11 và không phụ thuộc module PowerShell.
+    execFileSync("tar.exe", ["-a", "-c", "-f", zip, "-C", out, "."], { stdio: "inherit" });
+  } catch {
+    // Fallback cho máy Windows cũ không có tar.exe.
+    console.warn("tar.exe không khả dụng, chuyển sang Compress-Archive...");
+    await rm(zip, { force: true });
+    execFileSync(
+      "powershell.exe",
+      [
+        "-NoProfile",
+        "-Command",
+        `Set-Location -LiteralPath '${out}'; Compress-Archive -Path '*' -DestinationPath '${zip}' -CompressionLevel Optimal`,
+      ],
+      { stdio: "inherit" }
+    );
+  }
 } else {
   console.log("Bỏ qua bước nén (chỉ tự nén trên Windows).");
 }

@@ -5,6 +5,8 @@ export interface ArticleHeading {
   id: string;
   level: 2 | 3;
   text: string;
+  /** Số thứ tự chỉ tăng ở H2; H3 dùng dấu chấm trong mục lục. */
+  number: number | null;
 }
 
 /**
@@ -15,6 +17,7 @@ export interface ArticleHeading {
 export function buildArticleToc(html: string): { html: string; headings: ArticleHeading[] } {
   const headings: ArticleHeading[] = [];
   const used = new Map<string, number>();
+  let h2Number = 0;
 
   const withIds = html.replace(
     /<h([23])((?:"[^"]*"|'[^']*'|[^>])*)>([\s\S]*?)<\/h\1>/gi,
@@ -27,7 +30,9 @@ export function buildArticleToc(html: string): { html: string; headings: Article
       used.set(base, seen + 1);
       const id = seen === 0 ? base : `${base}-${seen + 1}`;
 
-      headings.push({ id, level: Number(levelRaw) === 3 ? 3 : 2, text });
+      const level = Number(levelRaw) === 3 ? 3 : 2;
+      if (level === 2) h2Number += 1;
+      headings.push({ id, level, number: level === 2 ? h2Number : null, text });
       const cleanedAttrs = attrs.replace(/\sid\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "");
       return `<h${levelRaw} id="${id}"${cleanedAttrs}>${inner}</h${levelRaw}>`;
     },
