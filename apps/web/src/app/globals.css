@@ -53,6 +53,18 @@ body {
   animation: marquee-reverse 24s linear infinite;
 }
 
+/* Menu hamburger luôn cuộn trong phần viewport còn lại bên dưới navbar. */
+.mobile-menu-panel {
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@supports (height: 100dvh) {
+  .mobile-menu-panel {
+    max-height: calc(100dvh - 60px);
+  }
+}
+
 /* ───────── Nội dung bài viết soạn bằng RichTextEditor (trang Quản trị) ─────────
    Dùng chung cho khung soạn thảo ở Admin và trang bài viết công khai để nội dung
    hiển thị y hệt lúc soạn. */

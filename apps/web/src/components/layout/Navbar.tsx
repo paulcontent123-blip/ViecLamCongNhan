@@ -247,14 +247,14 @@ export function Navbar() {
         type="button"
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 text-lg min-[1360px]:hidden"
         onClick={() => setMobileOpen((v) => !v)}
-        aria-label="Mở menu"
+        aria-label={mobileOpen ? "Đóng menu" : "Mở menu"}
         aria-expanded={mobileOpen}
       >
         {mobileOpen ? "✕" : "☰"}
       </button>
 
       {mobileOpen && (
-        <div className="absolute left-0 top-[60px] flex w-full flex-col gap-1 border-b border-black/5 bg-white p-3 shadow-lg min-[1360px]:hidden">
+        <div className="mobile-menu-panel absolute left-0 top-[60px] flex w-full flex-col gap-1 border-b border-black/5 bg-white p-3 shadow-lg min-[1360px]:hidden">
           <Link href={ROUTES.home} className="rounded-lg px-3 py-2.5 text-[14px] font-semibold text-brand-navy" onClick={() => setMobileOpen(false)}>
             Trang chủ
           </Link>
