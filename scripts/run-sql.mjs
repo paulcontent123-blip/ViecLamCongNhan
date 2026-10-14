@@ -2,6 +2,7 @@
 // Dùng cho seed.sql — `supabase db query --file` không hỗ trợ multi-statement
 // (lỗi "cannot insert multiple commands into a prepared statement").
 // Usage: node scripts/run-sql.mjs <path-to-sql-file>
+//test
 import { readFileSync } from "node:fs";
 import { Client } from "pg";
 
