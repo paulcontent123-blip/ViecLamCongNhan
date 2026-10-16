@@ -66,10 +66,10 @@ export async function getAdminJobs(
     .select("id, title, slug, province_code, industry, tier, status, created_at, employers(company_name)", {
       count: "exact",
     })
-    // Với danh sách "Tất cả": yêu cầu mới luôn ở trên, đã tư vấn và đã hủy ở dưới.
-    // Các giá trị status hiện tại được sắp theo thứ tự chữ giảm dần: new → consulted → cancelled.
+    // Giữ thứ tự của trang Admin; id là khóa phụ để phân trang ổn định khi trùng thời gian.
     .order("status", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
 
   if (filters.status) query = query.eq("status", filters.status);
   if (filters.q) query = query.ilike("title", `%${filters.q}%`);
