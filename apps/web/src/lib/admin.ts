@@ -959,20 +959,17 @@ export async function getMobileAdminArticles({
   q = "",
   page = 1,
   pageSize = 20,
-  id,
 }: {
   status?: "draft" | "published";
   q?: string;
   page?: number;
   pageSize?: number;
-  id?: string;
 } = {}) {
   const supabase = createSupabaseAdminClient();
   let query = supabase
     .from("articles")
     .select("id, slug, title, excerpt, cover_image_url, category, status, published_at, created_at, updated_at", { count: "exact" })
     .order("created_at", { ascending: false });
-  if (id) query = query.eq("id", id);
   if (status) query = query.eq("status", status);
   if (q) query = query.ilike("title", `%${q}%`);
 
