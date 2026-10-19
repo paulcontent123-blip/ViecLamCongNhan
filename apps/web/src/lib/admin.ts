@@ -954,6 +954,46 @@ export async function getAdminArticles(): Promise<AdminArticleRow[]> {
   return (data ?? []) as AdminArticleRow[];
 }
 
+export async function getMobileAdminArticles({
+  status,
+  q = "",
+  page = 1,
+  pageSize = 20,
+  id,
+}: {
+  status?: "draft" | "published";
+  q?: string;
+  page?: number;
+  pageSize?: number;
+  id?: string;
+} = {}) {
+  const supabase = createSupabaseAdminClient();
+  let query = supabase
+    .from("articles")
+    .select("id, slug, title, excerpt, cover_image_url, category, status, published_at, created_at, updated_at", { count: "exact" })
+    .order("created_at", { ascending: false });
+  if (id) query = query.eq("id", id);
+  if (status) query = query.eq("status", status);
+  if (q) query = query.ilike("title", `%${q}%`);
+
+  const offset = (page - 1) * pageSize;
+  const [{ data, count, error }, draftCount, publishedCount] = await Promise.all([
+    query.range(offset, offset + pageSize - 1),
+    supabase.from("articles").select("id", { count: "exact", head: true }).eq("status", "draft"),
+    supabase.from("articles").select("id", { count: "exact", head: true }).eq("status", "published"),
+  ]);
+  if (error) throw new Error(error.message);
+  if (draftCount.error) throw new Error(draftCount.error.message);
+  if (publishedCount.error) throw new Error(publishedCount.error.message);
+  return {
+    items: (data ?? []) as Pick<AdminArticleRow, "id" | "slug" | "title" | "excerpt" | "cover_image_url" | "category" | "status" | "published_at" | "created_at" | "updated_at">[],
+    total: count ?? 0,
+    page,
+    pageSize,
+    counts: { draft: draftCount.count ?? 0, published: publishedCount.count ?? 0 },
+  };
+}
+
 export interface ArticleInput {
   title: string;
   excerpt?: string;
