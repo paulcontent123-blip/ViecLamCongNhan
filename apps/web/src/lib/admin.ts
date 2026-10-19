@@ -955,11 +955,13 @@ export async function getAdminArticles(): Promise<AdminArticleRow[]> {
 }
 
 export async function getMobileAdminArticles({
+  id,
   status,
   q = "",
   page = 1,
   pageSize = 20,
 }: {
+  id?: string;
   status?: "draft" | "published";
   q?: string;
   page?: number;
@@ -970,6 +972,7 @@ export async function getMobileAdminArticles({
     .from("articles")
     .select("id, slug, title, excerpt, cover_image_url, category, status, published_at, created_at, updated_at", { count: "exact" })
     .order("created_at", { ascending: false });
+  if (id) query = query.eq("id", id);
   if (status) query = query.eq("status", status);
   if (q) query = query.ilike("title", `%${q}%`);
 
