@@ -49,3 +49,6 @@ tmp/
 dist-cpanel/
 dist-cpanel-app/
 *.deploy.zip
+
+# Codebase Memory generated index
+.codebase-memory/
