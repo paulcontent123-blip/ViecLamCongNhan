@@ -281,7 +281,7 @@ export interface AdminEmployerRow {
 }
 
 export async function getAdminEmployers(
-  filters: AdminListFilters & { verified?: boolean } = {},
+  filters: AdminListFilters & { verified?: boolean; id?: string } = {},
 ): Promise<{ employers: AdminEmployerRow[]; total: number }> {
   const supabase = createSupabaseAdminClient();
   let query = supabase
@@ -290,8 +290,10 @@ export async function getAdminEmployers(
       "id, company_name, company_slug, industry, province_code, tax_code, contact_phone, is_verified, account_type, created_at, users(email, full_name)",
       { count: "exact" },
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
 
+  if (filters.id) query = query.eq("id", filters.id);
   if (filters.verified !== undefined) query = query.eq("is_verified", filters.verified);
   if (filters.q) query = query.ilike("company_name", `%${filters.q}%`);
 
