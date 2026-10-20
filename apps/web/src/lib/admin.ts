@@ -1832,22 +1832,27 @@ export interface AdminQARow {
   created_at: string;
 }
 
+export type AdminQAStatus = AdminQARow["status"];
+
 // Thẻ Hỏi đáp cao (câu hỏi + textarea trả lời + nút hành động) nên để trang ngắn hơn
 // các bảng danh sách khác trong admin (ADMIN_PAGE_SIZE=20) để đỡ phải cuộn quá dài.
 export const ADMIN_QA_PAGE_SIZE = 5;
 
 export async function getAdminQAQuestions(
-  filters: { limit?: number; offset?: number } = {},
+  filters: { limit?: number; offset?: number; status?: AdminQAStatus; id?: string } = {},
 ): Promise<{ questions: AdminQARow[]; total: number; newCount: number }> {
   const supabase = createSupabaseAdminClient();
   const limit = filters.limit ?? ADMIN_QA_PAGE_SIZE;
   const offset = filters.offset ?? 0;
+  let questionsQuery = supabase
+    .from("qa_questions")
+    .select("id, question, full_name, contact, answer, status, sort_order, created_at", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
+  if (filters.status) questionsQuery = questionsQuery.eq("status", filters.status);
+  if (filters.id) questionsQuery = questionsQuery.eq("id", filters.id);
   const [{ data, error, count }, newCountRes] = await Promise.all([
-    supabase
-      .from("qa_questions")
-      .select("id, question, full_name, contact, answer, status, sort_order, created_at", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1),
+    questionsQuery.range(offset, offset + limit - 1),
     // Đếm riêng trên TOÀN BỘ bảng (không giới hạn trang hiện tại) — hiển thị ở dòng mô
     // tả đầu trang, khác với danh sách `questions` chỉ chứa đúng 1 trang.
     supabase.from("qa_questions").select("id", { count: "exact", head: true }).eq("status", "new"),
