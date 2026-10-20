@@ -161,7 +161,6 @@ export interface UpdateProfileInput {
   taxCode?: string;
   provinceCode?: string;
   industry?: string;
-  companyLogoUrl?: string;
 }
 
 /** Không cho sửa email/company_slug ở đây — email là định danh đăng nhập, đổi cần
@@ -170,29 +169,22 @@ export async function updateEmployerProfile(
   employerId: string,
   userId: string,
   input: UpdateProfileInput,
-): Promise<{ error: string } | { ok: true }> {
+): Promise<{ error: string; uncertain?: boolean } | { ok: true }> {
   const supabase = createSupabaseAdminClient();
 
-  const { error: employerError } = await supabase
-    .from("employers")
-    .update({
-      company_name: input.companyName,
-      contact_phone: input.contactPhone,
-      tax_code: input.taxCode || null,
-      province_code: input.provinceCode || null,
-      industry: input.industry || null,
-      company_logo_url: input.companyLogoUrl || null,
-    })
-    .eq("id", employerId);
+  const { data, error } = await supabase.rpc("update_employer_profile_atomically", {
+    p_employer_id: employerId,
+    p_user_id: userId,
+    p_company_name: input.companyName,
+    p_contact_phone: input.contactPhone,
+    p_full_name: input.fullName,
+    p_tax_code: input.taxCode?.trim() || null,
+    p_province_code: input.provinceCode?.trim() || null,
+    p_industry: input.industry?.trim() || null,
+  });
 
-  if (employerError) return { error: "Không cập nhật được thông tin công ty." };
-
-  const { error: userError } = await supabase
-    .from("users")
-    .update({ full_name: input.fullName, phone: input.contactPhone })
-    .eq("id", userId);
-
-  if (userError) return { error: "Không cập nhật được thông tin người phụ trách." };
+  if (error) return { error: "Chưa xác định được hồ sơ đã cập nhật hay chưa. Tải lại hồ sơ trước khi thử lại.", uncertain: true };
+  if (data !== true) return { error: "Hồ sơ không thuộc tài khoản hoặc doanh nghiệp chưa được xác minh." };
 
   return { ok: true };
 }
@@ -352,19 +344,12 @@ export interface CreateJobInput {
   hasMeals?: boolean;
   noExperienceRequired?: boolean;
   shiftType?: "day" | "night" | "rotating";
+  wantsCampaign?: boolean;
+  campaignMessage?: string;
+  paymentMethod?: PaymentMethod;
 }
 
 export async function createEmployerJob(employerId: string, input: CreateJobInput) {
-  const accountTier = await getEmployerAccountTier(employerId);
-  const perks = ACCOUNT_TIERS[accountTier];
-
-  const postedToday = await countJobsPostedToday(employerId);
-  if (postedToday >= perks.dailyPostLimit) {
-    return {
-      error: `Gói ${perks.label} chỉ được đăng ${perks.dailyPostLimit} tin/ngày. Nâng cấp gói để đăng nhiều tin hơn mỗi ngày.`,
-    };
-  }
-
   const slugBase = input.title
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
@@ -374,49 +359,52 @@ export async function createEmployerJob(employerId: string, input: CreateJobInpu
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   const slug = `${slugBase}-${Date.now().toString(36)}`;
-
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + perks.jobDurationDays);
-
   const supabase = createSupabaseAdminClient();
-  const { data, error } = await supabase
-    .from("jobs")
-    .insert({
-      employer_id: employerId,
-      slug,
+  const { data, error } = await supabase.rpc("create_employer_job_with_quota", {
+    p_employer_id: employerId,
+    p_slug: slug,
+    p_job: {
       title: input.title,
       description: input.description,
-      requirements: input.requirements || null,
-      salary_min: input.salaryMin ?? null,
-      salary_max: input.salaryMax ?? null,
-      job_type: input.jobType ?? null,
-      province_code: input.provinceCode,
-      district: input.district || null,
-      kcn_id: input.kcnId || null,
+      requirements: input.requirements || "",
+      salaryMin: input.salaryMin ?? "",
+      salaryMax: input.salaryMax ?? "",
+      jobType: input.jobType ?? "",
+      provinceCode: input.provinceCode,
+      district: input.district || "",
+      kcnId: input.kcnId || "",
       industry: input.industry,
       quantity: input.quantity ?? 1,
-      tier: accountTier,
-      // Chờ Admin duyệt (xem app/admin/tin-tuyen-dung) trước khi hiển thị công khai —
-      // đúng luồng nghiệp vụ TechSpec mục 6 (POST /admin/jobs/:id/approve).
-      status: "pending",
-      is_urgent: input.isUrgent ?? false,
-      has_housing: input.hasHousing ?? false,
-      has_shuttle: input.hasShuttle ?? false,
-      has_meals: input.hasMeals ?? false,
-      no_experience_required: input.noExperienceRequired ?? false,
-      shift_type: input.shiftType ?? null,
-      expires_at: expiresAt.toISOString(),
-    })
-    .select("id, slug")
-    .single();
+      isUrgent: input.isUrgent ?? false,
+      hasHousing: input.hasHousing ?? false,
+      hasShuttle: input.hasShuttle ?? false,
+      hasMeals: input.hasMeals ?? false,
+      noExperienceRequired: input.noExperienceRequired ?? false,
+      shiftType: input.shiftType ?? "",
+      wantsCampaign: input.wantsCampaign ?? false,
+      campaignMessage: input.campaignMessage ?? "",
+      paymentMethod: input.paymentMethod ?? "",
+      campaignPrice: input.wantsCampaign ? JOB_ADDONS.campaign.priceVnd : "",
+    },
+  });
 
-  if (error || !data) return { error: "Không đăng được tin, thử lại sau." };
+  if (error) return { error: "Chưa xác định được tin đã lưu hay chưa. Kiểm tra danh sách tin trước khi gửi lại.", uncertain: true };
+  const result = data as { ok?: boolean; code?: string; tier?: AccountTier; dailyLimit?: number; job?: { id: string; slug: string }; order?: { id: string; tier: string; amount: number; status: string; created_at: string } | null } | null;
+  if (!result?.ok || !result.job) {
+    if (result?.code === "daily_limit") {
+      const tier = result.tier && isAccountTier(result.tier) ? result.tier : "free";
+      const limit = result.dailyLimit ?? ACCOUNT_TIERS[tier].dailyPostLimit;
+      return { error: `Gói ${ACCOUNT_TIERS[tier].label} chỉ được đăng ${limit} tin/ngày. Nâng cấp gói để đăng nhiều tin hơn mỗi ngày.` };
+    }
+    if (result?.code === "employer_not_verified") return { error: "Tài khoản của bạn đang chờ Admin xác minh pháp nhân. Vui lòng chờ xác minh để đăng tin." };
+    return { error: "Không đăng được tin tuyển dụng. Hãy kiểm tra lại hồ sơ doanh nghiệp." };
+  }
 
   // Nếu NTD có mua thêm gói Chiến dịch, tin vẫn ở tier bình thường (accountTier) tới
   // đây — việc nâng tier='campaign' + auto-blast Zalo chỉ chạy SAU KHI Admin xác nhận
   // đã nhận thanh toán đơn hàng addon (xem activateCampaignFromOrder, gọi từ
   // updateOrderStatus ở admin.ts), không chạy ngay lúc NTD tự khai đã thanh toán.
-  return { job: data, tier: accountTier };
+  return { job: result.job, tier: result.tier, order: result.order ?? null };
 }
 
 export interface EmployerApplicationRow {
@@ -474,7 +462,7 @@ export async function getEmployerOrders(employerId: string) {
   const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("orders")
-    .select("*")
+    .select("id, order_type, tier, amount, payment_method, status, created_at, paid_at")
     .eq("employer_id", employerId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
@@ -763,6 +751,8 @@ export interface CandidateViewResult {
   allowed: boolean;
   viewedCount: number;
   limit: number;
+  found?: boolean;
+  verified?: boolean;
 }
 
 /** Ghi nhận 1 lượt xem hồ sơ ứng viên và trả về việc có được hiển thị thông tin liên hệ
@@ -771,31 +761,25 @@ export async function recordCandidateProfileView(
   employerId: string,
   candidateId: string,
 ): Promise<CandidateViewResult> {
-  const tier = await getEmployerAccountTier(employerId);
-  const limit = ACCOUNT_TIERS[tier].candidateViewLimit;
   const supabase = createSupabaseAdminClient();
   const periodStart = currentPeriodStart();
-
-  const { data: existing } = await supabase
-    .from("employer_candidate_views")
-    .select("id")
-    .eq("employer_id", employerId)
-    .eq("candidate_id", candidateId)
-    .eq("period_start", periodStart)
-    .maybeSingle();
-
-  const viewedCount = await getEmployerCandidateViewUsage(employerId);
-
-  if (existing) return { allowed: true, viewedCount, limit };
-  if (viewedCount >= limit) return { allowed: false, viewedCount, limit };
-
-  const { error } = await supabase
-    .from("employer_candidate_views")
-    .insert({ employer_id: employerId, candidate_id: candidateId, period_start: periodStart });
-  // Lỗi (VD: race condition trùng unique constraint) không nên chặn NTD xem hồ sơ đã hợp lệ.
-  if (error) return { allowed: true, viewedCount, limit };
-
-  return { allowed: true, viewedCount: viewedCount + 1, limit };
+  const { data, error } = await supabase.rpc("record_employer_candidate_profile_view", {
+    p_employer_id: employerId,
+    p_candidate_id: candidateId,
+    p_period_start: periodStart,
+  });
+  if (error) throw new Error("Không xác định được hạn mức xem hồ sơ. Đã khóa truy cập liên hệ để bảo toàn hạn mức.");
+  const result = data as { allowed?: boolean; found?: boolean; verified?: boolean; viewedCount?: number; limit?: number } | null;
+  if (!result || typeof result.allowed !== "boolean" || !Number.isInteger(result.viewedCount) || !Number.isInteger(result.limit)) {
+    throw new Error("Phản hồi hạn mức không hợp lệ.");
+  }
+  return {
+    allowed: result.allowed,
+    viewedCount: result.viewedCount!,
+    limit: result.limit!,
+    ...(typeof result.found === "boolean" ? { found: result.found } : {}),
+    ...(typeof result.verified === "boolean" ? { verified: result.verified } : {}),
+  };
 }
 
 export interface CandidateListRow {

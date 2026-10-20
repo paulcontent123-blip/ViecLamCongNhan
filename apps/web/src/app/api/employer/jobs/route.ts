@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getEmployerSession } from "@/lib/employer-auth";
-import { createEmployerJob, createJobAddonOrder, isEmployerVerified } from "@/lib/employer";
+import { createEmployerJob, isEmployerVerified } from "@/lib/employer";
 import { isPaymentMethod } from "@/lib/payment-method";
 
 const VERIFICATION_REQUIRED_ERROR =
@@ -59,17 +59,8 @@ export async function POST(request: NextRequest) {
 
   const result = await createEmployerJob(session.employerId, parsed.data);
   if ("error" in result) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
+    return NextResponse.json({ error: result.error }, { status: result.uncertain ? 503 : 400 });
   }
 
-  let order = null;
-  if (parsed.data.wantsCampaign) {
-    const orderResult = await createJobAddonOrder(session.employerId, "campaign", parsed.data.paymentMethod, {
-      jobId: result.job.id,
-      campaignMessage: parsed.data.campaignMessage ?? "",
-    });
-    if ("order" in orderResult) order = orderResult.order;
-  }
-
-  return NextResponse.json({ ok: true, job: result.job, order });
+  return NextResponse.json({ ok: true, job: result.job, order: result.order });
 }

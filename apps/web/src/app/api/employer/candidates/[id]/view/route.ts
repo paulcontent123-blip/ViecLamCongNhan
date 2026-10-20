@@ -16,7 +16,23 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 
   const { id: candidateId } = await params;
-  const result = await recordCandidateProfileView(session.employerId, candidateId);
+  let result;
+  try {
+    result = await recordCandidateProfileView(session.employerId, candidateId);
+  } catch (error) {
+    console.error("POST /api/employer/candidates/[id]/view quota check failed:", error);
+    return NextResponse.json(
+      { error: "Chưa xác minh được hạn mức. Thông tin liên hệ vẫn được khóa; vui lòng thử lại sau." },
+      { status: 503 },
+    );
+  }
+
+  if (result.verified === false) {
+    return NextResponse.json({ error: "Tài khoản của bạn đang chờ Admin xác minh pháp nhân." }, { status: 403 });
+  }
+  if (result.found === false) {
+    return NextResponse.json({ error: "Không tìm thấy hồ sơ ứng viên trong kho ứng viên." }, { status: 404 });
+  }
 
   if (!result.allowed) {
     return NextResponse.json({

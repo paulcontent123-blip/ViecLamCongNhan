@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getEmployerSession } from "@/lib/employer-auth";
-import { updateEmployerCampaign } from "@/lib/employer";
+import { isEmployerVerified, updateEmployerCampaign } from "@/lib/employer";
 import { isCampaignTheme } from "@/lib/campaign-theme";
 
 const bodySchema = z.object({
@@ -29,6 +29,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const session = await getEmployerSession();
   if (!session) {
     return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  }
+  if (!(await isEmployerVerified(session.employerId))) {
+    return NextResponse.json({ error: "Tài khoản của bạn đang chờ Admin xác minh pháp nhân." }, { status: 403 });
   }
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));

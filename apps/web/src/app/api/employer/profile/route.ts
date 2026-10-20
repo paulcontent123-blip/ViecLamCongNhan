@@ -10,7 +10,6 @@ const bodySchema = z.object({
   taxCode: z.string().optional(),
   provinceCode: z.string().optional(),
   industry: z.string().optional(),
-  companyLogoUrl: z.string().url().optional(),
 });
 
 export async function PATCH(request: NextRequest) {
@@ -36,7 +35,7 @@ export async function PATCH(request: NextRequest) {
 
   const result = await updateEmployerProfile(session.employerId, session.userId, parsed.data);
   if ("error" in result) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
+    return NextResponse.json({ error: result.error }, { status: result.uncertain ? 503 : 400 });
   }
 
   return NextResponse.json({ ok: true });
