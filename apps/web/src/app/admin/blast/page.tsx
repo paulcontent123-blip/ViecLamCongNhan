@@ -44,19 +44,19 @@ export default async function AdminBlastPage() {
                 return (
                   <tr key={b.id} className="border-t border-black/5">
                     <td className="px-4 py-3">
-                      <div className="font-bold text-brand-navy">{b.campaign_name || "—"}</div>
+                      <div className="font-bold text-brand-navy">{b.campaign_name || "‑"}</div>
                       <div className="text-[11px] text-brand-navy/40">
                         {new Date(b.created_at).toLocaleString("vi-VN")}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-brand-navy/60">{b.employers?.company_name ?? "—"}</td>
+                    <td className="px-4 py-3 text-brand-navy/60">{b.employers?.company_name ?? "‑"}</td>
                     <td className="px-4 py-3 text-brand-navy/60">{CHANNEL_LABEL[b.channel] ?? b.channel}</td>
                     <td className="max-w-[240px] truncate px-4 py-3 text-brand-navy/60">{b.message}</td>
                     <td className="px-4 py-3 font-mono text-brand-navy/60">
-                      {b.recipient_count?.toLocaleString("vi-VN") ?? "—"}
+                      {b.recipient_count?.toLocaleString("vi-VN") ?? "‑"}
                     </td>
                     <td className="px-4 py-3 font-mono font-bold text-brand-orange">
-                      {b.cost_vnd ? `${b.cost_vnd.toLocaleString("vi-VN")}đ` : "—"}
+                      {b.cost_vnd ? `${b.cost_vnd.toLocaleString("vi-VN")}đ` : "‑"}
                     </td>
                     <td className="px-4 py-3">
                       <StatusPill label={st.label} tone={st.tone} />

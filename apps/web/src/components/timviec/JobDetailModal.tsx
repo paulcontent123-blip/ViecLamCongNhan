@@ -7,7 +7,7 @@ import type { JobWithRelations } from "@/types/db";
 import { JobDetailContent } from "@/components/timviec/JobDetailContent";
 
 // Route intercept (@modal/(.)[slug]) render component này thay vì trang đầy đủ
-// khi người dùng bấm vào 1 thẻ việc làm từ danh sách /tim-viec-lam — cùng 1
+// khi người dùng bấm vào 1 thẻ việc làm từ danh sách /tim-viec-lam ‑ cùng 1
 // component JobDetailContent nên nội dung luôn khớp với trang chi tiết đầy đủ,
 // chỉ khác phần khung (modal thay vì cả trang).
 export function JobDetailModal({ job }: { job: JobWithRelations }) {

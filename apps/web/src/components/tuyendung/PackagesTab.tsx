@@ -86,7 +86,7 @@ export function PackagesTab({ loggedIn }: { loggedIn: boolean }) {
   return (
     <div>
       <p className="mb-5 text-[13px] text-brand-navy/50">
-        Gói <strong className="text-emerald-600">Free</strong> không cần thanh toán — chỉ cần tạo tài khoản.{" "}
+        Gói <strong className="text-emerald-600">Free</strong> không cần thanh toán ‑ chỉ cần tạo tài khoản.{" "}
         <strong>Basic</strong> và <strong>Premium</strong> là thuê bao theo tháng, áp dụng cho toàn bộ tài
         khoản (số tin/ngày, hiển thị profile công ty, xem hồ sơ ứng viên). Gói{" "}
         <strong>Chiến dịch</strong> là mua thêm riêng cho từng tin, độc lập với gói tài khoản.
@@ -106,7 +106,7 @@ export function PackagesTab({ loggedIn }: { loggedIn: boolean }) {
             <div className="mt-1 font-mono text-[22px] font-extrabold text-brand-orange">{pkg.price}</div>
             <div className="mb-3 text-[11px] text-brand-navy/45">{pkg.per}</div>
             {/* flex-1 đẩy toàn bộ nút CTA bên dưới xuống cùng 1 hàng đáy, bất kể thẻ
-                nào có nhiều/ít dòng quyền lợi hơn — tránh nút lệch hàng như trước. */}
+                nào có nhiều/ít dòng quyền lợi hơn ‑ tránh nút lệch hàng như trước. */}
             <div className="mb-4 flex-1 space-y-1.5">
               {pkg.features.map((f) => (
                 <div key={f.text} className={`text-[12px] ${featureRowClass[f.type]}`}>
@@ -126,11 +126,11 @@ export function PackagesTab({ loggedIn }: { loggedIn: boolean }) {
 
       <div className="mt-5 rounded-xl border border-brand-orange/20 bg-gradient-to-br from-brand-orange-light to-white p-5">
         <div className="mb-1.5 text-[13.5px] font-bold text-brand-navy">
-          📂 Database ứng viên — bảo mật, chỉ dùng nội bộ
+          📂 Database ứng viên ‑ bảo mật, chỉ dùng nội bộ
         </div>
         <div className="text-[13px] leading-relaxed text-brand-navy/55">
           Hồ sơ ứng viên <strong>không được public</strong> ra ngoài. Nhà tuyển dụng gói Basic/Premium xem hồ
-          sơ phù hợp theo hạn mức/tháng qua dashboard nội bộ — không có trang tra cứu công khai.
+          sơ phù hợp theo hạn mức/tháng qua dashboard nội bộ ‑ không có trang tra cứu công khai.
         </div>
       </div>
     </div>

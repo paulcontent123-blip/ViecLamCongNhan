@@ -12,7 +12,7 @@ interface AuthModalContextValue {
 const AuthModalContext = createContext<AuthModalContextValue | null>(null);
 
 // Modal quản lý ở 1 chỗ duy nhất (Provider bọc toàn app trong layout.tsx) để bất
-// kỳ trang/component nào cũng gọi mở được — không chỉ riêng Navbar (vd: nút
+// kỳ trang/component nào cũng gọi mở được ‑ không chỉ riêng Navbar (vd: nút
 // "Tạo tài khoản" trên trang Tuyển dụng công khai cần mở modal đăng ký NTD).
 export function AuthModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);

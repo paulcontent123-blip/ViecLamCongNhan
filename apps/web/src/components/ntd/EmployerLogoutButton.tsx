@@ -11,7 +11,7 @@ export function EmployerLogoutButton() {
   async function handleLogout() {
     setLoading(true);
     await fetch("/api/auth/employer/logout", { method: "POST" });
-    // Vào thẳng trang đăng nhập NTD thay vì trang chủ — tránh phải mở modal
+    // Vào thẳng trang đăng nhập NTD thay vì trang chủ ‑ tránh phải mở modal
     // rồi tự chuyển sang tab "Nhà tuyển dụng" mỗi lần muốn đăng nhập lại.
     router.push(ROUTES.ntdLogin);
     router.refresh();

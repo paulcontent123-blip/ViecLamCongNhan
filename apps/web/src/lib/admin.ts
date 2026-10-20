@@ -24,7 +24,7 @@ import type {
   ServicePartnerCardRow,
 } from "@/types/db";
 
-// Toàn bộ hàm ở đây dùng service-role client (bypass RLS) — quyền truy cập chỉ
+// Toàn bộ hàm ở đây dùng service-role client (bypass RLS) ‑ quyền truy cập chỉ
 // được đảm bảo bởi việc route/page gọi vào đã tự verify admin session trước
 // (xem lib/admin-auth.ts), giống quy ước đã dùng ở lib/employer.ts.
 
@@ -135,7 +135,7 @@ export async function getAdminCandidates(
       "id, full_name, phone, zalo, province, desired_industry, desired_salary_min, experience_years, status, created_at",
       { count: "exact" },
     )
-    // Chỉ ứng viên tự điền form "Để lại thông tin" (quick_form) — ứng viên chỉ nộp
+    // Chỉ ứng viên tự điền form "Để lại thông tin" (quick_form) ‑ ứng viên chỉ nộp
     // đơn vào 1 tin cụ thể (job_apply) xem ở mục Đơn ứng tuyển, không lộ vào Database.
     .eq("source", "quick_form")
     .order("created_at", { ascending: false });
@@ -341,12 +341,15 @@ export interface AdminOrderRow {
   paid_at: string | null;
   job_id: string | null;
   campaign_message: string | null;
+  code: string | null;
+  customer_confirmed_at: string | null;
+  reject_reason: string | null;
   employers: { company_name: string; contact_phone: string | null } | null;
   jobs: { title: string } | null;
 }
 
 const ADMIN_ORDER_SELECT =
-  "id, employer_id, order_type, tier, amount, payment_method, payment_ref, status, created_at, paid_at, job_id, campaign_message, employers(company_name, contact_phone), jobs(title)";
+  "id, employer_id, order_type, tier, amount, payment_method, payment_ref, status, created_at, paid_at, job_id, campaign_message, code, customer_confirmed_at, reject_reason, employers(company_name, contact_phone), jobs(title)";
 
 export async function getAdminOrders(
   filters: AdminListFilters & { status?: AdminOrderStatus } = {},
@@ -375,7 +378,7 @@ export async function getAdminOrders(
 
     // Mã đơn hiển thị dạng "DH1DECBE4D" (8 ký tự đầu của id, viết hoa). id là cột uuid
     // nên Postgres không ILIKE trực tiếp được (và PostgREST cũng không cho ép kiểu
-    // ::text bên trong or=(...)) — lấy toàn bộ id (chỉ 1 cột, nhẹ) rồi so khớp tiền tố
+    // ::text bên trong or=(...)) ‑ lấy toàn bộ id (chỉ 1 cột, nhẹ) rồi so khớp tiền tố
     // ở phía JS, gom lại thành danh sách cho .in() (uuid so sánh chính xác không cần ILIKE).
     const idQuery = /^dh/i.test(q) ? q.slice(2) : q;
     if (idQuery.length >= 3) {
@@ -430,7 +433,7 @@ export async function getAdminOrderStats(): Promise<AdminOrderStats> {
       .lt("created_at", startOfThisMonth.toISOString()),
     supabase.from("orders").select("id", { count: "exact", head: true }).gte("created_at", sevenDaysAgo.toISOString()),
     supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    // Không có cột riêng ghi "ngày hoàn tiền" nên tạm lấy theo created_at trong tháng —
+    // Không có cột riêng ghi "ngày hoàn tiền" nên tạm lấy theo created_at trong tháng ‑
     // sát nghĩa "đơn hoàn tiền phát sinh tháng này" với dữ liệu hiện có.
     supabase
       .from("orders")
@@ -452,9 +455,36 @@ export async function getAdminOrderStats(): Promise<AdminOrderStats> {
   };
 }
 
+/** Xác nhận "Đã nhận tiền" chỉ được phép khi NTD đã tự báo đã chuyển khoản: tránh
+ * kích hoạt quyền lợi trả phí cho đơn mà NTD còn chưa đụng tới. Đơn cũ (trước khi có
+ * luồng VietQR/MoMo) không có mã nên vẫn duyệt được như trước. */
+export async function canMarkOrderPaid(orderId: string): Promise<boolean> {
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("orders")
+    .select("code, customer_confirmed_at")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (!data) return false;
+  return data.code === null || data.customer_confirmed_at !== null;
+}
+
+/** Admin đối soát không khớp: trả đơn về cho NTD kèm lý do, đơn vẫn ở trạng thái chờ. */
+export async function rejectOrderPayment(orderId: string, reason: string): Promise<boolean> {
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("orders")
+    .update({ customer_confirmed_at: null, reject_reason: reason.trim().slice(0, 300) })
+    .eq("id", orderId)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+  return data !== null;
+}
+
 export async function updateOrderStatus(orderId: string, status: AdminOrderStatus): Promise<boolean> {
   const supabase = createSupabaseAdminClient();
-  // Chỉ set paid_at khi CHUYỂN SANG "paid" — các trạng thái khác (huỷ, hoàn tiền...)
+  // Chỉ set paid_at khi CHUYỂN SANG "paid" ‑ các trạng thái khác (huỷ, hoàn tiền...)
   // không đụng tới paid_at để giữ lại mốc thời gian đã thanh toán trước đó (VD đơn
   // paid -> refunded vẫn cần biết đã thanh toán lúc nào).
   const { data, error } = await supabase
@@ -480,7 +510,7 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
 
   // Hoàn tiền đơn thuê bao tài khoản (Basic/Premium) => phải thu hồi quyền lợi đã cấp,
   // không để NTD tiếp tục dùng gói đã hoàn tiền. Chỉ đụng account_type nếu gói đang
-  // active hiện tại ĐÚNG LÀ gói do đơn này cấp — tránh trường hợp hoàn tiền 1 đơn cũ đã
+  // active hiện tại ĐÚNG LÀ gói do đơn này cấp ‑ tránh trường hợp hoàn tiền 1 đơn cũ đã
   // bị 1 đơn mua gói mới hơn ghi đè từ trước, lại vô tình hạ nhầm gói NTD đang dùng.
   if (status === "refunded" && data.order_type === "account_subscription" && data.tier && isPaidAccountTier(data.tier)) {
     const { data: employer } = await supabase
@@ -491,7 +521,7 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
 
     if (employer?.account_type === data.tier) {
       // Tìm đơn thuê bao đã thanh toán gần nhất (khác đơn đang hoàn tiền) để khôi phục
-      // — nếu chu kỳ 30 ngày của đơn đó tính từ lúc thanh toán vẫn còn hiệu lực tới hiện
+      // ‑ nếu chu kỳ 30 ngày của đơn đó tính từ lúc thanh toán vẫn còn hiệu lực tới hiện
       // tại thì phục hồi đúng gói + hạn đó (VD premium -> basic), ngược lại hạ về Free
       // (VD premium -> free nếu chưa từng mua/gói cũ đã hết hạn).
       const { data: previousOrders } = await supabase
@@ -526,7 +556,7 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
 
   // Xác nhận thanh toán đơn mua gói Chiến dịch => mới nâng tier tin lên 'campaign' +
   // chạy auto-blast Zalo cho ứng viên khớp ngành nghề/tỉnh thành (xem
-  // activateCampaignFromOrder) — cố ý KHÔNG làm việc này ngay lúc NTD tạo đơn/tự khai
+  // activateCampaignFromOrder) ‑ cố ý KHÔNG làm việc này ngay lúc NTD tạo đơn/tự khai
   // đã thanh toán, để tránh kích hoạt quyền lợi trả phí khi chưa xác minh đã nhận tiền.
   if (status === "paid" && data.order_type === "job_post" && data.tier === "campaign" && data.job_id) {
     await activateCampaignFromOrder(data.employer_id, data.job_id, data.campaign_message);
@@ -837,7 +867,7 @@ export interface AdminSidebarCounts {
   newAdPricingInquiries: number;
 }
 
-/** Đếm nhẹ cho badge sidebar — gọi ở layout nên tách riêng khỏi getAdminDashboardStats (nặng hơn). */
+/** Đếm nhẹ cho badge sidebar ‑ gọi ở layout nên tách riêng khỏi getAdminDashboardStats (nặng hơn). */
 export async function getAdminSidebarCounts(): Promise<AdminSidebarCounts> {
   const supabase = createSupabaseAdminClient();
   const [pendingJobs, totalCandidates, totalApplications, unverifiedEmployers, newQuestions, newServiceInquiries, newKcnAdInquiries, newServicePartnerInquiries, newAdPricingInquiries] = await Promise.all([
@@ -1067,7 +1097,7 @@ export async function createArticle(input: ArticleInput): Promise<AdminArticleMu
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tiêu đề này đã tồn tại (trùng đường dẫn) — hãy đổi tiêu đề khác.", status: 409 };
+      return { ok: false, error: "Tiêu đề này đã tồn tại (trùng đường dẫn) ‑ hãy đổi tiêu đề khác.", status: 409 };
     }
     return { ok: false, error: "Không tạo được bài viết, thử lại sau.", status: 500 };
   }
@@ -1108,7 +1138,7 @@ export async function deleteArticle(articleId: string): Promise<boolean> {
   return !error;
 }
 
-/** Đăng/Ẩn nhanh 1 cú click từ bảng danh sách — không đụng title/content/category như
+/** Đăng/Ẩn nhanh 1 cú click từ bảng danh sách ‑ không đụng title/content/category như
  * updateArticle() (dành cho modal Sửa). Ẩn KHÔNG xoá bài, chỉ đưa status về "draft" nên
  * không còn hiện ở trang Tin tức & Quyền lợi, Admin bấm Đăng lại bất cứ lúc nào. */
 export async function setArticleStatus(articleId: string, status: "draft" | "published"): Promise<boolean> {
@@ -1202,7 +1232,7 @@ export async function createRightCard(input: RightCardInput): Promise<AdminRight
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tiêu đề này đã tồn tại (trùng đường dẫn) — hãy đổi tiêu đề khác.", status: 409 };
+      return { ok: false, error: "Tiêu đề này đã tồn tại (trùng đường dẫn) ‑ hãy đổi tiêu đề khác.", status: 409 };
     }
     return { ok: false, error: "Không tạo được thẻ quyền lợi, thử lại sau.", status: 500 };
   }
@@ -1240,7 +1270,7 @@ export async function deleteRightCard(cardId: string): Promise<boolean> {
   return !error;
 }
 
-/** Đăng/Ẩn nhanh 1 cú click từ bảng danh sách — không đụng icon/title/summary/... như
+/** Đăng/Ẩn nhanh 1 cú click từ bảng danh sách ‑ không đụng icon/title/summary/... như
  * updateRightCard() (dành cho modal Sửa). Ẩn KHÔNG xoá thẻ, chỉ đưa is_active về false
  * nên không còn hiện ở trang Quyền lợi & Pháp lý, Admin bấm Đăng lại bất cứ lúc nào. */
 export async function setRightCardActive(cardId: string, isActive: boolean): Promise<boolean> {
@@ -1339,7 +1369,7 @@ export async function createKcnAdCard(input: KcnAdCardInput): Promise<AdminKcnAd
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên thẻ này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên thẻ này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không tạo được thẻ quảng cáo, thử lại sau.", status: 500 };
   }
@@ -1374,7 +1404,7 @@ export async function updateKcnAdCard(cardId: string, input: KcnAdCardInput): Pr
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên thẻ này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên thẻ này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không cập nhật được thẻ quảng cáo, thử lại sau.", status: 500 };
   }
@@ -1484,7 +1514,7 @@ export async function createServicePackageCard(
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên dịch vụ này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên dịch vụ này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không tạo được dịch vụ, thử lại sau.", status: 500 };
   }
@@ -1520,7 +1550,7 @@ export async function updateServicePackageCard(
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên dịch vụ này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên dịch vụ này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không cập nhật được dịch vụ, thử lại sau.", status: 500 };
   }
@@ -1634,7 +1664,7 @@ export async function createServicePartnerCard(
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên đối tác này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên đối tác này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không tạo được đối tác, thử lại sau.", status: 500 };
   }
@@ -1672,7 +1702,7 @@ export async function updateServicePartnerCard(
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên đối tác này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên đối tác này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không cập nhật được đối tác, thử lại sau.", status: 500 };
   }
@@ -1771,7 +1801,7 @@ export async function createAdvertisingPricingCard(
     .single();
 
   if (error || !data) {
-    if (error?.code === "23505") return { ok: false, error: "Định dạng này đã tồn tại — hãy đổi tên khác.", status: 409 };
+    if (error?.code === "23505") return { ok: false, error: "Định dạng này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     return { ok: false, error: "Không tạo được bảng giá, thử lại sau.", status: 500 };
   }
   return { ok: true, card: data as AdminAdvertisingPricingCardRow };
@@ -1803,7 +1833,7 @@ export async function updateAdvertisingPricingCard(
     .single();
 
   if (error || !data) {
-    if (error?.code === "23505") return { ok: false, error: "Định dạng này đã tồn tại — hãy đổi tên khác.", status: 409 };
+    if (error?.code === "23505") return { ok: false, error: "Định dạng này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     return { ok: false, error: "Không cập nhật được bảng giá, thử lại sau.", status: 500 };
   }
   return { ok: true, card: data as AdminAdvertisingPricingCardRow };
@@ -1860,7 +1890,7 @@ export async function getAdminQAQuestions(
   if (filters.id) questionsQuery = questionsQuery.eq("id", filters.id);
   const [{ data, error, count }, newCountRes] = await Promise.all([
     questionsQuery.range(offset, offset + limit - 1),
-    // Đếm riêng trên TOÀN BỘ bảng (không giới hạn trang hiện tại) — hiển thị ở dòng mô
+    // Đếm riêng trên TOÀN BỘ bảng (không giới hạn trang hiện tại) ‑ hiển thị ở dòng mô
     // tả đầu trang, khác với danh sách `questions` chỉ chứa đúng 1 trang.
     supabase.from("qa_questions").select("id", { count: "exact", head: true }).eq("status", "new"),
   ]);
@@ -1869,7 +1899,7 @@ export async function getAdminQAQuestions(
 }
 
 /** Trả lời câu hỏi, tuỳ chọn "duyệt" (publish=true) để đăng công khai vào danh sách
- * FAQ ở /tin-tuc-quyen-loi/hoi-dap — gán sort_order cuối cùng để hiện sau các FAQ hiện có. */
+ * FAQ ở /tin-tuc-quyen-loi/hoi-dap ‑ gán sort_order cuối cùng để hiện sau các FAQ hiện có. */
 export async function answerQAQuestion(questionId: string, answer: string, publish: boolean): Promise<boolean> {
   const supabase = createSupabaseAdminClient();
   let sortOrder: number | undefined;
@@ -2037,7 +2067,7 @@ export async function createKcn(input: KcnInput): Promise<AdminKcnMutationResult
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên KCN này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên KCN này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không tạo được KCN, thử lại sau.", status: 500 };
   }
@@ -2069,7 +2099,7 @@ export async function updateKcn(kcnId: string, input: KcnInput): Promise<AdminKc
 
   if (error || !data) {
     if (error?.code === "23505") {
-      return { ok: false, error: "Tên KCN này đã tồn tại — hãy đổi tên khác.", status: 409 };
+      return { ok: false, error: "Tên KCN này đã tồn tại ‑ hãy đổi tên khác.", status: 409 };
     }
     return { ok: false, error: "Không cập nhật được KCN, thử lại sau.", status: 500 };
   }
@@ -2078,7 +2108,7 @@ export async function updateKcn(kcnId: string, input: KcnInput): Promise<AdminKc
 
 export async function deleteKcn(kcnId: string): Promise<boolean> {
   const supabase = createSupabaseAdminClient();
-  // jobs.kcn_id có ON DELETE SET NULL (xem migration create_jobs) — xoá KCN không làm
+  // jobs.kcn_id có ON DELETE SET NULL (xem migration create_jobs) ‑ xoá KCN không làm
   // mất tin tuyển dụng đang tham chiếu, chỉ gỡ liên kết KCN của các tin đó.
   const { error } = await supabase.from("kcn").delete().eq("id", kcnId);
   return !error;

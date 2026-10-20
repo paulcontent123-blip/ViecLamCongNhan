@@ -30,7 +30,7 @@ export default async function AdminCandidatesPage({
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-[16px] font-extrabold text-brand-navy">👥 Database Ứng viên — Nội bộ</h1>
+        <h1 className="text-[16px] font-extrabold text-brand-navy">👥 Database Ứng viên ‑ Nội bộ</h1>
         <Link
           href={ROUTES.adminApplications}
           className="rounded-lg bg-brand-orange-light px-3 py-2 text-[12px] font-bold text-brand-orange transition hover:brightness-95"
@@ -87,13 +87,13 @@ export default async function AdminCandidatesPage({
                       {c.zalo && <> · Zalo: {c.zalo}</>}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-brand-navy/60">{provinceName(c.province) || "—"}</td>
-                  <td className="px-4 py-3 text-brand-navy/60">{industryLabel(c.desired_industry) || "—"}</td>
+                  <td className="px-4 py-3 text-brand-navy/60">{provinceName(c.province) || "‑"}</td>
+                  <td className="px-4 py-3 text-brand-navy/60">{industryLabel(c.desired_industry) || "‑"}</td>
                   <td className="px-4 py-3 text-brand-navy/60">
-                    {c.desired_salary_min ? `${(c.desired_salary_min / 1_000_000).toLocaleString("vi-VN")}tr+` : "—"}
+                    {c.desired_salary_min ? `${(c.desired_salary_min / 1_000_000).toLocaleString("vi-VN")}tr+` : "‑"}
                   </td>
                   <td className="px-4 py-3 text-brand-navy/60">
-                    {c.experience_years !== null ? `${c.experience_years} năm` : "—"}
+                    {c.experience_years !== null ? `${c.experience_years} năm` : "‑"}
                   </td>
                   <td className="px-4 py-3">
                     <CandidateStatusSelect candidateId={c.id} currentStatus={c.status} />

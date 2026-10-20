@@ -12,11 +12,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const job = await getCampaignBySlug(slug);
-  if (!job) return { title: "Không tìm thấy chiến dịch — ViecLamCongNhan.com" };
+  if (!job) return { title: "Không tìm thấy chiến dịch | ViecLamCongNhan.com" };
 
-  const companyName = job.employers?.company_name ?? "Nhà tuyển dụng ẩn danh";
   return {
-    title: `${job.title} — Chiến dịch tuyển dụng ${companyName} | ViecLamCongNhan.com`,
+    title: `${job.title} | ViecLamCongNhan.com`,
     description: (job.campaign_story || job.description).slice(0, 160),
   };
 }

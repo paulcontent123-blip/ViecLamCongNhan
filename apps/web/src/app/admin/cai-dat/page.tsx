@@ -44,7 +44,7 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="mt-4 rounded-xl border border-dashed border-black/10 bg-white px-4 py-3 text-[12.5px] text-brand-navy/50">
-        ⚠️ Trang này chưa nối cơ sở dữ liệu (cần bảng <code className="rounded bg-black/5 px-1 py-0.5">settings</code> —
+        ⚠️ Trang này chưa nối cơ sở dữ liệu (cần bảng <code className="rounded bg-black/5 px-1 py-0.5">settings</code> ‑
         hiện chưa có trong schema Supabase). Cấu hình thật hiện đọc từ biến môi trường trên server.
       </div>
     </div>

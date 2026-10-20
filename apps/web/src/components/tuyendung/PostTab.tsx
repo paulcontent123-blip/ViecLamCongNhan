@@ -38,7 +38,7 @@ export function PostTab({
       <div className="text-[32px]">🔒</div>
       <div className="mt-2 text-[15px] font-bold text-brand-navy">Cần có tài khoản Nhà tuyển dụng để đăng tin</div>
       <p className="mx-auto mt-2 max-w-md text-[13px] text-brand-navy/55">
-        Tạo tài khoản miễn phí trong 30 giây — không cần thẻ, không cần thanh toán trước.
+        Tạo tài khoản miễn phí trong 30 giây ‑ không cần thẻ, không cần thanh toán trước.
         Đăng tin đầu tiên ngay sau khi đăng ký.
       </p>
       <div className="mt-5 flex flex-wrap justify-center gap-3">

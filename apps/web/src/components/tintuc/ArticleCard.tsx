@@ -25,7 +25,7 @@ export function ArticleCard({ article }: { article: ArticleRow }) {
         <div className={`mb-1.5 text-[10px] font-bold uppercase tracking-wide ${meta.textClass}`}>{meta.label}</div>
         <div className="mb-1.5 text-[14px] font-bold leading-snug text-brand-navy">{article.title}</div>
         <div className="text-[11.5px] text-brand-navy/45">
-          📅 {article.published_at ? new Date(article.published_at).toLocaleDateString("vi-VN") : "—"} · ⏱{" "}
+          📅 {article.published_at ? new Date(article.published_at).toLocaleDateString("vi-VN") : "‑"} · ⏱{" "}
           {article.read_minutes} phút đọc
         </div>
       </div>

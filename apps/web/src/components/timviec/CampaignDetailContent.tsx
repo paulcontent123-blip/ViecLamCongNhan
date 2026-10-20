@@ -41,7 +41,7 @@ export function CampaignDetailContent({ job }: { job: JobWithRelations }) {
     <div>
       <div className={`relative flex h-[180px] items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br ${theme.gradientClass} text-[64px] sm:h-[220px]`}>
         <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-brand-navy shadow-sm">
-          ⭐ PR Featured — Chiến dịch tuyển dụng
+          ⭐ PR Featured ‑ Chiến dịch tuyển dụng
         </span>
         <span className="absolute right-4 top-4 rounded-full bg-brand-navy/80 px-3 py-1.5 text-[11px] font-bold text-white">
           Tuyển {job.quantity.toLocaleString("vi-VN")} người

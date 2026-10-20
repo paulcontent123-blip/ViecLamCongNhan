@@ -16,7 +16,7 @@ export async function CampaignShowcase({ candidatesCount }: { candidatesCount: n
           Các công ty đang tuyển <em className="text-brand-orange not-italic">quy mô lớn</em>
         </h2>
         <p className="mt-2 max-w-xl text-[13.5px] text-brand-navy/50">
-          Những chiến dịch tuyển dụng hàng trăm công nhân — được ViecLamCongNhan.com triển khai PR chuyên sâu,
+          Những chiến dịch tuyển dụng hàng trăm công nhân ‑ được ViecLamCongNhan.com triển khai PR chuyên sâu,
           tiếp cận đúng ứng viên trong KCN.
         </p>
 

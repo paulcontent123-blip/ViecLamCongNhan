@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Client Supabase công khai — ANON key, tôn trọng RLS, KHÔNG đọc cookie.
+ * Client Supabase công khai ‑ ANON key, tôn trọng RLS, KHÔNG đọc cookie.
  *
  * Khác createSupabaseServerClient ở chỗ không chạm vào cookies(), nhờ vậy các
  * route dùng nó (sitemap.xml) vẫn cache được thay vì bị Next ép render động

@@ -16,7 +16,7 @@ export function QAManagement({
       <p className="mb-5 text-[13px] text-brand-navy/50">
         Câu hỏi NLĐ gửi từ form Hỏi đáp ({total.toLocaleString("vi-VN")}
         {newCount > 0 ? ` · ${newCount} câu hỏi mới chưa trả lời` : ""}). Trả lời rồi &ldquo;Duyệt &amp; đăng
-        công khai&rdquo; để hiện vào FAQ ở trang Hỏi đáp — thông tin liên hệ chỉ Admin nhìn thấy.
+        công khai&rdquo; để hiện vào FAQ ở trang Hỏi đáp ‑ thông tin liên hệ chỉ Admin nhìn thấy.
       </p>
 
       {questions.length === 0 ? (

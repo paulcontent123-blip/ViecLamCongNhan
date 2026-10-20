@@ -16,7 +16,7 @@ export default async function UngVienPage({
           Để lại thông tin tìm việc
         </h1>
         <p className="mt-3 text-[14px] leading-relaxed text-brand-navy/55">
-          Điền SĐT + Zalo + tỉnh thành mong muốn — nhà tuyển dụng phù hợp sẽ liên hệ trực tiếp với bạn.
+          Điền SĐT + Zalo + tỉnh thành mong muốn ‑ nhà tuyển dụng phù hợp sẽ liên hệ trực tiếp với bạn.
         </p>
       </div>
 

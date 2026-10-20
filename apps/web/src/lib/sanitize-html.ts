@@ -1,7 +1,7 @@
 /**
  * Sanitizer HTML tự viết (không thêm dependency) cho nội dung bài viết soạn bằng
  * RichTextEditor ở trang Quản trị. Chạy phía server ngay trước khi ghi DB, nên dữ
- * liệu trong bảng articles luôn sạch — trang công khai render bằng
+ * liệu trong bảng articles luôn sạch ‑ trang công khai render bằng
  * dangerouslySetInnerHTML mà không phải lọc lại.
  *
  * Nguyên tắc: allowlist (chỉ giữ thẻ/thuộc tính/CSS nằm trong danh sách cho phép),
@@ -10,7 +10,7 @@
 
 const VOID_TAGS = new Set(["br", "hr", "img"]);
 
-/** Thẻ được giữ lại — khớp đúng những gì thanh công cụ của editor tạo ra. */
+/** Thẻ được giữ lại ‑ khớp đúng những gì thanh công cụ của editor tạo ra. */
 const ALLOWED_TAGS = new Set([
   "p", "br", "hr", "div", "span",
   "strong", "b", "em", "i", "u", "s", "sup", "sub",
@@ -33,7 +33,7 @@ const ALLOWED_ATTRS: Record<string, Set<string>> = {
   colgroup: new Set(["span"]),
 };
 
-/** Thuộc tính style inline được phép — đủ cho canh lề, bảng và cỡ ảnh. */
+/** Thuộc tính style inline được phép ‑ đủ cho canh lề, bảng và cỡ ảnh. */
 const ALLOWED_CSS_PROPS = new Set([
   "text-align", "font-weight", "font-style", "text-decoration",
   "width", "height", "max-width",
@@ -61,7 +61,7 @@ function sanitizeStyle(value: string): string | null {
     const prop = decl.slice(0, idx).trim().toLowerCase();
     const val = decl.slice(idx + 1).trim();
     if (!ALLOWED_CSS_PROPS.has(prop)) continue;
-    // url(), expression(), \ escape — chặn hết, các giá trị hợp lệ ở đây không cần.
+    // url(), expression(), \ escape ‑ chặn hết, các giá trị hợp lệ ở đây không cần.
     if (/url\s*\(|expression|javascript:|@import|[\\]/i.test(val)) continue;
     if (!val) continue;
     kept.push(`${prop}: ${val}`);
@@ -163,7 +163,7 @@ export function sanitizeArticleHtml(input: string): string {
   return out.join("").trim();
 }
 
-/** Rút text thuần từ HTML — dùng để đếm ký tự/chữ khi validate và tính thời gian đọc. */
+/** Rút text thuần từ HTML ‑ dùng để đếm ký tự/chữ khi validate và tính thời gian đọc. */
 export function htmlToPlainText(html: string): string {
   return html
     .replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ")

@@ -15,10 +15,10 @@ function toSp(searchParams: Record<string, string | string[] | undefined>): Reco
   return out;
 }
 
-// `toggleKey` là searchParam mà chip này bật/tắt — bấm lần 2 khi đang active sẽ xoá
+// `toggleKey` là searchParam mà chip này bật/tắt ‑ bấm lần 2 khi đang active sẽ xoá
 // đúng param đó (không đụng các bộ lọc khác), thay vì phải tải lại trang mới bỏ được.
 // "Tất cả" không có toggleKey vì bản thân nó đã là nút "xoá hết" (không cần bật/tắt).
-// Toàn bộ tham số coi là "bộ lọc" (không tính tab/page) — dùng để biết có đang lọc
+// Toàn bộ tham số coi là "bộ lọc" (không tính tab/page) ‑ dùng để biết có đang lọc
 // gì hay không, hiện nút "Xóa tất cả bộ lọc" khi cần.
 const FILTER_PARAM_KEYS = [
   "q",
@@ -164,7 +164,7 @@ export default async function TimViecLamPage({
 
                 {total > 0 && (
                   <div className="mt-6 text-center text-[12.5px] text-brand-navy/45">
-                    Trang {currentPage}/{totalPages} — hiển thị {jobs.length} / {total} tin
+                    Trang {currentPage}/{totalPages} ‑ hiển thị {jobs.length} / {total} tin
                   </div>
                 )}
                 <Pagination currentPage={currentPage} totalPages={totalPages} sp={sp} />
@@ -174,7 +174,7 @@ export default async function TimViecLamPage({
         ) : (
           <div className="mt-6">
             <p className="mb-5 text-[13.5px] text-brand-navy/50">
-              {kcnList.length} khu công nghiệp đã có trong hệ thống — bấm vào KCN để xem tin tuyển dụng đang có.
+              {kcnList.length} khu công nghiệp đã có trong hệ thống ‑ bấm vào KCN để xem tin tuyển dụng đang có.
             </p>
             {kcnList.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-black/10 bg-white p-10 text-center text-[13.5px] text-brand-navy/45">

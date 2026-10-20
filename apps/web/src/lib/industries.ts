@@ -1,6 +1,6 @@
 // Ngành nghề cho tin tuyển dụng (jobs.industry là free text, không ràng buộc enum
-// ở DB — danh sách này là "gợi ý chuẩn hoá" dùng chung giữa filter sidebar và seed).
-// Ngoài danh sách này, NTD/ứng viên có thể chọn "Ngành nghề khác" và tự gõ tên —
+// ở DB ‑ danh sách này là "gợi ý chuẩn hoá" dùng chung giữa filter sidebar và seed).
+// Ngoài danh sách này, NTD/ứng viên có thể chọn "Ngành nghề khác" và tự gõ tên ‑
 // xem OTHER_INDUSTRY_VALUE + IndustrySelect/IndustryFilterSelect.
 export const JOB_INDUSTRIES = [
   { value: "may_mac", label: "May mặc · Giày da" },
@@ -19,7 +19,7 @@ export function industryLabel(value: string | null | undefined): string {
 }
 
 // employers.industry KHÔNG còn ràng buộc enum ở DB (đã bỏ CHECK constraint, xem
-// migration 20260820110001) — danh sách này giờ cũng chỉ là gợi ý, có thể tự gõ
+// migration 20260820110001) ‑ danh sách này giờ cũng chỉ là gợi ý, có thể tự gõ
 // "Ngành nghề khác" giống JOB_INDUSTRIES.
 export const EMPLOYER_INDUSTRIES = [
   { value: "may_mac", label: "May mặc · Giày da" },
@@ -30,16 +30,16 @@ export const EMPLOYER_INDUSTRIES = [
 ] as const;
 
 // Sentinel value chỉ dùng nội bộ ở UI (IndustrySelect/IndustryFilterSelect) để biết
-// lúc nào hiện ô nhập tự do — KHÔNG BAO GIỜ được gửi lên server hay lưu vào DB, giá
+// lúc nào hiện ô nhập tự do ‑ KHÔNG BAO GIỜ được gửi lên server hay lưu vào DB, giá
 // trị thật gửi đi luôn là tên ngành NTD/ứng viên tự gõ.
 export const OTHER_INDUSTRY_VALUE = "__khac__";
 
 /**
  * Chuẩn hoá để so khớp ngành nghề không phân biệt hoa/thường, có dấu hay không dấu
- * (VD: "May Mặc", "may mac", "MAY MAC" đều khớp nhau) — PHẢI cho ra kết quả giống hệt
+ * (VD: "May Mặc", "may mac", "MAY MAC" đều khớp nhau) ‑ PHẢI cho ra kết quả giống hệt
  * hàm SQL public.text_search_key() ở migration 20260820110001, vì 1 bên chuẩn hoá lúc
  * lưu (generated column industry_key/desired_industry_key), 1 bên chuẩn hoá lúc lọc
- * (dùng hàm này) rồi so bằng .eq() — sai lệch dù nhỏ cũng làm lọc/auto-blast bỏ sót.
+ * (dùng hàm này) rồi so bằng .eq() ‑ sai lệch dù nhỏ cũng làm lọc/auto-blast bỏ sót.
  */
 export function normalizeIndustryText(value: string): string {
   return value
@@ -51,7 +51,7 @@ export function normalizeIndustryText(value: string): string {
 }
 
 /**
- * Chuẩn hoá + escape ký tự đặc biệt của SQL LIKE (%, _, \) rồi bọc %...% — dùng với
+ * Chuẩn hoá + escape ký tự đặc biệt của SQL LIKE (%, _, \) rồi bọc %...% ‑ dùng với
  * .ilike("industry_key"/"desired_industry_key", ...) để lọc theo TỪNG PHẦN ký tự gõ
  * vào (VD: gõ "sản xuất" vẫn khớp "Sản xuất - vận hành máy"), không cần gõ đủ nguyên
  * cụm như so khớp tuyệt đối .eq() trước đây.

@@ -24,7 +24,7 @@ export default async function EmployerCampaignsPage() {
         <div className="mt-2 text-[15px] font-bold text-brand-navy">Bạn chưa đăng ký Chiến dịch nào</div>
         <p className="mx-auto mt-2 max-w-md text-[13px] text-brand-navy/55">
           Gói Chiến dịch (1.500.000đ/tin · 60 ngày) cho tin của bạn 1 trang riêng nổi bật, hiển thị ở mục
-          &ldquo;Chiến dịch tuyển dụng nổi bật&rdquo; trên trang chủ — mua thêm khi đăng tin mới, độc lập với
+          &ldquo;Chiến dịch tuyển dụng nổi bật&rdquo; trên trang chủ ‑ mua thêm khi đăng tin mới, độc lập với
           gói thuê bao tài khoản.
         </p>
         <Link

@@ -35,10 +35,10 @@ export function FilterSidebar({ sp }: { sp: Record<string, string | undefined> }
   const hasActiveSidebarFilters = FILTER_FIELD_KEYS.some((k) => sp[k]);
 
   // Các input dưới đây là uncontrolled (defaultValue/defaultChecked) nên React chỉ
-  // đọc giá trị mặc định lúc mount — điều hướng qua Link (không reload trang) đổi sp
+  // đọc giá trị mặc định lúc mount ‑ điều hướng qua Link (không reload trang) đổi sp
   // nhưng KHÔNG tự cập nhật lại DOM input đã mount. Gắn key theo chính các tham số lọc
   // để buộc React remount cả form mỗi khi sp đổi, đảm bảo form luôn khớp URL hiện tại
-  // (kể cả khi bấm "Xóa lọc"/"Xóa tất cả bộ lọc" — không còn bị kẹt giá trị cũ).
+  // (kể cả khi bấm "Xóa lọc"/"Xóa tất cả bộ lọc" ‑ không còn bị kẹt giá trị cũ).
   const formKey = FILTER_FIELD_KEYS.map((k) => `${k}=${sp[k] ?? ""}`).join("&");
 
   return (

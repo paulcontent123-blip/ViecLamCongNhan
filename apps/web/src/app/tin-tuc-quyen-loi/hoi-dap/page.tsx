@@ -10,7 +10,7 @@ export default async function HoiDapPage() {
   return (
     <div className="px-4 pb-20 pt-10 sm:px-8 lg:px-[52px]">
       {/* Khung ngoài dùng chung max-w-6xl với 2 trang tab còn lại (Tin tức / Quyền
-          lợi) — không co giãn kích thước khi chuyển tab. Nội dung bên trong canh lề
+          lợi) ‑ không co giãn kích thước khi chuyển tab. Nội dung bên trong canh lề
           trái đồng nhất với heading/tab phía trên (không bọc mx-auto căn giữa), khớp
           bố cục trong file .html gốc. */}
       <div className="mx-auto max-w-6xl">
@@ -18,10 +18,10 @@ export default async function HoiDapPage() {
           Tin tức & Quyền lợi công nhân
         </div>
         <h1 className="mt-2 text-[26px] font-extrabold text-brand-navy sm:text-[30px]">
-          Hỏi & Đáp — <em className="text-brand-orange not-italic">quyền lợi người lao động</em>
+          Hỏi & Đáp ‑ <em className="text-brand-orange not-italic">quyền lợi người lao động</em>
         </h1>
         <p className="mt-2 max-w-2xl text-[13.5px] text-brand-navy/50">
-          Câu hỏi thường gặp về pháp luật lao động — hoặc gửi câu hỏi riêng để VEA Law phản hồi trong 24 giờ.
+          Câu hỏi thường gặp về pháp luật lao động ‑ hoặc gửi câu hỏi riêng để VEA Law phản hồi trong 24 giờ.
         </p>
 
         <div className="mt-6">

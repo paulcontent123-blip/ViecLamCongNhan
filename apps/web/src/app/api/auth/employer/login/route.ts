@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   const emailIdentifier = identifier.toLowerCase();
 
   const supabase = createSupabaseAdminClient();
-  // 2 truy vấn .eq() riêng biệt thay vì ghép chuỗi vào .or() — tránh identifier
+  // 2 truy vấn .eq() riêng biệt thay vì ghép chuỗi vào .or() ‑ tránh identifier
   // chứa ký tự đặc biệt (,.()) làm sai lệch cú pháp filter của PostgREST.
   const baseQuery = () =>
     supabase

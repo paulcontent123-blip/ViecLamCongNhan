@@ -20,7 +20,6 @@ export function BuyPackageButton({
 }) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   if (!verified) {
     return (
@@ -35,11 +34,6 @@ export function BuyPackageButton({
     );
   }
 
-  function openModal() {
-    setSuccess(false);
-    setModalOpen(true);
-  }
-
   async function handleConfirm(method: PaymentMethod) {
     try {
       const res = await fetch("/api/employer/orders", {
@@ -50,7 +44,7 @@ export function BuyPackageButton({
       const data = await res.json();
       if (!res.ok) return { ok: false as const, error: data.error ?? "Không tạo được đơn hàng." };
       router.refresh();
-      return { ok: true as const };
+      return { ok: true as const, payment: data.payment };
     } catch {
       return { ok: false as const, error: "Không kết nối được máy chủ." };
     }
@@ -60,7 +54,7 @@ export function BuyPackageButton({
     <>
       <button
         type="button"
-        onClick={openModal}
+        onClick={() => setModalOpen(true)}
         className={`w-full rounded-lg py-2 text-[12px] font-bold transition ${
           highlight
             ? "bg-brand-orange text-white hover:brightness-105"
@@ -70,41 +64,19 @@ export function BuyPackageButton({
         {highlight ? "Mua ngay ★" : "Mua ngay"}
       </button>
 
-      {modalOpen && !success && (
+      {modalOpen && (
         <PaymentMethodModal
           title="Nâng cấp gói tài khoản"
-          description={`Gói ${label} — thuê bao theo tháng`}
+          description={`Gói ${label} ‑ thuê bao theo tháng`}
           priceVnd={priceVnd}
+          footNote={`Gói ${label} được kích hoạt ngay sau khi VEA xác minh đã nhận thanh toán (thường trong vài giờ làm việc).`}
           onConfirm={handleConfirm}
-          onConfirmed={() => setSuccess(true)}
-          onClose={() => setModalOpen(false)}
+          onConfirmed={() => router.refresh()}
+          onClose={() => {
+            setModalOpen(false);
+            router.refresh();
+          }}
         />
-      )}
-
-      {modalOpen && success && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
-          onClick={() => setModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-[40px]">✅</div>
-            <div className="mt-2 text-[16px] font-extrabold text-brand-navy">Thanh toán thành công!</div>
-            <p className="mx-auto mt-1.5 max-w-xs text-[13px] text-brand-navy/55">
-              Đơn hàng đang chờ Admin xác nhận — gói {label} sẽ được kích hoạt ngay sau khi xác nhận (thường
-              trong vài giờ làm việc).
-            </p>
-            <button
-              type="button"
-              onClick={() => setModalOpen(false)}
-              className="mt-5 w-full rounded-lg bg-brand-orange py-2.5 text-[13px] font-bold text-white transition hover:brightness-105"
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
       )}
     </>
   );

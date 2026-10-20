@@ -39,11 +39,11 @@ export function Hero({ stats }: { stats: HomeStats }) {
           <h1 className="text-[34px] font-extrabold leading-tight text-brand-navy sm:text-[44px]">
             Tìm việc <em className="text-brand-orange not-italic">công nhân</em>
             <br />
-            gần nhà — lương tốt.
+            gần nhà ‑ lương tốt.
           </h1>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-brand-navy/60">
             {stats.approvedJobs.toLocaleString("vi-VN")} tin tuyển dụng từ nhà máy, KCN trên {stats.provinces} tỉnh
-            thành. Ứng tuyển ngay không cần lập tài khoản — chỉ cần số điện thoại là xong.
+            thành. Ứng tuyển ngay không cần lập tài khoản ‑ chỉ cần số điện thoại là xong.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a

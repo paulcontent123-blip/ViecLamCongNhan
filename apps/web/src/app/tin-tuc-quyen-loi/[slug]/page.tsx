@@ -63,7 +63,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
           {article.title}
         </h1>
         <div className="mt-3 text-[12.5px] text-brand-navy/45">
-          📅 {article.published_at ? new Date(article.published_at).toLocaleDateString("vi-VN") : "—"} · ⏱{" "}
+          📅 {article.published_at ? new Date(article.published_at).toLocaleDateString("vi-VN") : "‑"} · ⏱{" "}
           {article.read_minutes} phút đọc
           {article.author_name ? ` · ✍ ${article.author_name}` : ""}
         </div>

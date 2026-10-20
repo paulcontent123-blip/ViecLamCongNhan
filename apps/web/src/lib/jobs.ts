@@ -6,7 +6,7 @@ export interface JobFilters {
   province?: string;
   industry?: string;
   kcnId?: string;
-  salaryMin?: number; // triệu/tháng — lọc job có salary_max >= ngưỡng này
+  salaryMin?: number; // triệu/tháng ‑ lọc job có salary_max >= ngưỡng này
   urgent?: boolean;
   housing?: boolean;
   shuttle?: boolean;
@@ -33,8 +33,8 @@ export async function getJobs(
 
   if (filters.province) query = query.eq("province_code", filters.province);
   // industry_key so khớp không phân biệt hoa/thường + không dấu, và chỉ cần chứa 1
-  // phần ký tự gõ vào (ILIKE %...%) — không cần gõ đủ nguyên cụm (xem migration
-  // 20260820110001) — cần thiết vì industry giờ có thể là text NTD tự gõ, không chỉ
+  // phần ký tự gõ vào (ILIKE %...%) ‑ không cần gõ đủ nguyên cụm (xem migration
+  // 20260820110001) ‑ cần thiết vì industry giờ có thể là text NTD tự gõ, không chỉ
   // slug chuẩn trong JOB_INDUSTRIES.
   if (filters.industry) query = query.ilike("industry_key", industryLikePattern(filters.industry));
   if (filters.kcnId) query = query.eq("kcn_id", filters.kcnId);
@@ -48,13 +48,13 @@ export async function getJobs(
   if (filters.q) query = query.ilike("title", `%${filters.q}%`);
 
   // tier_weight ưu tiên tin của tài khoản Premium/gói Chiến dịch lên đầu, kế tiếp
-  // Basic, cuối cùng mới tới Free — quyền lợi "hiển thị profile công ty ngoài trang
+  // Basic, cuối cùng mới tới Free ‑ quyền lợi "hiển thị profile công ty ngoài trang
   // chủ/tìm kiếm" (xem account-tiers.ts).
   query = query.order("tier_weight", { ascending: false });
   if (filters.sort === "salary_desc") {
     query = query.order("salary_max", { ascending: false, nullsFirst: false });
   } else {
-    // Trong cùng 1 hạng (VD 2 tin Basic), tin ĐĂNG TRƯỚC được đẩy lên trước — không
+    // Trong cùng 1 hạng (VD 2 tin Basic), tin ĐĂNG TRƯỚC được đẩy lên trước ‑ không
     // phải mới nhất lên đầu. Đây là lựa chọn nghiệp vụ có chủ đích (công bằng theo
     // thứ tự đăng ký, tránh tin trả phí cũ bị tin trả phí mới liên tục đẩy xuống).
     query = query.order("created_at", { ascending: true });
@@ -86,12 +86,12 @@ export async function getJobBySlug(slug: string): Promise<JobWithRelations | nul
   return data as unknown as JobWithRelations;
 }
 
-// Chỉ là trần an toàn cho 1 query — khối "Chiến dịch tuyển dụng nổi bật" tự phân
+// Chỉ là trần an toàn cho 1 query ‑ khối "Chiến dịch tuyển dụng nổi bật" tự phân
 // trang phía client (xem CampaignGrid.tsx, 9 chiến dịch/trang + 1 ô CTA cố định),
 // không phải số lượng thẻ hiển thị 1 lần như trước.
 export const FEATURED_CAMPAIGNS_LIMIT = 45;
 
-/** Chiến dịch tuyển dụng (tier='campaign') đang còn hạn hiển thị — dùng cho khối
+/** Chiến dịch tuyển dụng (tier='campaign') đang còn hạn hiển thị ‑ dùng cho khối
  * "Chiến dịch tuyển dụng nổi bật" ở trang chủ. */
 export async function getFeaturedCampaigns(limit = FEATURED_CAMPAIGNS_LIMIT): Promise<JobWithRelations[]> {
   const supabase = await createSupabaseServerClient();
@@ -113,7 +113,7 @@ export async function getFeaturedCampaigns(limit = FEATURED_CAMPAIGNS_LIMIT): Pr
   return (data ?? []) as unknown as JobWithRelations[];
 }
 
-/** Trang chi tiết Chiến dịch (/chien-dich/[slug]) — chỉ trả về tin tier='campaign',
+/** Trang chi tiết Chiến dịch (/chien-dich/[slug]) ‑ chỉ trả về tin tier='campaign',
  * để không lộ trang chiến dịch cho tin thường qua đúng slug. */
 export async function getCampaignBySlug(slug: string): Promise<JobWithRelations | null> {
   const supabase = await createSupabaseServerClient();

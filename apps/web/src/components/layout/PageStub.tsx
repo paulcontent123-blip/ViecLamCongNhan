@@ -16,7 +16,7 @@ export function PageStub({
       <h1 className="mt-2 text-[26px] font-extrabold text-brand-navy sm:text-[30px]">{title}</h1>
       <p className="mt-3 text-[14px] leading-relaxed text-brand-navy/55">{description}</p>
       <p className="mt-1 text-[12.5px] text-brand-navy/35">
-        Trang đang được xây dựng — nội dung chi tiết sẽ được bổ sung ở bước tiếp theo.
+        Trang đang được xây dựng ‑ nội dung chi tiết sẽ được bổ sung ở bước tiếp theo.
       </p>
       <Link
         href={ROUTES.home}

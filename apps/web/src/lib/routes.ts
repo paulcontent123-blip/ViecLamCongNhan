@@ -1,4 +1,4 @@
-// Đường dẫn trang — tập trung 1 chỗ để tránh lỗi gõ sai route (bug đã gặp ở bản
+// Đường dẫn trang ‑ tập trung 1 chỗ để tránh lỗi gõ sai route (bug đã gặp ở bản
 // HTML demo cũ: nav('jobs') trỏ tới id không tồn tại 'pg-jobs' → trang trắng).
 export const ROUTES = {
   home: "/",
@@ -32,6 +32,7 @@ export const ROUTES = {
   adminAdPricing: "/admin/quang-cao/bang-gia",
   adminAdPricingInquiries: "/admin/quang-cao/bang-gia/yeu-cau",
   adminUsers: "/admin/nguoi-dung",
+  adminPaymentChannels: "/admin/nhan-tien",
   adminSettings: "/admin/cai-dat",
   ntdLogin: "/tuyen-dung/dang-nhap",
   ntdDashboard: "/tuyen-dung/dashboard",
@@ -40,6 +41,7 @@ export const ROUTES = {
   ntdDashboardCandidates: "/tuyen-dung/dashboard/ho-so-ung-vien",
   ntdDashboardCampaigns: "/tuyen-dung/dashboard/chien-dich",
   ntdDashboardOrders: "/tuyen-dung/dashboard/don-hang",
+  ntdPayment: "/tuyen-dung/thanh-toan",
   ntdDashboardServices: "/tuyen-dung/dashboard/dich-vu-da-dat",
   ntdDashboardProfile: "/tuyen-dung/dashboard/thong-tin",
 } as const;

@@ -284,7 +284,7 @@ export function KcnAdvertisingPage({
         {activeTab === "kcn" ? (
           <section className="pt-6" role="tabpanel">
             <p className="mb-5 text-[14px] leading-relaxed text-brand-navy/60">
-              Quảng cáo banner, card nhà trọ, dịch vụ xung quanh KCN — hiển thị đúng trang KCN và tin tuyển dụng tại khu vực bạn muốn target.
+              Quảng cáo banner, card nhà trọ, dịch vụ xung quanh KCN ‑ hiển thị đúng trang KCN và tin tuyển dụng tại khu vực bạn muốn target.
             </p>
             {cards.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-black/10 bg-white p-10 text-center text-[13.5px] text-brand-navy/45">
@@ -301,7 +301,7 @@ export function KcnAdvertisingPage({
         ) : activeTab === "partner" ? (
           <section className="pt-6" role="tabpanel">
             <p className="mb-4 text-[14px] leading-relaxed text-brand-navy/60">
-              Các đơn vị đang cung cấp dịch vụ tài chính, bảo hiểm, tích lũy dành cho công nhân — phù hợp để tiếp cận tệp lao động phổ thông qua ViecLamCongNhan.
+              Các đơn vị đang cung cấp dịch vụ tài chính, bảo hiểm, tích lũy dành cho công nhân ‑ phù hợp để tiếp cận tệp lao động phổ thông qua ViecLamCongNhan.
             </p>
             <div className="mb-4 flex flex-wrap gap-1.5">
               {PARTNER_FILTERS.map((filter) => (
@@ -373,7 +373,7 @@ export function KcnAdvertisingPage({
       )}
       {selectedPricing && (
         <ServiceInquiryModal
-          serviceName={`${selectedPricing.format} — ${selectedPricing.price} / ${selectedPricing.unit}`}
+          serviceName={`${selectedPricing.format} ‑ ${selectedPricing.price} / ${selectedPricing.unit}`}
           inquiryType="advertising-pricing"
           onClose={() => setSelectedPricing(null)}
         />

@@ -7,7 +7,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await getAdminSession();
 
   // Chưa đăng nhập: đây chính là /admin/login (middleware đã chặn mọi trang admin
-  // khác) — hiện form login trần, không có khung sidebar/topbar quản trị.
+  // khác) ‑ hiện form login trần, không có khung sidebar/topbar quản trị.
   if (!session) {
     return <>{children}</>;
   }
@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="flex items-center justify-between bg-brand-navy px-4 py-3 sm:px-6">
         <div className="text-[14.5px] font-extrabold text-white">
           ViecLam<em className="not-italic text-brand-orange">CongNhan</em>
-          <span className="ml-2 font-medium text-white/40">— Quản trị</span>
+          <span className="ml-2 font-medium text-white/40">‑ Quản trị</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="hidden text-[12.5px] font-semibold text-white/70 sm:inline">{session.fullName}</span>

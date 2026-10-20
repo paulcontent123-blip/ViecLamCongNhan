@@ -35,6 +35,9 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
   const [error, setError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<"campaignName" | "message" | null>(null);
   const [payModalOpen, setPayModalOpen] = useState(false);
+  // Kết quả tạo chiến dịch chỉ hiện SAU khi NTD đóng màn hình thanh toán: hiện ngay sẽ
+  // thay thế cả tab và cuốn mất mã QR vừa tạo.
+  const [pendingResult, setPendingResult] = useState<Result>(null);
   const campaignNameRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,7 +47,7 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
         <div className="text-[32px]">📲</div>
         <div className="mt-2 text-[15px] font-bold text-brand-navy">Cần đăng nhập để tạo chiến dịch Blast</div>
         <p className="mx-auto mt-2 max-w-md text-[13px] text-brand-navy/55">
-          Gửi SMS/Zalo trực tiếp đến ứng viên phù hợp trong database — cần tài khoản Nhà tuyển dụng.
+          Gửi SMS/Zalo trực tiếp đến ứng viên phù hợp trong database ‑ cần tài khoản Nhà tuyển dụng.
         </p>
         <div className="mt-5">
           <PackageCtaButton
@@ -64,7 +67,7 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
         <div className="text-[32px]">🔒</div>
         <div className="mt-2 text-[15px] font-bold text-brand-navy">Cần xác minh tài khoản để gửi Blast</div>
         <p className="mx-auto mt-2 max-w-md text-[13px] text-brand-navy/55">
-          Tài khoản của bạn đang chờ Admin xác minh pháp nhân — chiến dịch Blast SMS/Zalo chỉ mở cho nhà
+          Tài khoản của bạn đang chờ Admin xác minh pháp nhân ‑ chiến dịch Blast SMS/Zalo chỉ mở cho nhà
           tuyển dụng đã xác minh để tránh spam tới ứng viên trong database.
         </p>
       </div>
@@ -135,8 +138,8 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
       });
       const data = await res.json();
       if (!res.ok) return { ok: false as const, error: data.error ?? "Không tạo được chiến dịch." };
-      setResult(data);
-      return { ok: true as const };
+      setPendingResult(data);
+      return { ok: true as const, payment: data.payment };
     } catch {
       return { ok: false as const, error: "Không kết nối được máy chủ." };
     }
@@ -149,7 +152,7 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
         <div className="mt-2 text-[15px] font-bold text-emerald-800">Đã tạo chiến dịch Blast!</div>
         <p className="mt-2 text-[13px] text-emerald-700">
           Sẽ gửi tới {result.recipientCount.toLocaleString("vi-VN")} ứng viên (mới điền form/ứng tuyển gần
-          đây nhất). Đơn hàng đang chờ xác nhận thanh toán — xem chi tiết ở mục Đơn hàng &amp; Gói trong
+          đây nhất). Đơn hàng đang chờ xác nhận thanh toán ‑ xem chi tiết ở mục Đơn hàng &amp; Gói trong
           dashboard.
         </p>
         <a
@@ -203,7 +206,7 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
               }`}
             />
             {fieldError === "campaignName" && (
-              <span className="mt-1 block text-[11px] font-normal text-red-600">Thiếu tên chiến dịch — nhập ở đây.</span>
+              <span className="mt-1 block text-[11px] font-normal text-red-600">Thiếu tên chiến dịch ‑ nhập ở đây.</span>
             )}
           </label>
 
@@ -244,7 +247,7 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
             />
             {fieldError === "message" ? (
               <span className="mt-1 block text-[11px] font-normal text-red-600">
-                Thiếu nội dung tin nhắn (cần tối thiểu 10 ký tự) — nhập ở đây.
+                Thiếu nội dung tin nhắn (cần tối thiểu 10 ký tự) ‑ nhập ở đây.
               </span>
             ) : (
               <span className="mt-1 block text-right text-[11px] text-brand-navy/40">{message.length}/160</span>
@@ -340,7 +343,7 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
             </div>
             {estimate.reach === 0 && (
               <p className="mt-3 text-[12px] text-white/70">
-                Chưa có ứng viên nào khớp bộ lọc này trong database — thử bỏ bớt tỉnh/ngành mục tiêu.
+                Chưa có ứng viên nào khớp bộ lọc này trong database ‑ thử bỏ bớt tỉnh/ngành mục tiêu.
               </p>
             )}
             <button
@@ -358,12 +361,15 @@ export function BlastTab({ loggedIn, verified }: { loggedIn: boolean; verified?:
       {payModalOpen && estimate && (
         <PaymentMethodModal
           title="Thanh toán chiến dịch Blast"
-          description={`${campaignName} — ${estimate.recipientCount.toLocaleString("vi-VN")} ứng viên · ${channels.find((c) => c.id === channel)?.name}`}
+          description={`${campaignName} ‑ ${estimate.recipientCount.toLocaleString("vi-VN")} ứng viên · ${channels.find((c) => c.id === channel)?.name}`}
           priceVnd={estimate.priceVnd}
-          footNote="Chiến dịch ở trạng thái chờ xác nhận — VEA sẽ gửi Blast sau khi xác minh đã nhận thanh toán."
+          footNote="Chiến dịch ở trạng thái chờ xác nhận ‑ VEA sẽ gửi Blast sau khi xác minh đã nhận thanh toán."
           onConfirm={handleConfirmPayment}
-          onConfirmed={() => setPayModalOpen(false)}
-          onClose={() => setPayModalOpen(false)}
+          onConfirmed={() => {}}
+          onClose={() => {
+            setPayModalOpen(false);
+            if (pendingResult) setResult(pendingResult);
+          }}
         />
       )}
     </div>

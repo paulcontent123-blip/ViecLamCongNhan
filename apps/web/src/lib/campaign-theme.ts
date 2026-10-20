@@ -1,4 +1,4 @@
-// Theme banner trang Chiến dịch — NTD tự chọn khi chỉnh sửa chiến dịch của mình.
+// Theme banner trang Chiến dịch ‑ NTD tự chọn khi chỉnh sửa chiến dịch của mình.
 // Không phụ thuộc server-only nên dùng được cả ở Client Component (form chọn theme).
 export const CAMPAIGN_THEMES = {
   orange: { label: "Cam", swatchClass: "bg-orange-400", gradientClass: "from-orange-300 to-orange-500" },

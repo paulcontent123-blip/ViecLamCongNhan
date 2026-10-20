@@ -33,7 +33,7 @@ export default async function EmployerApplicationsPage() {
       <div className="mb-4 rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="text-[12.5px] font-bold text-brand-navy">
-            📞 Lượt xem thông tin liên hệ — gói {perks.label}
+            📞 Lượt xem thông tin liên hệ ‑ gói {perks.label}
           </div>
           <div className="font-mono text-[12.5px] font-bold text-brand-orange">
             {perks.candidateViewLimit > 0 ? `${viewedCount}/${perks.candidateViewLimit} đã xem tháng này` : "Chưa mở khoá"}
@@ -64,7 +64,7 @@ export default async function EmployerApplicationsPage() {
                     {app.candidates?.full_name ?? "Ứng viên"}
                   </div>
                   <div className="mt-0.5 text-[12.5px] text-brand-navy/50">
-                    Ứng tuyển: <span className="font-semibold text-brand-navy/70">{app.jobs?.title ?? "—"}</span>
+                    Ứng tuyển: <span className="font-semibold text-brand-navy/70">{app.jobs?.title ?? "‑"}</span>
                   </div>
                 </div>
                 <ApplicationStatusSelect applicationId={app.id} currentStatus={app.status} verified={verified} />

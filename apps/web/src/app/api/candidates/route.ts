@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Chỉ cho 1 hồ sơ/SĐT: nếu SĐT này đã tồn tại và ứng viên chưa xác nhận ghi đè,
-  // trả về 409 để client hỏi xác nhận trước — không ghi gì vào DB ở bước này.
+  // trả về 409 để client hỏi xác nhận trước ‑ không ghi gì vào DB ở bước này.
   const { data: existingRows, error: existingError } = await supabase
     .from("candidates")
     .select("id, source, user_id")

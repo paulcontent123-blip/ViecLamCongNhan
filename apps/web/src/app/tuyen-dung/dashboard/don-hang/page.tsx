@@ -1,17 +1,20 @@
+import Link from "next/link";
 import { getEmployerSession } from "@/lib/employer-auth";
 import { getEmployerOrders, getEmployerAccountTier, isEmployerVerified } from "@/lib/employer";
 import { ACCOUNT_TIERS, PAID_ACCOUNT_TIERS } from "@/lib/account-tiers";
 import { JOB_ADDONS } from "@/lib/packages";
+import { PAYMENT_STATE_LABEL, paymentState } from "@/lib/payment";
 import { BuyPackageButton } from "@/components/ntd/BuyPackageButton";
 import { CampaignPurchaseCard } from "@/components/ntd/CampaignPurchaseCard";
 
-// Đơn chỉ được tạo sau khi NTD bấm "Xác nhận thanh toán" ở modal (xem
-// BuyPackageButton.tsx) nên "pending" ở đây nghĩa là "đã thanh toán, chờ VEA xác nhận".
-const ORDER_STATUS_LABEL: Record<string, { label: string; className: string }> = {
-  pending: { label: "Đã thanh toán — chờ xác nhận", className: "bg-amber-50 text-amber-700" },
-  paid: { label: "Đã xác nhận", className: "bg-emerald-50 text-emerald-700" },
-  cancelled: { label: "Đã huỷ", className: "bg-black/5 text-brand-navy/50" },
-  refunded: { label: "Đã hoàn tiền", className: "bg-sky-50 text-sky-700" },
+// Trạng thái hiển thị suy ra từ orders.status + việc NTD đã bấm "Tôi đã thanh toán"
+// chưa (xem lib/payment.ts): tạo đơn xong mà chưa chuyển tiền vẫn là "Chưa thanh toán".
+const ORDER_STATE_CLASS: Record<string, string> = {
+  unpaid: "bg-black/5 text-brand-navy/50",
+  awaiting: "bg-amber-50 text-amber-700",
+  paid: "bg-emerald-50 text-emerald-700",
+  cancelled: "bg-black/5 text-brand-navy/50",
+  refunded: "bg-sky-50 text-sky-700",
 };
 
 const ORDER_TYPE_LABEL: Record<string, string> = {
@@ -58,7 +61,7 @@ export default async function EmployerOrdersPage() {
       <div>
         <h2 className="mb-3 text-[15px] font-extrabold text-brand-navy">💳 Nâng cấp gói tài khoản</h2>
         <p className="mb-4 text-[13px] text-brand-navy/50">
-          Gói hiện tại: <strong className="text-brand-navy">{ACCOUNT_TIERS[currentTier].label}</strong> — thuê
+          Gói hiện tại: <strong className="text-brand-navy">{ACCOUNT_TIERS[currentTier].label}</strong> ‑ thuê
           bao theo tháng, áp dụng cho toàn bộ tài khoản (số tin/ngày, hiển thị profile công ty, xem hồ sơ ứng
           viên).
         </p>
@@ -142,32 +145,46 @@ export default async function EmployerOrdersPage() {
                   <th className="px-4 py-3 font-semibold">Gói</th>
                   <th className="px-4 py-3 font-semibold">Số tiền</th>
                   <th className="px-4 py-3 font-semibold">Trạng thái</th>
+                  <th className="px-4 py-3 font-semibold" />
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order) => {
-                  const status = ORDER_STATUS_LABEL[order.status] ?? ORDER_STATUS_LABEL.pending;
+                  const state = paymentState(order.status, order.customer_confirmed_at !== null);
+                  const payable = order.status === "pending" && order.code;
                   return (
                     <tr key={order.id} className="border-t border-black/5">
                       <td className="px-4 py-3">
                         <div className="font-mono text-[12px] font-semibold text-brand-navy">
-                          DH{order.id.slice(0, 8).toUpperCase()}
+                          {order.code ?? `DH${order.id.slice(0, 8).toUpperCase()}`}
                         </div>
                         <div className="text-[11px] text-brand-navy/40">
                           {new Date(order.created_at).toLocaleString("vi-VN")}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-brand-navy/60">
-                        {order.order_type ? ORDER_TYPE_LABEL[order.order_type] ?? order.order_type : "—"}
+                        {order.order_type ? ORDER_TYPE_LABEL[order.order_type] ?? order.order_type : "‑"}
                       </td>
-                      <td className="px-4 py-3 text-brand-navy/60">{order.tier ?? "—"}</td>
+                      <td className="px-4 py-3 text-brand-navy/60">{order.tier ?? "‑"}</td>
                       <td className="px-4 py-3 font-mono font-bold text-brand-orange">
                         {order.amount.toLocaleString("vi-VN")}đ
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${status.className}`}>
-                          {status.label}
+                        <span
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${ORDER_STATE_CLASS[state]}`}
+                        >
+                          {PAYMENT_STATE_LABEL[state]}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {payable && (
+                          <Link
+                            href={`/tuyen-dung/thanh-toan/${order.code}`}
+                            className="rounded-lg bg-brand-orange-light px-2.5 py-1.5 text-[11.5px] font-bold text-brand-orange transition hover:bg-brand-orange/15"
+                          >
+                            {order.customer_confirmed_at ? "Xem đơn" : "Thanh toán →"}
+                          </Link>
+                        )}
                       </td>
                     </tr>
                   );

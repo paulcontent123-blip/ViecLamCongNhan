@@ -57,7 +57,7 @@ export function ServiceInquiryDetailButton({ inquiry }: { inquiry: ServiceInquir
 
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-wide text-brand-navy/45">Yêu cầu của khách hàng</div>
-                <div className="mt-2 whitespace-pre-wrap rounded-xl border border-black/5 bg-white p-4 text-[13.5px] leading-relaxed text-brand-navy/70">{inquiry.request || "—"}</div>
+                <div className="mt-2 whitespace-pre-wrap rounded-xl border border-black/5 bg-white p-4 text-[13.5px] leading-relaxed text-brand-navy/70">{inquiry.request || "‑"}</div>
               </div>
 
               {inquiry.cancel_reason && (

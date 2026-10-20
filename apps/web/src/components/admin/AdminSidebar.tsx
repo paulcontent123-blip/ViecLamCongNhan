@@ -65,6 +65,7 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
       label: "Hệ thống",
       items: [
         { href: ROUTES.adminOrders, icon: "💳", label: "Đơn hàng / Thanh toán" },
+        { href: ROUTES.adminPaymentChannels, icon: "💰", label: "Kênh nhận tiền" },
         {
           href: ROUTES.adminAds,
           icon: "📢",

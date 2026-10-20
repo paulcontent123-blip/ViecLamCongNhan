@@ -357,7 +357,7 @@ export function ArticleManagement({ articles }: { articles: AdminArticleRow[] })
                 <p className="mt-1 text-[12px] text-brand-navy/45">
                   Đường dẫn:{" "}
                   <span className="font-mono text-brand-navy/70">/tin-tuc-quyen-loi/{slugPreview || "…"}</span>
-                  {isEditing ? " (không đổi sau khi lưu)" : " — tự tạo từ tiêu đề"}
+                  {isEditing ? " (không đổi sau khi lưu)" : " ‑ tự tạo từ tiêu đề"}
                 </p>
               </div>
               <button
@@ -547,7 +547,7 @@ export function ArticleManagement({ articles }: { articles: AdminArticleRow[] })
                       <span className="mt-0.5 block text-[11px] font-normal text-brand-navy/40">
                         {contentStats.headings > 0
                           ? `Đang có ${contentStats.headings} tiêu đề mục (H2/H3).`
-                          : "Chưa có mục lục — dùng nút H2 / H3 để đặt tiêu đề cho các phần trong bài."}
+                          : "Chưa có mục lục ‑ dùng nút H2 / H3 để đặt tiêu đề cho các phần trong bài."}
                       </span>
                     </span>
                   </label>

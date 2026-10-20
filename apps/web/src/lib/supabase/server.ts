@@ -25,7 +25,7 @@ export async function createSupabaseServerClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Gọi từ Server Component (không thể set cookie) — bỏ qua,
+            // Gọi từ Server Component (không thể set cookie) ‑ bỏ qua,
             // middleware sẽ đảm nhiệm việc refresh session nếu cần.
           }
         },

@@ -110,7 +110,7 @@ export default async function AdminKcnAdInquiriesPage({
                   <td className="max-w-[180px] px-4 py-3 font-bold text-brand-orange">{inquiry.service_name}</td>
                   <td className="px-4 py-3 font-bold text-brand-navy">{inquiry.company_name}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-brand-navy/60"><div>📞 {inquiry.phone}</div><div className="mt-1">✉ {inquiry.email}</div></td>
-                  <td className="max-w-[180px] px-4 py-3 font-semibold text-brand-navy/65">{inquiry.kcn_target || "—"}</td>
+                  <td className="max-w-[180px] px-4 py-3 font-semibold text-brand-navy/65">{inquiry.kcn_target || "‑"}</td>
                   <td className="max-w-[250px] px-4 py-3 leading-relaxed text-brand-navy/60">
                     <div className="line-clamp-3 whitespace-pre-wrap">{inquiry.request}</div>
                     {inquiry.cancel_reason && <div className="mt-1 line-clamp-2 text-[11.5px] text-red-600">Lý do hủy: {inquiry.cancel_reason}</div>}

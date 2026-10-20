@@ -69,12 +69,12 @@ export function ServiceInquiryPage({ cards }: { cards: ServicePackageCardRow[] }
       <div className="mx-auto max-w-6xl">
         <div className="text-[11px] font-bold uppercase tracking-widest text-brand-orange">Dịch vụ trọn gói</div>
         <h1 className="mt-3 max-w-2xl text-[34px] font-extrabold leading-tight text-brand-navy sm:text-[44px]">
-          Một đầu mối —
+          Một đầu mối ‑
           <br />
           <em className="text-brand-orange not-italic">toàn bộ nhân sự công nhân</em>
         </h1>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-brand-navy/60">
-          Từ tuyển dụng đến quản lý hồ sơ, thuế, BHXH và tư vấn pháp lý lao động — ViecLamCongNhan.com phối hợp với
+          Từ tuyển dụng đến quản lý hồ sơ, thuế, BHXH và tư vấn pháp lý lao động ‑ ViecLamCongNhan.com phối hợp với
           VEA Law và DichVuThue.net để xử lý trọn gói.
         </p>
 

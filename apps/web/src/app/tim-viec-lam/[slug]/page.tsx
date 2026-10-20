@@ -12,16 +12,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const job = await getJobBySlug(slug);
-  if (!job) return { title: "Không tìm thấy tin tuyển dụng — ViecLamCongNhan.com" };
+  if (!job) return { title: "Không tìm thấy tin tuyển dụng | ViecLamCongNhan.com" };
 
-  const companyName = job.employers?.company_name ?? "Nhà tuyển dụng ẩn danh";
   return {
-    title: `${job.title} — ${companyName} | ViecLamCongNhan.com`,
+    title: `${job.title} | ViecLamCongNhan.com`,
     description: job.description.slice(0, 160),
   };
 }
 
-// Trang đầy đủ cho 1 tin tuyển dụng — mở khi vào thẳng URL (chia sẻ link,
+// Trang đầy đủ cho 1 tin tuyển dụng ‑ mở khi vào thẳng URL (chia sẻ link,
 // vào lại từ lịch sử trình duyệt, hoặc bot SEO). Khi bấm vào thẻ việc làm từ
 // /tim-viec-lam, cùng URL này bị route @modal/(.)[slug] chặn lại và hiển thị
 // dạng modal thay vì render trang này (xem app/tim-viec-lam/@modal).

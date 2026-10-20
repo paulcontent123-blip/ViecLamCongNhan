@@ -23,11 +23,11 @@ export function JobCard({ job }: { job: JobWithRelations }) {
           ⚡ TUYỂN GẤP
         </span>
       )}
-      {/* Link phủ toàn thẻ để bấm đâu cũng mở chi tiết — nút Ứng tuyển bên dưới
+      {/* Link phủ toàn thẻ để bấm đâu cũng mở chi tiết ‑ nút Ứng tuyển bên dưới
           nằm trên (z-10) để vẫn bấm được riêng, không bị link này chặn. Không
           dùng <Link> bọc ngoài vì HTML không cho phép lồng thẻ <a>. */}
       <Link href={detailHref} className="absolute inset-0 rounded-2xl" aria-label={`Xem chi tiết: ${job.title}`} />
-      {/* Các div nội dung dưới đây CỐ Ý không đặt position:relative — nếu có,
+      {/* Các div nội dung dưới đây CỐ Ý không đặt position:relative ‑ nếu có,
           chúng sẽ cùng nhóm stacking (z-index:auto) với Link phủ ở trên và vì
           đứng sau trong DOM nên sẽ đè lên Link, làm bấm vào chữ (tiêu đề, tên
           công ty...) không mở được chi tiết, chỉ những khoảng trống giữa các

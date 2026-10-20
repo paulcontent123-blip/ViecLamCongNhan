@@ -17,7 +17,7 @@ export function PackageCtaButton({
   const { openAuthModal } = useAuthModal();
 
   // flex + justify-center bắt buộc phải có ở đây (không chỉ dựa vào text-center của
-  // className truyền vào) vì <Link> render ra thẻ <a> — mặc định display:inline nên
+  // className truyền vào) vì <Link> render ra thẻ <a> ‑ mặc định display:inline nên
   // width/text-align không ăn, khiến nút bị co theo độ dài chữ thay vì full-width
   // và không nằm giữa thẻ gói.
   const baseClass = `${className} flex items-center justify-center`;

@@ -1,6 +1,6 @@
-// Quyền lợi thuê bao tài khoản NTD (Free/Basic/Premium) — nguồn sự thật duy nhất,
+// Quyền lợi thuê bao tài khoản NTD (Free/Basic/Premium) ‑ nguồn sự thật duy nhất,
 // khớp migration supabase/migrations/20260819090001_employer_account_tiers.sql.
-// Khác với JOB_ADDONS ở packages.ts (mua thêm riêng cho 1 tin, VD: Chiến dịch) —
+// Khác với JOB_ADDONS ở packages.ts (mua thêm riêng cho 1 tin, VD: Chiến dịch) ‑
 // các quyền lợi ở đây áp dụng cho TOÀN BỘ tài khoản trong suốt chu kỳ thuê bao.
 export const ACCOUNT_TIERS = {
   free: {

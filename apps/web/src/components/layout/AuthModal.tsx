@@ -25,14 +25,14 @@ export function AuthModal({
   const [mounted, setMounted] = useState(false);
 
   // Render qua portal vào document.body: Navbar cha có backdrop-blur
-  // (backdrop-filter) — theo spec CSS, filter/backdrop-filter trên ancestor tạo
+  // (backdrop-filter) ‑ theo spec CSS, filter/backdrop-filter trên ancestor tạo
   // containing block mới cho position:fixed, khiến modal bị định vị theo khung
   // 62px của nav thay vì toàn viewport nếu render trực tiếp bên trong <nav>.
   useEffect(() => setMounted(true), []);
 
   // Đồng bộ role khi modal được mở lại với initialRole khác (vd: nút "Tạo tài
   // khoản NTD" ở trang Tuyển dụng cần mở thẳng vào role employer). Reset cả
-  // loading ở đây để phòng vệ kép — modal là component sống xuyên suốt (chỉ
+  // loading ở đây để phòng vệ kép ‑ modal là component sống xuyên suốt (chỉ
   // return null khi đóng, không unmount) nên state cũ có thể còn sót lại.
   useEffect(() => {
     if (isOpen) {

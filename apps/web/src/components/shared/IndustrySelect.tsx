@@ -12,7 +12,7 @@ const DEFAULT_CLASS =
   "mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange";
 
 /** Select ngành nghề dùng chung cho form "tự mô tả" (đăng tin, hồ sơ ứng viên, hồ sơ
- * công ty...) — controlled, `value` là giá trị THẬT sẽ gửi lên server (slug chuẩn
+ * công ty...) ‑ controlled, `value` là giá trị THẬT sẽ gửi lên server (slug chuẩn
  * hoặc text NTD/ứng viên tự gõ khi chọn "Ngành nghề khác"), không bao giờ là sentinel
  * OTHER_INDUSTRY_VALUE. */
 export function IndustrySelect({

@@ -10,6 +10,7 @@ import { ACCOUNT_TIERS, type AccountTier } from "@/lib/account-tiers";
 import { ROUTES } from "@/lib/routes";
 import type { PaymentMethod } from "@/lib/payment-method";
 import type { KcnRow } from "@/types/db";
+import type { OrderPaymentView } from "@/lib/payment";
 import { PaymentMethodModal } from "@/components/ntd/PaymentMethodModal";
 import { IndustrySelect } from "@/components/shared/IndustrySelect";
 
@@ -44,9 +45,10 @@ export function PostJobForm({
   const [loading, setLoading] = useState(false);
   const [pendingBody, setPendingBody] = useState<Record<string, unknown> | null>(null);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
   // Tự tick sẵn khi đến từ nút "Đăng ký ngay" ở thẻ Chiến dịch trang Đơn hàng & Gói
-  // (xem CampaignPurchaseCard.tsx) — đọc query string trực tiếp thay vì useSearchParams
+  // (xem CampaignPurchaseCard.tsx) ‑ đọc query string trực tiếp thay vì useSearchParams
   // để tránh phải bọc Suspense chỉ vì 1 giá trị đọc 1 lần lúc mount.
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("campaign") === "1") {
@@ -68,7 +70,7 @@ export function PostJobForm({
 
   async function submitJob(
     body: Record<string, unknown>,
-  ): Promise<{ ok: true; orderId: string | null } | { ok: false; error: string }> {
+  ): Promise<{ ok: true; orderId: string | null; payment?: OrderPaymentView } | { ok: false; error: string }> {
     try {
       const res = await fetch("/api/employer/jobs", {
         method: "POST",
@@ -83,7 +85,7 @@ export function PostJobForm({
         return { ok: false, error: message };
       }
 
-      return { ok: true, orderId: data.order?.id ?? null };
+      return { ok: true, orderId: data.order?.id ?? null, payment: data.payment ?? undefined };
     } catch {
       const message = "Không kết nối được máy chủ, thử lại sau.";
       setError(message);
@@ -114,7 +116,7 @@ export function PostJobForm({
       ...Object.fromEntries(featureCheckboxes.map((c) => [c.name, form.get(c.name) === "on"])),
     };
 
-    // Gói Chiến dịch trả phí ngay lúc đăng tin — cần chọn phương thức thanh toán
+    // Gói Chiến dịch trả phí ngay lúc đăng tin ‑ cần chọn phương thức thanh toán
     // giống mọi gói trả phí khác (Basic/Premium, nâng cấp Chiến dịch từ Đơn hàng &
     // Gói) thay vì tạo đơn ngầm không rõ đã chọn phương thức nào.
     if (wantsCampaign) {
@@ -136,8 +138,9 @@ export function PostJobForm({
     if (!pendingBody) return { ok: false as const, error: "Thiếu dữ liệu tin đăng, vui lòng thử lại." };
     const result = await submitJob({ ...pendingBody, paymentMethod: method });
     if (!result.ok) return result;
-    navigateAfterSuccess(result.orderId);
-    return { ok: true as const };
+    // Tin đã đăng xong; giữ modal lại ở màn hình QR, chỉ rời trang khi NTD bấm đóng.
+    setCreatedOrderId(result.orderId);
+    return { ok: true as const, payment: result.payment };
   }
 
   if (!verified) {
@@ -147,7 +150,7 @@ export function PostJobForm({
         <div className="mt-2 text-[15px] font-bold text-brand-navy">Cần xác minh tài khoản để đăng tin</div>
         <p className="mx-auto mt-2 max-w-md text-[13px] text-brand-navy/55">
           Tài khoản của bạn đang chờ Admin xác minh pháp nhân (mã số thuế, giấy phép...). Việc này thường
-          mất vài giờ làm việc — bạn sẽ đăng tin được ngay khi tài khoản được xác minh.
+          mất vài giờ làm việc ‑ bạn sẽ đăng tin được ngay khi tài khoản được xác minh.
         </p>
       </div>
     );
@@ -183,7 +186,7 @@ export function PostJobForm({
             name="title"
             required
             minLength={5}
-            placeholder="VD: Tuyển công nhân may mặc — KCN Sóng Thần 2"
+            placeholder="VD: Tuyển công nhân may mặc ‑ KCN Sóng Thần 2"
             className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange"
           />
         </label>
@@ -224,13 +227,13 @@ export function PostJobForm({
             {kcnOptions.map((k) => (
               <option key={k.id} value={k.id}>
                 {k.name}
-                {!provinceCode ? ` — ${k.province_name}` : ""}
+                {!provinceCode ? ` ‑ ${k.province_name}` : ""}
               </option>
             ))}
           </select>
           {provinceCode && kcnOptions.length === 0 && (
             <span className="mt-1 block text-[11px] font-normal text-brand-navy/40">
-              Chưa có KCN nào của tỉnh này trong danh bạ — để trống cũng không sao.
+              Chưa có KCN nào của tỉnh này trong danh bạ ‑ để trống cũng không sao.
             </span>
           )}
         </label>
@@ -346,7 +349,7 @@ export function PostJobForm({
         <div className="rounded-xl border-2 border-brand-orange bg-brand-orange-light p-3">
           <div className="flex items-center justify-between">
             <div className="text-[12.5px] font-bold text-brand-navy">
-              {perks.label} — {postedToday}/{dailyPostLimit} tin hôm nay · Hiển thị {perks.jobDurationDays} ngày
+              {perks.label} ‑ {postedToday}/{dailyPostLimit} tin hôm nay · Hiển thị {perks.jobDurationDays} ngày
             </div>
             <Link href={ROUTES.ntdDashboardOrders} className="text-[11.5px] font-bold text-brand-orange">
               Nâng cấp gói →
@@ -363,12 +366,12 @@ export function PostJobForm({
           />
           <div>
             <div className="text-[12.5px] font-bold text-brand-navy">
-              🏆 Mua thêm gói Chiến dịch cho tin này —{" "}
+              🏆 Mua thêm gói Chiến dịch cho tin này ‑{" "}
               {(JOB_ADDONS.campaign.priceVnd / 1000).toLocaleString("vi-VN")}K
             </div>
             <div className="mt-0.5 text-[11px] text-brand-navy/45">
               Trang campaign riêng, banner trang chủ, top danh sách · {JOB_ADDONS.campaign.durationDays} ngày
-              hiển thị — độc lập với gói tài khoản
+              hiển thị ‑ độc lập với gói tài khoản
             </div>
           </div>
         </label>
@@ -376,7 +379,7 @@ export function PostJobForm({
           <div className="mt-3">
             <p className="text-[12px] text-brand-navy/50">
               Đăng tin xong hệ thống sẽ tạo đơn hàng {JOB_ADDONS.campaign.priceVnd.toLocaleString("vi-VN")}đ ở
-              trạng thái chờ Admin xác nhận đã nhận thanh toán — tin chỉ được nâng lên gói Chiến dịch và tự
+              trạng thái chờ Admin xác nhận đã nhận thanh toán ‑ tin chỉ được nâng lên gói Chiến dịch và tự
               động gửi tin nhắn Zalo cho ứng viên cùng ngành nghề/tỉnh thành.
             </p>
             <label className="mt-2 block text-[12px] font-semibold text-brand-navy/60">
@@ -388,7 +391,7 @@ export function PostJobForm({
                 maxLength={1000}
                 required={wantsCampaign}
                 minLength={10}
-                placeholder="VD: Công ty ABC đang tuyển công nhân may — lương 9-12tr, có nhà ở & xe đưa đón. Liên hệ 090xxxxxxx để ứng tuyển ngay!"
+                placeholder="VD: Công ty ABC đang tuyển công nhân may ‑ lương 9-12tr, có nhà ở & xe đưa đón. Liên hệ 090xxxxxxx để ứng tuyển ngay!"
                 className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange"
               />
               <span className="mt-1 block text-[11px] font-normal text-brand-navy/40">
@@ -414,11 +417,14 @@ export function PostJobForm({
       {paymentModalOpen && (
         <PaymentMethodModal
           title="Đăng ký gói Chiến dịch"
-          description={`${JOB_ADDONS.campaign.label} — ${JOB_ADDONS.campaign.durationDays} ngày hiển thị`}
+          description={`${JOB_ADDONS.campaign.label} ‑ ${JOB_ADDONS.campaign.durationDays} ngày hiển thị`}
           priceVnd={JOB_ADDONS.campaign.priceVnd}
           onConfirm={handlePaymentConfirm}
-          onConfirmed={() => setPaymentModalOpen(false)}
-          onClose={() => setPaymentModalOpen(false)}
+          onConfirmed={() => {}}
+          onClose={() => {
+            setPaymentModalOpen(false);
+            navigateAfterSuccess(createdOrderId);
+          }}
         />
       )}
     </form>

@@ -62,5 +62,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: result.uncertain ? 503 : 400 });
   }
 
-  return NextResponse.json({ ok: true, job: result.job, order: result.order });
+  return NextResponse.json({ ok: true, job: result.job, order: result.order, payment: result.payment });
 }

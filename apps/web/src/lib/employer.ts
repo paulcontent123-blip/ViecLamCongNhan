@@ -5,13 +5,19 @@ import { CAMPAIGN_BLAST_BUDGET_VND, JOB_ADDONS, type JobAddon } from "@/lib/pack
 import { normalizeIndustryText, industryLikePattern } from "@/lib/industries";
 import { ACCOUNT_TIERS, isAccountTier, type AccountTier, type PaidAccountTier } from "@/lib/account-tiers";
 import type { PaymentMethod } from "@/lib/payment-method";
+import {
+  attachPaymentToOrder,
+  ORDER_PAYMENT_COLUMNS,
+  preparePaymentForOrder,
+  toOrderPaymentView,
+} from "@/lib/payment-orders";
 import type { CampaignTheme } from "@/lib/campaign-theme";
 import type { ApplicationStatus } from "@/lib/application-status";
 import { normalizePhone } from "@/lib/phone";
 import type { ServiceInquiryRow } from "@/types/db";
 
 // Toàn bộ hàm ở đây dùng service-role client (bypass RLS) vì NTD không xác thực
-// qua Supabase Auth — quyền truy cập chỉ được đảm bảo bởi việc LUÔN scope theo
+// qua Supabase Auth ‑ quyền truy cập chỉ được đảm bảo bởi việc LUÔN scope theo
 // employerId lấy từ employer_session đã verify ở route/page gọi vào, KHÔNG BAO
 // GIỜ nhận employerId trực tiếp từ input client.
 
@@ -87,7 +93,7 @@ export async function cancelEmployerServiceInquiry(
 /**
  * Chốt bảo mật cho toàn bộ hành động ghi dữ liệu của NTD (đăng tin, mua gói,
  * Blast, cập nhật ứng viên, sửa hồ sơ). employer_session (JWT) không mang theo
- * is_verified — session sống 30 ngày nên phải đọc DB trực tiếp mỗi lần mới phản
+ * is_verified ‑ session sống 30 ngày nên phải đọc DB trực tiếp mỗi lần mới phản
  * ánh đúng trạng thái xác minh hiện tại (Admin có thể xác minh/huỷ xác minh bất
  * kỳ lúc nào giữa phiên đăng nhập). cache() dedupe trong 1 request khi layout +
  * page cùng cần giá trị này.
@@ -129,7 +135,7 @@ export async function getEmployerProfile(employerId: string): Promise<EmployerPr
 
 /**
  * Gói thuê bao tài khoản hiện hành (free/basic/premium). Basic/Premium hết hạn (qua
- * account_tier_expires_at) mà chưa gia hạn sẽ tự động hạ về Free ngay khi đọc — tin đã
+ * account_tier_expires_at) mà chưa gia hạn sẽ tự động hạ về Free ngay khi đọc ‑ tin đã
  * đăng trước đó giữ nguyên, không bị ẩn hay xoá.
  */
 export const getEmployerAccountTier = cache(async (employerId: string): Promise<AccountTier> => {
@@ -163,7 +169,7 @@ export interface UpdateProfileInput {
   industry?: string;
 }
 
-/** Không cho sửa email/company_slug ở đây — email là định danh đăng nhập, đổi cần
+/** Không cho sửa email/company_slug ở đây ‑ email là định danh đăng nhập, đổi cần
  * luồng xác thực riêng (chưa xây); company_slug ảnh hưởng đường dẫn công khai. */
 export async function updateEmployerProfile(
   employerId: string,
@@ -205,21 +211,21 @@ export async function getEmployerJobs(employerId: string) {
 const EMPLOYER_CAMPAIGN_LIST_SELECT =
   "id, slug, title, status, quantity, apply_count, view_count, expires_at, created_at, campaign_theme, campaign_story";
 
-// Đầy đủ mọi field NTD sửa được ở trang chỉnh sửa chiến dịch — không chỉ banner
+// Đầy đủ mọi field NTD sửa được ở trang chỉnh sửa chiến dịch ‑ không chỉ banner
 // theme/story như trước, mà cả nội dung tin đăng gốc (tiêu đề, mô tả, lương...),
 // giống hệt bộ field ở PostJobForm lúc đăng tin mới.
 const EMPLOYER_CAMPAIGN_EDIT_SELECT =
   "id, slug, title, status, quantity, apply_count, view_count, expires_at, created_at, campaign_theme, campaign_story, description, requirements, salary_min, salary_max, job_type, province_code, district, industry, is_urgent, has_housing, has_shuttle, has_meals, no_experience_required, shift_type";
 
 /** Tổng số ứng viên đã được auto-blast Zalo lúc mua gói, gắn với 1 chiến dịch (job_id)
- * — xem runCampaignAutoBlast. Không phải phí Blast NTD tự mua thêm ở BlastTab. */
+ * ‑ xem runCampaignAutoBlast. Không phải phí Blast NTD tự mua thêm ở BlastTab. */
 async function getCampaignBlastSentCount(jobId: string): Promise<number> {
   const supabase = createSupabaseAdminClient();
   const { data } = await supabase.from("sms_blasts").select("recipient_count").eq("job_id", jobId);
   return (data ?? []).reduce((sum, row) => sum + (row.recipient_count ?? 0), 0);
 }
 
-/** Toàn bộ tin tier='campaign' của NTD — 1 NTD có thể chạy nhiều chiến dịch cùng lúc. */
+/** Toàn bộ tin tier='campaign' của NTD ‑ 1 NTD có thể chạy nhiều chiến dịch cùng lúc. */
 export async function getEmployerCampaigns(employerId: string) {
   const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
@@ -237,7 +243,7 @@ export async function getEmployerCampaigns(employerId: string) {
   return withBlastCount;
 }
 
-/** .eq('employer_id', employerId) là chốt bảo mật — NTD chỉ sửa được chiến dịch của
+/** .eq('employer_id', employerId) là chốt bảo mật ‑ NTD chỉ sửa được chiến dịch của
  * chính mình, kể cả khi lỡ đoán được id chiến dịch khác. */
 export async function getEmployerCampaignById(employerId: string, jobId: string) {
   const supabase = createSupabaseAdminClient();
@@ -274,7 +280,7 @@ export interface CampaignEditInput {
   shiftType?: "day" | "night" | "rotating";
 }
 
-/** Sửa trực tiếp tin đang hiển thị (không đưa về "pending" chờ duyệt lại) — chiến
+/** Sửa trực tiếp tin đang hiển thị (không đưa về "pending" chờ duyệt lại) ‑ chiến
  * dịch là nội dung đã trả phí, NTD cần sửa nhanh mà không mất hiển thị. */
 export async function updateEmployerCampaign(
   employerId: string,
@@ -401,10 +407,16 @@ export async function createEmployerJob(employerId: string, input: CreateJobInpu
   }
 
   // Nếu NTD có mua thêm gói Chiến dịch, tin vẫn ở tier bình thường (accountTier) tới
-  // đây — việc nâng tier='campaign' + auto-blast Zalo chỉ chạy SAU KHI Admin xác nhận
+  // đây ‑ việc nâng tier='campaign' + auto-blast Zalo chỉ chạy SAU KHI Admin xác nhận
   // đã nhận thanh toán đơn hàng addon (xem activateCampaignFromOrder, gọi từ
   // updateOrderStatus ở admin.ts), không chạy ngay lúc NTD tự khai đã thanh toán.
-  return { job: result.job, tier: result.tier, order: result.order ?? null };
+  // Đơn addon do RPC insert nên chưa có mã + nơi nhận tiền: gắn thêm ở đây để NTD thấy
+  // ngay màn hình QR giống hai luồng mua còn lại.
+  const order = result.order ?? null;
+  const payment =
+    order && input.paymentMethod ? await attachPaymentToOrder(order.id, input.paymentMethod) : null;
+
+  return { job: result.job, tier: result.tier, order, payment };
 }
 
 export interface EmployerApplicationRow {
@@ -414,7 +426,7 @@ export interface EmployerApplicationRow {
   created_at: string;
   updated_at: string;
   jobs: { title: string; slug: string } | null;
-  // Thông tin liên hệ (phone/zalo) KHÔNG lấy ở đây — ứng viên tự ứng tuyển vào tin
+  // Thông tin liên hệ (phone/zalo) KHÔNG lấy ở đây ‑ ứng viên tự ứng tuyển vào tin
   // vẫn tính vào cùng hạn mức xem hồ sơ/tháng như duyệt database (xem
   // recordCandidateProfileView), chỉ lộ ra khi NTD bấm "Xem hồ sơ" trên UI.
   candidates: {
@@ -462,18 +474,18 @@ export async function getEmployerOrders(employerId: string) {
   const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("orders")
-    .select("id, order_type, tier, amount, payment_method, status, created_at, paid_at")
+    .select("id, code, order_type, tier, amount, payment_method, status, customer_confirmed_at, created_at, paid_at")
     .eq("employer_id", employerId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return data ?? [];
 }
 
-/** Mua thêm gói Chiến dịch cho 1 tin cụ thể — độc lập với thuê bao tài khoản.
+/** Mua thêm gói Chiến dịch cho 1 tin cụ thể ‑ độc lập với thuê bao tài khoản.
  * paymentMethod optional vì lời gọi từ luồng đăng tin (checkbox "mua thêm Chiến
  * dịch") tạo đơn tự động, không đi qua modal chọn phương thức thanh toán. jobId +
  * campaignMessage lưu vào đơn hàng để activateCampaignFromOrder dùng lại khi Admin
- * xác nhận đã nhận thanh toán — CHƯA nâng tier/gửi Zalo ngay lúc tạo đơn. */
+ * xác nhận đã nhận thanh toán ‑ CHƯA nâng tier/gửi Zalo ngay lúc tạo đơn. */
 export async function createJobAddonOrder(
   employerId: string,
   addon: JobAddon,
@@ -482,6 +494,12 @@ export async function createJobAddonOrder(
 ) {
   const pkg = JOB_ADDONS[addon];
   const supabase = createSupabaseAdminClient();
+
+  // Chỉ đơn do NTD tự chọn phương thức mới cần mã + nơi nhận tiền; đơn tạo tự động từ
+  // luồng đăng tin chưa chọn phương thức nên để trống, NTD trả sau ở trang đơn hàng.
+  const payment = paymentMethod ? await preparePaymentForOrder(paymentMethod) : null;
+  if (payment && "error" in payment) return payment;
+
   const { data, error } = await supabase
     .from("orders")
     .insert({
@@ -493,17 +511,20 @@ export async function createJobAddonOrder(
       job_id: campaignExtra?.jobId ?? null,
       campaign_message: campaignExtra?.campaignMessage ?? null,
       status: "pending",
+      code: payment?.code ?? null,
+      payment_account_id: payment?.destination.paymentAccountId ?? null,
+      momo_wallet_id: payment?.destination.momoWalletId ?? null,
     })
-    .select("id, tier, amount, status, created_at")
+    .select(ORDER_PAYMENT_COLUMNS)
     .single();
   if (error || !data) return { error: "Không tạo được đơn hàng, thử lại sau." };
-  return { order: data };
+  return { order: data, payment: await toOrderPaymentView(data) };
 }
 
-/** Kích hoạt gói Chiến dịch cho 1 tin — gọi DUY NHẤT khi Admin xác nhận đã nhận
+/** Kích hoạt gói Chiến dịch cho 1 tin ‑ gọi DUY NHẤT khi Admin xác nhận đã nhận
  * thanh toán đơn hàng addon (orders.status='paid', order_type='job_post',
  * tier='campaign') từ updateOrderStatus ở admin.ts. Trước thời điểm này tin vẫn ở
- * tier bình thường và KHÔNG có ứng viên nào được auto-blast — tránh kích hoạt quyền
+ * tier bình thường và KHÔNG có ứng viên nào được auto-blast ‑ tránh kích hoạt quyền
  * lợi trả phí (banner, top danh sách, gửi Zalo tốn hạn mức) khi NTD mới chỉ tự khai
  * đã thanh toán, chưa được Admin xác minh thực sự nhận được tiền. */
 export async function activateCampaignFromOrder(
@@ -540,10 +561,10 @@ export interface CampaignAutoBlastResult {
 }
 
 /** Tự động gửi tin Zalo cho ứng viên form_quick cùng ngành nghề + tỉnh thành với
- * chiến dịch, ngay khi mua/nâng cấp gói — dùng tối đa CAMPAIGN_BLAST_BUDGET_VND
+ * chiến dịch, ngay khi mua/nâng cấp gói ‑ dùng tối đa CAMPAIGN_BLAST_BUDGET_VND
  * (1tr trong giá 1.5tr gói) theo đơn giá Zalo hiện hành (BLAST_CHANNEL_RATES.zalo),
  * gửi hết mức có thể nếu không đủ ứng viên khớp để dùng hết hạn mức. Chỉ tính toán
- * + lưu số liệu vào sms_blasts (status='queued'), CHƯA gọi cổng Zalo thật — giống
+ * + lưu số liệu vào sms_blasts (status='queued'), CHƯA gọi cổng Zalo thật ‑ giống
  * mọi Blast khác trong hệ thống hiện nay. Không tạo order riêng vì đã nằm trong giá
  * gói Chiến dịch (khác Blast NTD tự mua thêm ở BlastTab).
  */
@@ -558,7 +579,7 @@ export async function runCampaignAutoBlast(
     .select("id", { count: "exact", head: true })
     .eq("source", "quick_form")
     // desired_industry_key so khớp không phân biệt hoa/thường + không dấu (xem
-    // migration 20260820110001) — NTD/ứng viên có thể gõ tự do khác chính tả nhau
+    // migration 20260820110001) ‑ NTD/ứng viên có thể gõ tự do khác chính tả nhau
     // dù cùng 1 ngành thật, so chuỗi tuyệt đối sẽ bỏ sót ứng viên.
     .eq("desired_industry_key", normalizeIndustryText(job.industry))
     .eq("province", job.province_code);
@@ -588,7 +609,7 @@ export async function runCampaignAutoBlast(
 }
 
 /** Đăng ký/gia hạn thuê bao tài khoản Basic hoặc Premium (399k / 899k mỗi tháng).
- * Đơn hàng ở trạng thái "pending" — account_type chỉ được kích hoạt khi Admin xác
+ * Đơn hàng ở trạng thái "pending" ‑ account_type chỉ được kích hoạt khi Admin xác
  * nhận đã thanh toán (xem admin.ts updateOrderStatus). NTD đã bấm "Xác nhận thanh
  * toán" ở modal trước khi hàm này được gọi, nên "pending" ở đây nghĩa là "đã thanh
  * toán (tự khai), chờ Admin xác nhận" chứ không phải "chưa làm gì". */
@@ -599,6 +620,10 @@ export async function createAccountSubscriptionOrder(
 ) {
   const perks = ACCOUNT_TIERS[tier];
   const supabase = createSupabaseAdminClient();
+
+  const payment = await preparePaymentForOrder(paymentMethod);
+  if ("error" in payment) return payment;
+
   const { data, error } = await supabase
     .from("orders")
     .insert({
@@ -608,36 +633,39 @@ export async function createAccountSubscriptionOrder(
       amount: perks.priceVnd,
       payment_method: paymentMethod,
       status: "pending",
+      code: payment.code,
+      payment_account_id: payment.destination.paymentAccountId,
+      momo_wallet_id: payment.destination.momoWalletId,
     })
-    .select("id, tier, amount, status, created_at")
+    .select(ORDER_PAYMENT_COLUMNS)
     .single();
   if (error || !data) return { error: "Không tạo được đơn hàng, thử lại sau." };
-  return { order: data };
+  return { order: data, payment: await toOrderPaymentView(data) };
 }
 
-// Blast SMS/Zalo — đơn giá theo bản HTML gốc.
+// Blast SMS/Zalo ‑ đơn giá theo bản HTML gốc.
 export const BLAST_CHANNEL_RATES = {
   sms: { label: "SMS", priceVnd: 500 },
   zalo: { label: "Zalo OA", priceVnd: 300 },
   combo: { label: "Combo SMS+Zalo", priceVnd: 700 },
 } as const;
 export type BlastChannel = keyof typeof BLAST_CHANNEL_RATES;
-const READ_RATE_PCT = 37; // tỷ lệ đọc trung bình — số cố định tham khảo ngành, không phải số ảo random
+const READ_RATE_PCT = 37; // tỷ lệ đọc trung bình ‑ số cố định tham khảo ngành, không phải số ảo random
 
 export interface BlastEstimateInput {
   targetProvince?: string;
   targetIndustry?: string;
   channel: BlastChannel;
-  /** NTD tự giới hạn số lượng gửi để tiết kiệm chi phí — để trống nghĩa là gửi hết
+  /** NTD tự giới hạn số lượng gửi để tiết kiệm chi phí ‑ để trống nghĩa là gửi hết
    * `reach`. Khi có giới hạn, ứng viên được chọn luôn là những người MỚI NHẤT (mới
-   * điền form nhanh hoặc mới ứng tuyển — sắp theo created_at desc), không phải lấy
+   * điền form nhanh hoặc mới ứng tuyển ‑ sắp theo created_at desc), không phải lấy
    * ngẫu nhiên hay ưu tiên ứng viên cũ. */
   quantity?: number;
 }
 
 /**
  * Ước tính reach dựa trên số ứng viên THẬT trong bảng candidates khớp bộ lọc
- * — khác bản HTML demo cũ dùng Math.random() giả lập con số.
+ * ‑ khác bản HTML demo cũ dùng Math.random() giả lập con số.
  */
 export async function estimateBlastReach(input: BlastEstimateInput) {
   const supabase = createSupabaseAdminClient();
@@ -674,10 +702,10 @@ export interface CreateBlastInput extends BlastEstimateInput {
   message: string;
 }
 
-/** Gọi sau khi NTD đã bấm "Xác nhận thanh toán" ở modal (xem PaymentMethodModal) —
+/** Gọi sau khi NTD đã bấm "Xác nhận thanh toán" ở modal (xem PaymentMethodModal) ‑
  * tạo cả chiến dịch Blast lẫn đơn hàng cùng lúc, "queued" nghĩa là "đã xếp hàng chờ
  * gửi sau khi Admin xác nhận thanh toán", không phải đã gửi thật (chưa tích hợp
- * cổng SMS/Zalo thật — xem BLAST_CHANNEL_RATES). */
+ * cổng SMS/Zalo thật ‑ xem BLAST_CHANNEL_RATES). */
 export async function createEmployerBlast(
   employerId: string,
   input: CreateBlastInput,
@@ -687,6 +715,11 @@ export async function createEmployerBlast(
   if (recipientCount === 0) {
     return { error: "Không tìm thấy ứng viên phù hợp với bộ lọc để gửi chiến dịch." };
   }
+
+  // Lấy mã đơn + nơi nhận tiền TRƯỚC khi tạo chiến dịch: thiếu kênh nhận tiền thì dừng
+  // ngay, không để lại chiến dịch mồ côi không có đơn hàng đi kèm.
+  const payment = await preparePaymentForOrder(paymentMethod);
+  if ("error" in payment) return payment;
 
   const supabase = createSupabaseAdminClient();
   const { data: blast, error: blastError } = await supabase
@@ -716,17 +749,20 @@ export async function createEmployerBlast(
       amount: priceVnd,
       payment_method: paymentMethod,
       status: "pending",
+      code: payment.code,
+      payment_account_id: payment.destination.paymentAccountId,
+      momo_wallet_id: payment.destination.momoWalletId,
     })
-    .select("id, amount, status, created_at")
+    .select(ORDER_PAYMENT_COLUMNS)
     .single();
 
   if (orderError || !order) return { error: "Đã tạo chiến dịch nhưng không tạo được đơn hàng." };
 
-  return { blastId: blast.id, order, recipientCount };
+  return { blastId: blast.id, order, recipientCount, payment: await toOrderPaymentView(order) };
 }
 
 // ───────────────────── Database ứng viên (Basic/Premium) ─────────────────────
-// Quyền lợi "xem X hồ sơ ứng viên/tháng" — đếm theo ỨNG VIÊN DUY NHẤT mỗi tháng
+// Quyền lợi "xem X hồ sơ ứng viên/tháng" ‑ đếm theo ỨNG VIÊN DUY NHẤT mỗi tháng
 // (xem lại hồ sơ đã xem trong tháng không trừ thêm lượt). Free (limit = 0) không
 // truy cập được mục này.
 
@@ -798,7 +834,7 @@ export interface CandidateListFilters {
   offset?: number;
 }
 
-/** Danh sách ứng viên trong DB cho NTD duyệt (Basic/Premium) — KHÔNG kèm thông tin liên
+/** Danh sách ứng viên trong DB cho NTD duyệt (Basic/Premium) ‑ KHÔNG kèm thông tin liên
  * hệ, chỉ lộ ra qua recordCandidateProfileView khi NTD chủ động bấm xem hồ sơ. */
 export async function listCandidatesForEmployer(
   filters: CandidateListFilters = {},
@@ -807,7 +843,7 @@ export async function listCandidatesForEmployer(
   let query = supabase
     .from("candidates")
     .select("id, full_name, province, desired_industry, experience_years, created_at", { count: "exact" })
-    // Chỉ ứng viên tự điền form "Để lại thông tin" (quick_form) — ứng viên chỉ nộp
+    // Chỉ ứng viên tự điền form "Để lại thông tin" (quick_form) ‑ ứng viên chỉ nộp
     // đơn vào 1 tin cụ thể (job_apply) xem ở mục Ứng viên đã ứng tuyển, không lộ vào
     // database chung để duyệt.
     .eq("source", "quick_form")

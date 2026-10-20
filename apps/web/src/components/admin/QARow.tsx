@@ -89,7 +89,7 @@ export function QARow({ question }: { question: AdminQARowType }) {
         <div className="min-w-0">
           <div className="text-[14px] font-bold text-brand-navy">{question.question}</div>
           <div className="mt-1 text-[12px] text-brand-navy/45">
-            {question.full_name || "Ẩn danh"} · {question.contact ?? "—"} ·{" "}
+            {question.full_name || "Ẩn danh"} · {question.contact ?? "‑"} ·{" "}
             {new Date(question.created_at).toLocaleString("vi-VN")}
           </div>
         </div>

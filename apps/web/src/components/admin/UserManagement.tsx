@@ -148,7 +148,7 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
         <div>
           <h1 className="text-[16px] font-extrabold text-brand-navy">👤 Người dùng</h1>
           <p className="mt-1 text-[13px] text-brand-navy/50">
-            Toàn bộ tài khoản trong hệ thống ({users.length.toLocaleString("vi-VN")}) — Admin, nhà tuyển dụng, ứng viên.
+            Toàn bộ tài khoản trong hệ thống ({users.length.toLocaleString("vi-VN")}) ‑ Admin, nhà tuyển dụng, ứng viên.
           </p>
         </div>
         <button
@@ -187,7 +187,7 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
                     {isCurrentAdmin && <div className="mt-0.5 text-[11px] text-brand-orange">Tài khoản đang đăng nhập</div>}
                   </td>
                   <td className="px-4 py-3 text-brand-navy/60">
-                    <div>{user.email ?? "—"}</div>
+                    <div>{user.email ?? "‑"}</div>
                     {user.phone && <div className="mt-0.5 text-[11px] text-brand-navy/40">{user.phone}</div>}
                   </td>
                   <td className="px-4 py-3">

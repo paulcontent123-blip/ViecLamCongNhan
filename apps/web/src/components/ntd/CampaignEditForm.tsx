@@ -270,7 +270,7 @@ export function CampaignEditForm({
           onChange={(e) => setStory(e.target.value)}
           rows={6}
           maxLength={2000}
-          placeholder="VD: Chiến dịch tuyển 500 công nhân may cho đơn hàng Tết 2027 — môi trường làm việc hiện đại, phúc lợi hấp dẫn, đào tạo tay nghề miễn phí..."
+          placeholder="VD: Chiến dịch tuyển 500 công nhân may cho đơn hàng Tết 2027 ‑ môi trường làm việc hiện đại, phúc lợi hấp dẫn, đào tạo tay nghề miễn phí..."
           className="mt-1.5 w-full rounded-lg border border-black/10 px-3 py-2.5 text-[13.5px] text-brand-navy outline-none focus:border-brand-orange"
         />
         <span className="mt-1 block text-right text-[11px] text-brand-navy/40">{story.length}/2000</span>

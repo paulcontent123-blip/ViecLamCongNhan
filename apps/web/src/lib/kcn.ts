@@ -3,7 +3,7 @@ import type { KcnRow } from "@/types/db";
 
 /**
  * kcn.active_jobs (seed) là số tĩnh, dễ lệch với dữ liệu jobs thật. Ở đây tính lại
- * live theo COUNT(jobs đã duyệt) để tránh hiển thị sai số lượng tin — đây là lỗi
+ * live theo COUNT(jobs đã duyệt) để tránh hiển thị sai số lượng tin ‑ đây là lỗi
  * logic đã sửa so với bản HTML demo cũ (số liệu hard-code không bao giờ đổi).
  */
 export async function getKcnList(province?: string): Promise<KcnRow[]> {

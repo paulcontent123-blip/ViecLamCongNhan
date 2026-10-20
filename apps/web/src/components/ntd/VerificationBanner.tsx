@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-// Không có hạ tầng thông báo real-time (SSE/push) — dùng localStorage để phát
+// Không có hạ tầng thông báo real-time (SSE/push) ‑ dùng localStorage để phát
 // hiện lần đầu tiên tài khoản chuyển từ "chưa xác minh" -> "đã xác minh" trên
 // trình duyệt này và hiện banner chúc mừng 1 lần, tự lưu lại để không lặp lại.
 const STORAGE_KEY = "ntd_verification_seen";

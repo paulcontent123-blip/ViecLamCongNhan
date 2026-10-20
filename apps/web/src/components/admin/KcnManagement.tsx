@@ -195,7 +195,7 @@ export function KcnManagement({ kcnList }: { kcnList: KcnRow[] }) {
                   </td>
                   <td className="px-4 py-3 text-brand-navy/60">{kcn.province_name}</td>
                   <td className="px-4 py-3 text-brand-navy/60">
-                    {kcn.total_area_ha !== null ? `${kcn.total_area_ha} ha` : "—"}
+                    {kcn.total_area_ha !== null ? `${kcn.total_area_ha} ha` : "‑"}
                     {kcn.occupied_pct !== null ? ` · ${kcn.occupied_pct}%` : ""}
                   </td>
                   <td className="px-4 py-3 font-mono text-brand-navy/60">

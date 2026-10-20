@@ -20,7 +20,7 @@ export function ComingSoonSection({
         <div className="text-[28px]">🚧</div>
         <div className="mt-2 text-[14px] font-bold text-brand-navy">Chưa kết nối cơ sở dữ liệu</div>
         <p className="mx-auto mt-1.5 max-w-md text-[12.5px] text-brand-navy/50">
-          Mục này cần thêm bảng dữ liệu trong Supabase (chưa có trong schema hiện tại) — sẽ xây khi có yêu cầu cụ
+          Mục này cần thêm bảng dữ liệu trong Supabase (chưa có trong schema hiện tại) ‑ sẽ xây khi có yêu cầu cụ
           thể. Các tính năng dự kiến:
         </p>
         <ul className="mx-auto mt-4 max-w-sm space-y-1.5 text-left text-[12.5px] text-brand-navy/60">

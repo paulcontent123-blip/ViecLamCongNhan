@@ -34,7 +34,7 @@ export default async function QuyenLoiPage({
           Quyền lợi & <em className="text-brand-orange not-italic">Pháp lý lao động</em>
         </h1>
         <p className="mt-2 max-w-2xl text-[13.5px] text-brand-navy/50">
-          Tra cứu nhanh số liệu pháp luật lao động hiện hành — lương tối thiểu vùng, BHXH, hợp đồng lao động và
+          Tra cứu nhanh số liệu pháp luật lao động hiện hành ‑ lương tối thiểu vùng, BHXH, hợp đồng lao động và
           các chế độ khác.
         </p>
 

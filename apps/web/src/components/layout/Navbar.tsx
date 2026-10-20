@@ -12,10 +12,10 @@ const timViecItems = [
 ];
 
 // Luôn trỏ về trang công khai (giới thiệu + bảng giá), bất kể đã đăng nhập NTD
-// hay chưa — đúng hành vi bản HTML gốc (nav('tuyendung',null);switchTDTab(...)).
+// hay chưa ‑ đúng hành vi bản HTML gốc (nav('tuyendung',null);switchTDTab(...)).
 // Khi đã đăng nhập, các chức năng thật (đăng tin, ứng viên, đơn hàng...) đã có
 // sẵn trong sidebar dashboard NTD rồi nên không cần đổi mục menu này theo trạng
-// thái đăng nhập nữa — tránh trùng lặp 2 chỗ điều hướng.
+// thái đăng nhập nữa ‑ tránh trùng lặp 2 chỗ điều hướng.
 const tuyenDungItemsPublic = [
   { href: `${ROUTES.tuyenDung}?tab=dang`, icon: "📋", label: "Đăng bài tuyển dụng" },
   { href: `${ROUTES.tuyenDung}?tab=goi`, icon: "💼", label: "Gói đăng tin tuyển dụng" },
@@ -72,7 +72,7 @@ function NavDropdown({
 }
 
 // 1 nút đăng nhập/tài khoản duy nhất thay vì 2 nút Quản trị + Nhà tuyển dụng
-// tách rời — vừa gọn chỗ trên menu, vừa gộp đúng logic: đăng nhập quyền nào
+// tách rời ‑ vừa gọn chỗ trên menu, vừa gộp đúng logic: đăng nhập quyền nào
 // hiện tên quyền đó và trỏ thẳng vào trang tương ứng; chưa đăng nhập quyền
 // nào thì mở modal (có sẵn tab chọn quyền). Trường hợp hiếm khi đăng nhập cả
 // 2 quyền cùng lúc (2 cookie phiên độc lập) thì gộp thành dropdown nhỏ.
@@ -180,7 +180,7 @@ export function Navbar() {
   const isEmployerLoggedIn = Boolean(employerCompanyName);
 
   // Navbar sống xuyên suốt qua điều hướng client-side (nằm trong layout gốc,
-  // không unmount) nên chỉ fetch 1 lần lúc mount là chưa đủ — sau khi đăng
+  // không unmount) nên chỉ fetch 1 lần lúc mount là chưa đủ ‑ sau khi đăng
   // xuất, nút tài khoản (AuthNavButton) sẽ vẫn hiển thị trạng thái cũ đã đăng
   // nhập cho tới khi có dịp mount lại. Refetch mỗi khi pathname đổi (router
   // .refresh()/push() sau login/logout đều kéo theo đổi pathname) để trạng

@@ -2,7 +2,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Client Supabase dùng SERVICE ROLE key — bypass RLS hoàn toàn.
+ * Client Supabase dùng SERVICE ROLE key ‑ bypass RLS hoàn toàn.
  * CHỈ import trong code chạy trên server (Route Handlers, Server Actions).
  * `server-only` sẽ làm build fail nếu module này lỡ bị import vào Client Component.
  */

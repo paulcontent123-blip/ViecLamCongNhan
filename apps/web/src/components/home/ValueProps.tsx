@@ -16,7 +16,7 @@ export function ValueProps({ stats }: { stats: HomeStats }) {
     {
       icon: "⚖",
       title: "VEA Law & VEA Academy",
-      desc: "Tư vấn pháp lý lao động và đào tạo tay nghề — hệ sinh thái toàn diện của VEA Group",
+      desc: "Tư vấn pháp lý lao động và đào tạo tay nghề ‑ hệ sinh thái toàn diện của VEA Group",
     },
   ];
 

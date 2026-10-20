@@ -98,13 +98,13 @@ export default async function AdminEmployersPage({
                 <tr key={e.id} className="border-t border-black/5">
                   <td className="px-4 py-3">
                     <div className="font-bold text-brand-navy">{e.company_name}</div>
-                    <div className="text-[11px] text-brand-navy/45">{e.users?.email ?? "—"}</div>
+                    <div className="text-[11px] text-brand-navy/45">{e.users?.email ?? "‑"}</div>
                   </td>
                   <td className="px-4 py-3 text-brand-navy/60">{e.contact_phone}</td>
                   <td className="px-4 py-3 text-brand-navy/60">
-                    {industryLabel(e.industry) || "—"} · {provinceName(e.province_code)}
+                    {industryLabel(e.industry) || "‑"} · {provinceName(e.province_code)}
                   </td>
-                  <td className="px-4 py-3 text-brand-navy/60">{e.tax_code ?? "—"}</td>
+                  <td className="px-4 py-3 text-brand-navy/60">{e.tax_code ?? "‑"}</td>
                   <td className="px-4 py-3">
                     {e.is_verified ? (
                       <StatusPill label="Đã xác minh" tone="green" />

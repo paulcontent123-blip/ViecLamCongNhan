@@ -118,7 +118,7 @@ export default async function AdminJobsPage({
                     <td className="max-w-[220px] px-4 py-3">
                       <div className="truncate font-bold text-brand-navy">{job.title}</div>
                     </td>
-                    <td className="px-4 py-3 text-brand-navy/60">{job.employers?.company_name ?? "—"}</td>
+                    <td className="px-4 py-3 text-brand-navy/60">{job.employers?.company_name ?? "‑"}</td>
                     <td className="px-4 py-3 text-brand-navy/60">
                       {industryLabel(job.industry)} · {provinceName(job.province_code)}
                     </td>

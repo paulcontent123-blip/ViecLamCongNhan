@@ -10,15 +10,16 @@ import {
 import { ROUTES } from "@/lib/routes";
 import { buildQuery } from "@/lib/url";
 import { isPaymentMethod, PAYMENT_METHOD_META } from "@/lib/payment-method";
+import { PAYMENT_STATE_LABEL, PAYMENT_STATE_TONE, paymentState } from "@/lib/payment";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { OrderStatusActions } from "@/components/admin/OrderStatusActions";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 
 // NTD đã bấm "Xác nhận thanh toán" ở modal thì đơn mới được tạo (xem
-// BuyPackageButton.tsx) — nên "pending" ở đây luôn có nghĩa "NTD đã tự khai đã
+// BuyPackageButton.tsx) ‑ nên "pending" ở đây luôn có nghĩa "NTD đã tự khai đã
 // thanh toán, chờ Admin xác minh", không phải "chưa làm gì".
 const STATUS_LABEL: Record<AdminOrderStatus, { label: string; tone: "amber" | "green" | "gray" | "blue" }> = {
-  pending: { label: "Đã thanh toán — chờ xác nhận", tone: "amber" },
+  pending: { label: "Chờ đối soát", tone: "amber" },
   paid: { label: "Đã xác nhận", tone: "green" },
   cancelled: { label: "Đã huỷ", tone: "gray" },
   refunded: { label: "Đã hoàn tiền", tone: "blue" },
@@ -150,20 +151,26 @@ export default async function AdminOrdersPage({
             </thead>
             <tbody>
               {orders.map((o) => {
-                const st = STATUS_LABEL[o.status as AdminOrderStatus] ?? STATUS_LABEL.pending;
+                const state = paymentState(o.status, o.customer_confirmed_at !== null);
+                // Đơn chờ: phân biệt NTD đã bấm "Tôi đã thanh toán" hay chưa, vì chỉ đơn
+                // đã được NTD báo mới xác nhận "Đã nhận tiền" được.
+                const st =
+                  o.status === "pending"
+                    ? { label: PAYMENT_STATE_LABEL[state], tone: PAYMENT_STATE_TONE[state] }
+                    : STATUS_LABEL[o.status as AdminOrderStatus] ?? STATUS_LABEL.pending;
                 return (
                   <tr key={o.id} className="border-t border-black/5">
                     <td className="px-4 py-3">
                       <div className="font-mono text-[12px] font-bold text-brand-navy">
-                        DH{o.id.slice(0, 8).toUpperCase()}
+                        {o.code ?? `DH${o.id.slice(0, 8).toUpperCase()}`}
                       </div>
                       <div className="text-[11px] text-brand-navy/40">
                         {new Date(o.created_at).toLocaleString("vi-VN")}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-brand-navy/60">{o.employers?.company_name ?? "—"}</td>
+                    <td className="px-4 py-3 text-brand-navy/60">{o.employers?.company_name ?? "‑"}</td>
                     <td className="px-4 py-3 text-brand-navy/60">
-                      {o.order_type ? ORDER_TYPE_LABEL[o.order_type] ?? o.order_type : "—"}
+                      {o.order_type ? ORDER_TYPE_LABEL[o.order_type] ?? o.order_type : "‑"}
                       {o.tier && <span className="text-brand-navy/40"> · {o.tier}</span>}
                     </td>
                     <td className="px-4 py-3 font-mono font-bold text-brand-orange">
@@ -172,7 +179,7 @@ export default async function AdminOrdersPage({
                     <td className="px-4 py-3 text-brand-navy/60">
                       {o.payment_method && isPaymentMethod(o.payment_method)
                         ? `${PAYMENT_METHOD_META[o.payment_method].icon} ${PAYMENT_METHOD_META[o.payment_method].label}`
-                        : "—"}
+                        : "‑"}
                     </td>
                     <td className="px-4 py-3">
                       <StatusPill label={st.label} tone={st.tone} />

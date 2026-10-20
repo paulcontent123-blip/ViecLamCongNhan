@@ -9,7 +9,7 @@ interface IndustryOption {
 }
 
 /** Select ngành nghề dùng cho form LỌC gửi bằng GET (Tìm việc, Duyệt hồ sơ ứng viên)
- * — không controlled bằng React state, submit thẳng qua thuộc tính name như select
+ * ‑ không controlled bằng React state, submit thẳng qua thuộc tính name như select
  * thường. Khi chọn "Ngành nghề khác", select tự bỏ `name` (trình duyệt bỏ qua lúc
  * submit) và nhường chỗ cho ô nhập text mang đúng `name` đó, nên form GET vẫn chỉ có
  * đúng 1 giá trị `industry` trong query string dù dùng 2 input khác nhau. */

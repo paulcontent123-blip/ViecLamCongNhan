@@ -85,7 +85,7 @@ export default async function EmployerCandidatesPage({
     <div className="space-y-6">
       {isLocked ? (
         <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-5">
-          <div className="text-[13px] font-bold text-brand-navy">🔒 Gói Free — xem hồ sơ nhưng ẩn liên hệ</div>
+          <div className="text-[13px] font-bold text-brand-navy">🔒 Gói Free ‑ xem hồ sơ nhưng ẩn liên hệ</div>
           <p className="mt-1 text-[12.5px] text-brand-navy/55">
             Bạn vẫn xem được ngành nghề, tỉnh/thành, kinh nghiệm của ứng viên bên dưới. Nâng cấp Basic (60 hồ
             sơ/tháng) hoặc Premium (300 hồ sơ/tháng + matching) để xem số điện thoại/Zalo.{" "}
@@ -97,7 +97,7 @@ export default async function EmployerCandidatesPage({
       ) : (
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="text-[13px] font-extrabold text-brand-navy">📂 Hồ sơ ứng viên — gói {perks.label}</div>
+            <div className="text-[13px] font-extrabold text-brand-navy">📂 Hồ sơ ứng viên ‑ gói {perks.label}</div>
             <div className="font-mono text-[13px] font-bold text-brand-orange">
               {viewedCount}/{perks.candidateViewLimit} đã xem tháng này
             </div>
@@ -107,7 +107,7 @@ export default async function EmployerCandidatesPage({
           </div>
           {viewedCount >= perks.candidateViewLimit && (
             <p className="mt-2 text-[12px] text-brand-navy/50">
-              Đã hết hạn mức tháng này — hồ sơ mới vẫn hiển thị nhưng ẩn thông tin liên hệ.{" "}
+              Đã hết hạn mức tháng này ‑ hồ sơ mới vẫn hiển thị nhưng ẩn thông tin liên hệ.{" "}
               <Link href={ROUTES.ntdDashboardOrders} className="font-bold text-brand-orange">
                 Nâng cấp gói →
               </Link>
@@ -180,7 +180,7 @@ export default async function EmployerCandidatesPage({
         )}
         {total > candidates.length && (
           <p className="mt-3 text-center text-[12px] text-brand-navy/40">
-            Hiển thị {candidates.length}/{total} hồ sơ phù hợp — thu hẹp bộ lọc để xem chính xác hơn.
+            Hiển thị {candidates.length}/{total} hồ sơ phù hợp ‑ thu hẹp bộ lọc để xem chính xác hơn.
           </p>
         )}
       </div>

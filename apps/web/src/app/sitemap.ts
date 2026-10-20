@@ -4,7 +4,7 @@ import { absoluteUrl } from "@/lib/site-url";
 import { ROUTES } from "@/lib/routes";
 
 // Xây lại tối đa 1 lần/giờ. Tin tuyển dụng mới không cần xuất hiện trong sitemap
-// tức thì, mà mỗi lần dựng là 4 query xuống Supabase — không nên chạy mỗi request.
+// tức thì, mà mỗi lần dựng là 4 query xuống Supabase ‑ không nên chạy mỗi request.
 export const revalidate = 3600;
 
 // Trần an toàn cho 1 query. Chuẩn sitemap cho phép tối đa 50.000 URL/file;
@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .limit(MAX_ROWS),
   ]);
 
-  // Một query lỗi thì chỉ mất nhóm URL đó, sitemap vẫn ra — thà thiếu vài trang
+  // Một query lỗi thì chỉ mất nhóm URL đó, sitemap vẫn ra ‑ thà thiếu vài trang
   // còn hơn trả lỗi 500 khiến Google bỏ luôn cả sitemap.
   const rows = (res: { data: unknown; error: unknown }, dateKey: string): Row[] => {
     if (res.error || !Array.isArray(res.data)) return [];

@@ -1,4 +1,4 @@
-// Cấu hình danh mục Tin tức — tách riêng khỏi lib/content.ts vì file đó import
+// Cấu hình danh mục Tin tức ‑ tách riêng khỏi lib/content.ts vì file đó import
 // createSupabaseServerClient (dùng next/headers, chỉ chạy được ở Server Component).
 // Module này KHÔNG có side-effect server-only nên an toàn import từ Client Component
 // (VD: ArticleManagement.tsx cần ARTICLE_CATEGORIES cho <select> chọn danh mục).

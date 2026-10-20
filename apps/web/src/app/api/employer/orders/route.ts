@@ -4,11 +4,12 @@ import { getEmployerSession } from "@/lib/employer-auth";
 import { createAccountSubscriptionOrder, createJobAddonOrder, isEmployerVerified } from "@/lib/employer";
 import { isPaidAccountTier } from "@/lib/account-tiers";
 import { isJobAddon } from "@/lib/packages";
-import { isPaymentMethod } from "@/lib/payment-method";
+import { isSelectablePaymentMethod } from "@/lib/payment-method";
 
 const bodySchema = z.object({
   tier: z.enum(["basic", "premium", "campaign"]),
-  paymentMethod: z.string().refine(isPaymentMethod, "Phương thức thanh toán không hợp lệ."),
+  // Chỉ nhận phương thức đang mở (VietQR / MoMo) ‑ VNPay còn ở trạng thái "Sắp có".
+  paymentMethod: z.string().refine(isSelectablePaymentMethod, "Phương thức thanh toán không hợp lệ."),
 });
 
 export async function POST(request: NextRequest) {
@@ -43,5 +44,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, order: result.order });
+  // payment = màn hình thanh toán (mã đơn, QR, số tài khoản / ví) hiện ngay cho NTD.
+  return NextResponse.json({ ok: true, order: result.order, payment: result.payment });
 }

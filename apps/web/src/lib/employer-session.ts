@@ -1,11 +1,11 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 
-// Edge-safe (jose only, không bcrypt) — dùng được trong middleware.ts.
+// Edge-safe (jose only, không bcrypt) ‑ dùng được trong middleware.ts.
 // Xem lib/admin-session.ts để biết lý do tách riêng khỏi lib/auth.ts.
 
 export const EMPLOYER_SESSION_COOKIE = "employer_session";
-const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 ngày — NTD không cần đăng nhập lại liên tục
+const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 ngày ‑ NTD không cần đăng nhập lại liên tục
 export const EMPLOYER_SESSION_MAX_AGE = SESSION_TTL_SECONDS;
 
 function getSecretKey() {

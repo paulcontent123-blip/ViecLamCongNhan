@@ -208,7 +208,7 @@ export function CandidateQuickForm({ jobSlug }: { jobSlug?: string }) {
         disabled={status.type === "loading"}
         className="mt-5 w-full rounded-xl bg-brand-orange py-3 text-[14px] font-bold text-white shadow-sm transition hover:brightness-105 disabled:opacity-60"
       >
-        {status.type === "loading" ? "Đang gửi..." : "✅ Gửi thông tin tìm việc — Miễn phí"}
+        {status.type === "loading" ? "Đang gửi..." : "✅ Gửi thông tin tìm việc ‑ Miễn phí"}
       </button>
     </form>
   );

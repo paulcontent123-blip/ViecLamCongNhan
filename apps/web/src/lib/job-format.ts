@@ -1,5 +1,5 @@
 // Định dạng dùng chung giữa JobCard (thẻ rút gọn) và JobDetailContent (trang/modal
-// chi tiết) — tách ra đây để 2 nơi hiển thị luôn khớp nhau, không lệch logic.
+// chi tiết) ‑ tách ra đây để 2 nơi hiển thị luôn khớp nhau, không lệch logic.
 
 export function formatSalary(min: number | null, max: number | null): string {
   const fmt = (v: number) => (v / 1_000_000).toLocaleString("vi-VN");

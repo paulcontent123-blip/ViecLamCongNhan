@@ -2,7 +2,7 @@ import "server-only";
 import bcrypt from "bcryptjs";
 
 // Chỉ dùng trong Route Handlers/Server Actions (Node runtime).
-// KHÔNG import file này trong middleware.ts — bcryptjs không chạy được trên
+// KHÔNG import file này trong middleware.ts ‑ bcryptjs không chạy được trên
 // Edge Runtime. Session/JWT (Edge-safe) nằm ở lib/admin-session.ts.
 
 export async function hashPassword(plain: string): Promise<string> {

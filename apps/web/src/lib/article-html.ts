@@ -12,7 +12,7 @@ export interface ArticleHeading {
 /**
  * Gắn id vào các thẻ h2/h3 trong nội dung HTML và trả về danh sách heading để dựng
  * mục lục (table of contents) đầu bài viết. Chạy lúc render trang công khai, không
- * lưu id vào DB — đổi tiêu đề trong bài là mục lục tự khớp lại.
+ * lưu id vào DB ‑ đổi tiêu đề trong bài là mục lục tự khớp lại.
  */
 export function buildArticleToc(html: string): { html: string; headings: ArticleHeading[] } {
   const headings: ArticleHeading[] = [];
@@ -47,7 +47,7 @@ export function buildArticleToc(html: string): { html: string; headings: Article
   return { html: withScrollableTables, headings };
 }
 
-/** ~200 từ/phút — con số quen dùng cho bài đọc tiếng Việt trên web. */
+/** ~200 từ/phút ‑ con số quen dùng cho bài đọc tiếng Việt trên web. */
 export function estimateReadMinutes(content: string): number {
   const words = htmlToPlainText(content).split(/\s+/).filter(Boolean).length;
   return Math.min(60, Math.max(1, Math.round(words / 200) || 1));

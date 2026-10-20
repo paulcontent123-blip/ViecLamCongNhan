@@ -13,10 +13,10 @@ export interface HomeStats {
 }
 
 /**
- * Số liệu hero/stats trang chủ tính trực tiếp từ dữ liệu thật — khác bản HTML demo
+ * Số liệu hero/stats trang chủ tính trực tiếp từ dữ liệu thật ‑ khác bản HTML demo
  * cũ dùng số cố định (48.000+ tin, 1.200+ nhà máy, 800K+ ứng viên) không bao giờ đổi.
  * Dùng service-role client (bypass RLS) vì candidates không có policy đọc công khai
- * (đúng chủ đích — bảo vệ SĐT/thông tin ứng viên) nên client anon sẽ luôn đếm ra 0;
+ * (đúng chủ đích ‑ bảo vệ SĐT/thông tin ứng viên) nên client anon sẽ luôn đếm ra 0;
  * ở đây chỉ trả về SỐ ĐẾM tổng hợp, không lộ dữ liệu thô của từng ứng viên.
  */
 export async function getHomeStats(): Promise<HomeStats> {

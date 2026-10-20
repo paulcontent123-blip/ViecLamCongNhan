@@ -217,7 +217,7 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
   /**
    * formatBlock mặc định của trình duyệt luôn đổi toàn bộ block chứa vùng chọn.
    * Với H1/H2/H3, nếu người dùng chỉ bôi một phần câu thì tách block thành phần
-   * trước — heading — phần sau để chỉ phần đã chọn được đổi cấp.
+   * trước ‑ heading ‑ phần sau để chỉ phần đã chọn được đổi cấp.
    */
   function setHeading(tagName: "h1" | "h2" | "h3") {
     if (disabled) return;
@@ -396,7 +396,7 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
     return (cell as HTMLTableCellElement | null) ?? null;
   }
 
-  /** Thao tác bảng chỉnh thẳng trên DOM — execCommand không có lệnh nào cho bảng. */
+  /** Thao tác bảng chỉnh thẳng trên DOM ‑ execCommand không có lệnh nào cho bảng. */
   function withTable(action: (cell: HTMLTableCellElement, row: HTMLTableRowElement, table: HTMLTableElement) => void) {
     if (disabled) return;
     restoreRange();
@@ -548,7 +548,7 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
     setUploading(true);
     try {
       const url = await onUploadImage(file);
-      const alt = window.prompt("Mô tả ảnh (alt — tốt cho SEO, có thể bỏ trống)", "")?.trim() ?? "";
+      const alt = window.prompt("Mô tả ảnh (alt ‑ tốt cho SEO, có thể bỏ trống)", "")?.trim() ?? "";
       restoreRange();
       document.execCommand(
         "insertHTML",
@@ -600,19 +600,19 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
         <span className="mx-1 h-5 w-px bg-black/10" />
         <ToolbarButton
           label="H1"
-          title="Tiêu đề lớn — chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
+          title="Tiêu đề lớn ‑ chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
           onClick={() => setHeading("h1")}
           disabled={richDisabled}
         />
         <ToolbarButton
           label="H2"
-          title="Tiêu đề mục — chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
+          title="Tiêu đề mục ‑ chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
           onClick={() => setHeading("h2")}
           disabled={richDisabled}
         />
         <ToolbarButton
           label="H3"
-          title="Tiêu đề phụ — chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
+          title="Tiêu đề phụ ‑ chỉ phần bôi đen sẽ đổi; không bôi thì đổi cả đoạn"
           onClick={() => setHeading("h3")}
           disabled={richDisabled}
         />
@@ -640,7 +640,7 @@ export function RichTextEditor({ value, onChange, onUploadImage, disabled, place
           disabled={richDisabled}
         />
         <ToolbarButton label="❝ Quote" title="Trích dẫn" onClick={() => exec("formatBlock", "<blockquote>")} disabled={richDisabled} />
-        <ToolbarButton label="— Kẻ ngang" title="Chèn đường kẻ ngang" onClick={() => exec("insertHTML", "<hr /><p><br></p>")} disabled={richDisabled} />
+        <ToolbarButton label="‑ Kẻ ngang" title="Chèn đường kẻ ngang" onClick={() => exec("insertHTML", "<hr /><p><br></p>")} disabled={richDisabled} />
         <ToolbarButton
           label="✕ Xoá định dạng"
           title="Đưa phần đang chọn về đoạn văn thường và xoá định dạng chữ"

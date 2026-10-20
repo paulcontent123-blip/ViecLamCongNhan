@@ -35,7 +35,7 @@ export default async function TinTucQuyenLoiPage({
           Tin tức & Quyền lợi công nhân
         </div>
         <h1 className="mt-2 text-[26px] font-extrabold text-brand-navy sm:text-[30px]">
-          Cập nhật tin tức — <em className="text-brand-orange not-italic">bảo vệ quyền lợi</em>
+          Cập nhật tin tức ‑ <em className="text-brand-orange not-italic">bảo vệ quyền lợi</em>
         </h1>
         <p className="mt-2 max-w-2xl text-[13.5px] text-brand-navy/50">
           Bài viết pháp lý, tin tức lao động và thông tin quyền lợi người lao động theo Bộ luật Lao động 2019.

@@ -31,7 +31,7 @@ export async function FeaturedJobs({
             </>
           ) : (
             <>
-              <em className="text-brand-orange not-italic">Đang tuyển gấp</em> — lương hấp dẫn
+              <em className="text-brand-orange not-italic">Đang tuyển gấp</em> ‑ lương hấp dẫn
             </>
           )}
         </h2>

@@ -7,7 +7,7 @@ import { CampaignCard } from "@/components/timviec/CampaignCard";
 import type { JobWithRelations } from "@/types/db";
 
 // Ô CTA "Dành cho doanh nghiệp" luôn chiếm 1 suất cuối lưới, nên mỗi trang tối đa
-// 9 chiến dịch thật + 1 CTA = 10 ô — khớp ví dụ "10 ô = 9 chiến dịch + 1 CTA".
+// 9 chiến dịch thật + 1 CTA = 10 ô ‑ khớp ví dụ "10 ô = 9 chiến dịch + 1 CTA".
 const CAMPAIGNS_PER_PAGE = 9;
 
 // Tailwind cần class literal (không ghép chuỗi động) để JIT nhận diện lúc build.
@@ -19,7 +19,7 @@ const COLS_CLASS: Record<number, string> = {
   5: "sm:grid-cols-2 lg:grid-cols-5",
 };
 
-/** Số cột sao cho các hàng đều nhau nhất có thể, tối đa 5 cột — từ 6 ô trở lên
+/** Số cột sao cho các hàng đều nhau nhất có thể, tối đa 5 cột ‑ từ 6 ô trở lên
  * luôn xếp 2 hàng (VD 6→3x2, 9→5x2 dư 1, 10→5x2 đủ); từ 5 ô trở xuống xếp 1 hàng. */
 function columnsFor(totalCells: number): number {
   const rows = totalCells <= 5 ? 1 : 2;

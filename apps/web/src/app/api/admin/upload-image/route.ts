@@ -4,7 +4,7 @@ import { uploadImageToCloudinary } from "@/lib/cloudinary";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
-const ALLOWED_FOLDERS = new Set(["article-content", "article-covers"]);
+const ALLOWED_FOLDERS = new Set(["article-content", "article-covers", "momo-qr"]);
 
 /** Upload ảnh cho trình soạn bài viết ở trang Quản trị (ảnh trong bài + ảnh đại diện). */
 export async function POST(request: NextRequest) {

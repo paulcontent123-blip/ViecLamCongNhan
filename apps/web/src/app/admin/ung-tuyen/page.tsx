@@ -150,7 +150,7 @@ export default async function AdminApplicationsPage({
                     <td className="px-4 py-3">
                       <div className="font-bold text-brand-navy">{candidate?.full_name ?? "Ứng viên"}</div>
                       <div className="text-[11px] text-brand-navy/45">
-                        📞 {candidate?.phone ?? "—"}
+                        📞 {candidate?.phone ?? "‑"}
                         {candidate?.zalo && <> · Zalo: {candidate.zalo}</>}
                       </div>
                       <div className="mt-1 text-[11px] text-brand-navy/40">
@@ -161,7 +161,7 @@ export default async function AdminApplicationsPage({
                       <div className="font-semibold text-brand-navy">{job?.title ?? "Tin đã bị xoá"}</div>
                       {job?.slug && <div className="mt-0.5 truncate text-[11px] text-brand-navy/40">/{job.slug}</div>}
                     </td>
-                    <td className="px-4 py-3 text-brand-navy/60">{job?.employers?.company_name ?? "—"}</td>
+                    <td className="px-4 py-3 text-brand-navy/60">{job?.employers?.company_name ?? "‑"}</td>
                     <td className="px-4 py-3">
                       <StatusPill label={APPLICATION_STATUS_LABEL[applicationStatus]} tone={statusMeta.tone} />
                       <div className="mt-1 text-[11px] text-brand-navy/35">

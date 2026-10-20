@@ -13,7 +13,7 @@ const beVietnamPro = Be_Vietnam_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "ViecLamCongNhan.com — Việc làm cho công nhân KCN",
+  title: "ViecLamCongNhan.com ‑ Hệ sinh thái việc làm cho công nhân",
   description:
     "Nền tảng tuyển dụng chuyên biệt cho công nhân phổ thông và lao động sản xuất tại các Khu công nghiệp trên 34 tỉnh thành.",
 };

@@ -72,7 +72,7 @@ export default async function EmployerDashboardOverviewPage() {
 
       <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
         <div className="mb-3 flex items-center justify-between border-b border-black/5 pb-2.5">
-          <div className="text-[13px] font-extrabold text-brand-navy">💳 Gói dịch vụ — {perks.label}</div>
+          <div className="text-[13px] font-extrabold text-brand-navy">💳 Gói dịch vụ ‑ {perks.label}</div>
           <Link href={ROUTES.ntdDashboardOrders} className="text-[12px] font-bold text-brand-orange">
             Nâng cấp gói →
           </Link>
@@ -151,7 +151,7 @@ export default async function EmployerDashboardOverviewPage() {
                       <td className="py-2.5 pr-3 font-mono text-brand-navy/60">{job.view_count}</td>
                       <td className="py-2.5 pr-3 font-mono text-brand-navy/60">{job.apply_count}</td>
                       <td className="py-2.5 text-brand-navy/45">
-                        {job.expires_at ? new Date(job.expires_at).toLocaleDateString("vi-VN") : "—"}
+                        {job.expires_at ? new Date(job.expires_at).toLocaleDateString("vi-VN") : "‑"}
                       </td>
                     </tr>
                   );

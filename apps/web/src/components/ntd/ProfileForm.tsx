@@ -86,7 +86,7 @@ export function ProfileForm({ profile }: { profile: EmployerProfile }) {
         <div className="grid gap-x-6 gap-y-2 text-[13px] sm:grid-cols-2">
           <div>
             <span className="text-brand-navy/40">Email đăng nhập: </span>
-            <span className="font-semibold text-brand-navy">{profile.users?.email ?? "—"}</span>
+            <span className="font-semibold text-brand-navy">{profile.users?.email ?? "‑"}</span>
           </div>
           <div>
             <span className="text-brand-navy/40">Mã công ty: </span>
@@ -117,7 +117,7 @@ export function ProfileForm({ profile }: { profile: EmployerProfile }) {
 
         {!profile.is_verified && (
           <div className="mb-4 rounded-lg bg-amber-50 px-3 py-2.5 text-[12.5px] text-amber-800">
-            🔒 Tài khoản đang chờ Admin xác minh — chưa thể sửa thông tin đơn vị lúc này.
+            🔒 Tài khoản đang chờ Admin xác minh ‑ chưa thể sửa thông tin đơn vị lúc này.
           </div>
         )}
 

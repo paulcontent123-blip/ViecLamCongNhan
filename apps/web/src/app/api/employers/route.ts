@@ -9,7 +9,7 @@ import {
 } from "@/lib/employer-session";
 
 const bodySchema = z.object({
-  // Form đăng ký rút gọn (modal, khớp bản HTML gốc) không hỏi tên người liên hệ —
+  // Form đăng ký rút gọn (modal, khớp bản HTML gốc) không hỏi tên người liên hệ ‑
   // mặc định dùng tên công ty. Trang /tuyen-dung (đăng ký đầy đủ) vẫn gửi kèm.
   fullName: z.string().min(2).optional(),
   companyName: z.string().min(2, "Vui lòng nhập tên công ty"),
@@ -17,7 +17,7 @@ const bodySchema = z.object({
   email: z.string().email("Email đăng nhập không hợp lệ"),
   password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự"),
   provinceCode: z.string().optional(),
-  // Không còn ràng buộc enum — employers.industry đã bỏ CHECK constraint (xem
+  // Không còn ràng buộc enum ‑ employers.industry đã bỏ CHECK constraint (xem
   // migration 20260820110001), NTD có thể tự gõ "Ngành nghề khác".
   industry: z.string().min(1).optional(),
   taxCode: z.string().optional(),

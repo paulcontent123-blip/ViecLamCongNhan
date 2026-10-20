@@ -2,7 +2,7 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 
 // Tách riêng khỏi lib/auth.ts (bcrypt): file này chỉ dùng jose (Edge-compatible)
-// vì được import trong middleware.ts, chạy trên Edge Runtime — bcryptjs dùng
+// vì được import trong middleware.ts, chạy trên Edge Runtime ‑ bcryptjs dùng
 // Node API (process.nextTick, setImmediate) không chạy được ở Edge.
 
 export const ADMIN_SESSION_COOKIE = "admin_session";
