@@ -1918,6 +1918,7 @@ export async function getAdminServiceInquiries(
     q?: string;
     status?: AdminServiceInquiryStatus;
     type?: string;
+    id?: string;
     limit?: number;
     offset?: number;
   } = {},
@@ -1932,8 +1933,10 @@ export async function getAdminServiceInquiries(
     })
     // Ưu tiên yêu cầu mới; các yêu cầu đã tư vấn/cancelled được đẩy xuống dưới.
     .order("status", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
 
+  if (filters.id) query = query.eq("id", filters.id);
   if (filters.status) query = query.eq("status", filters.status);
   if (filters.type) query = query.eq("type", filters.type);
   const search = filters.q?.trim().replace(/[(),]/g, " ");
