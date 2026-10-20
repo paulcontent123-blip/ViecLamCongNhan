@@ -398,6 +398,13 @@ export async function getAdminOrders(
   return { orders: (data ?? []) as unknown as AdminOrderRow[], total: count ?? 0 };
 }
 
+export async function getAdminOrderById(id: string): Promise<AdminOrderRow | null> {
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase.from("orders").select(ADMIN_ORDER_SELECT).eq("id", id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as unknown as AdminOrderRow | null) ?? null;
+}
+
 export interface AdminOrderStats {
   revenueThisMonthVnd: number;
   revenueLastMonthVnd: number;
