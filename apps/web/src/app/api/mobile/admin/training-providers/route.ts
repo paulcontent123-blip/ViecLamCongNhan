@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
+
+type TrainingProviderListRow = {
+  id: string;
+  provider_name: string;
+  provider_type: string | null;
+  contact_name: string | null;
+  contact_phone: string | null;
+  province_code: string | null;
+  tax_code: string | null;
+  license_number: string | null;
+  is_verified: boolean;
+  account_type: string;
+  created_at: string;
+  users: { email: string } | Array<{ email: string }>;
+};
+
 export async function GET(request: NextRequest) {
   const admin = await getAdminSession();
   if (!admin) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
@@ -22,7 +38,8 @@ export async function GET(request: NextRequest) {
   if (q) { const safeQ = q.replace(/[%,._(),]/g, " "); query = query.or(`provider_name.ilike.%${safeQ}%,contact_phone.ilike.%${safeQ}%`); }
   const { data, count, error } = await query.range((page - 1) * pageSize, page * pageSize - 1);
   if (error) return NextResponse.json({ error: "Chưa tải được danh sách đơn vị đào tạo." }, { status: 500 });
-  const items = (data || []).map((item: any) => ({ ...item, email: Array.isArray(item.users) ? item.users[0]?.email : item.users?.email, users: undefined }));
+  const rows = (data || []) as unknown as TrainingProviderListRow[];
+  const items = rows.map(({ users, ...provider }) => ({ ...provider, email: Array.isArray(users) ? users[0]?.email : users.email }));
   const total = count || 0;
   return NextResponse.json({ ok: true, items, total, page, pageSize, hasMore: page * pageSize < total });
 }

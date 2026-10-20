@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
+
+type ProviderRelation = { provider_name: string; is_verified: boolean } | Array<{ provider_name: string; is_verified: boolean }> | null;
+type VocationalCourseListRow = Record<string, unknown> & { training_providers: ProviderRelation };
+
 export async function GET(request: NextRequest) {
   if (!(await getAdminSession())) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
   const params = request.nextUrl.searchParams;
@@ -21,7 +25,11 @@ export async function GET(request: NextRequest) {
   }
   const { data, count, error } = await query.range((page - 1) * pageSize, page * pageSize - 1);
   if (error) return NextResponse.json({ error: "Chưa tải được danh sách khóa học chờ duyệt." }, { status: 500 });
-  const items = (data || []).map((item: any) => ({ ...item, provider_name: Array.isArray(item.training_providers) ? item.training_providers[0]?.provider_name : item.training_providers?.provider_name, provider_verified: Array.isArray(item.training_providers) ? item.training_providers[0]?.is_verified : item.training_providers?.is_verified, training_providers: undefined }));
+  const rows = (data || []) as unknown as VocationalCourseListRow[];
+  const items = rows.map(({ training_providers, ...course }) => {
+    const provider = Array.isArray(training_providers) ? training_providers[0] : training_providers;
+    return { ...course, provider_name: provider?.provider_name, provider_verified: provider?.is_verified };
+  });
   const total = count || 0;
   return NextResponse.json({ ok: true, items, total, page, pageSize, hasMore: page * pageSize < total });
 }

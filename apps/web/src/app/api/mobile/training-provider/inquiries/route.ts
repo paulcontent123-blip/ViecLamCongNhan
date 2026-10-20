@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTrainingProviderSession } from "@/lib/training-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
+
+type CourseRelation = { title: string } | Array<{ title: string }> | null;
+type VocationalInquiryListRow = Record<string, unknown> & { vocational_courses: CourseRelation };
+
 export async function GET(request: NextRequest) {
   const session = await getTrainingProviderSession();
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
@@ -22,6 +26,10 @@ export async function GET(request: NextRequest) {
   const { data, count, error } = await query.range((page - 1) * pageSize, page * pageSize - 1);
   if (error) return NextResponse.json({ error: "Chưa tải được yêu cầu học nghề." }, { status: 500 });
   const total = count || 0;
-  const items = (data || []).map((item: any) => ({ ...item, course_title: Array.isArray(item.vocational_courses) ? item.vocational_courses[0]?.title : item.vocational_courses?.title, vocational_courses: undefined }));
+  const rows = (data || []) as unknown as VocationalInquiryListRow[];
+  const items = rows.map(({ vocational_courses, ...inquiry }) => ({
+    ...inquiry,
+    course_title: Array.isArray(vocational_courses) ? vocational_courses[0]?.title : vocational_courses?.title,
+  }));
   return NextResponse.json({ ok: true, items, total, page, pageSize, hasMore: page * pageSize < total });
 }

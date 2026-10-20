@@ -28,6 +28,7 @@ export function ArticleCard({ article }: { article: ArticleRow }) {
           📅 {article.published_at ? new Date(article.published_at).toLocaleDateString("vi-VN") : "‑"} · ⏱{" "}
           {article.read_minutes} phút đọc
         </div>
+        <div className="mt-2 line-clamp-3 text-[12px] leading-relaxed text-brand-navy/65">{summary}</div>
       </div>
     </Link>
   );
