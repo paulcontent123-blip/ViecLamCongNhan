@@ -168,7 +168,10 @@ export default async function AdminOrdersPage({
                         {new Date(o.created_at).toLocaleString("vi-VN")}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-brand-navy/60">{o.employers?.company_name ?? "‑"}</td>
+                    <td className="px-4 py-3 text-brand-navy/60">
+                      <div>{o.employers?.company_name ?? o.training_providers?.provider_name ?? "‑"}</div>
+                      {o.training_provider_id && <div className="mt-1 text-[10px] font-semibold text-brand-navy/40">Đơn vị đào tạo</div>}
+                    </td>
                     <td className="px-4 py-3 text-brand-navy/60">
                       {o.order_type ? ORDER_TYPE_LABEL[o.order_type] ?? o.order_type : "‑"}
                       {o.tier && <span className="text-brand-navy/40"> · {o.tier}</span>}

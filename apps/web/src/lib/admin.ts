@@ -331,6 +331,7 @@ export { ORDER_TYPE_LABEL };
 export interface AdminOrderRow {
   id: string;
   employer_id: string | null;
+  training_provider_id: string | null;
   order_type: string | null;
   tier: string | null;
   amount: number;
@@ -345,11 +346,12 @@ export interface AdminOrderRow {
   customer_confirmed_at: string | null;
   reject_reason: string | null;
   employers: { company_name: string; contact_phone: string | null } | null;
+  training_providers: { provider_name: string; contact_phone: string | null } | null;
   jobs: { title: string } | null;
 }
 
 const ADMIN_ORDER_SELECT =
-  "id, employer_id, order_type, tier, amount, payment_method, payment_ref, status, created_at, paid_at, job_id, campaign_message, code, customer_confirmed_at, reject_reason, employers(company_name, contact_phone), jobs(title)";
+  "id, employer_id, training_provider_id, order_type, tier, amount, payment_method, payment_ref, status, created_at, paid_at, job_id, campaign_message, code, customer_confirmed_at, reject_reason, employers(company_name, contact_phone), training_providers(provider_name, contact_phone), jobs(title)";
 
 export async function getAdminOrders(
   filters: AdminListFilters & { status?: AdminOrderStatus } = {},
@@ -374,6 +376,10 @@ export async function getAdminOrders(
     const { data: matchedEmployers } = await supabase.from("employers").select("id").ilike("company_name", `%${q}%`);
     if (matchedEmployers && matchedEmployers.length > 0) {
       orConditions.push(`employer_id.in.(${matchedEmployers.map((e) => e.id).join(",")})`);
+    }
+    const { data: matchedTrainingProviders } = await supabase.from("training_providers").select("id").ilike("provider_name", `%${q}%`);
+    if (matchedTrainingProviders && matchedTrainingProviders.length > 0) {
+      orConditions.push(`training_provider_id.in.(${matchedTrainingProviders.map((provider) => provider.id).join(",")})`);
     }
 
     // Mã đơn hiển thị dạng "DH1DECBE4D" (8 ký tự đầu của id, viết hoa). id là cột uuid
@@ -491,7 +497,7 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
     .from("orders")
     .update(status === "paid" ? { status, paid_at: new Date().toISOString() } : { status })
     .eq("id", orderId)
-    .select("id, employer_id, order_type, tier, job_id, campaign_message")
+    .select("id, employer_id, training_provider_id, order_type, tier, job_id, campaign_message")
     .maybeSingle();
   if (error || !data) return false;
 
@@ -502,10 +508,15 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
     const perks = ACCOUNT_TIERS[data.tier];
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + (perks.billingCycleDays ?? 30));
-    await supabase
-      .from("employers")
-      .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
-      .eq("id", data.employer_id);
+    if (data.training_provider_id) {
+      await supabase.from("training_providers")
+        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
+        .eq("id", data.training_provider_id);
+    } else if (data.employer_id) {
+      await supabase.from("employers")
+        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
+        .eq("id", data.employer_id);
+    }
   }
 
   // Hoàn tiền đơn thuê bao tài khoản (Basic/Premium) => phải thu hồi quyền lợi đã cấp,
@@ -513,27 +524,32 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
   // active hiện tại ĐÚNG LÀ gói do đơn này cấp ‑ tránh trường hợp hoàn tiền 1 đơn cũ đã
   // bị 1 đơn mua gói mới hơn ghi đè từ trước, lại vô tình hạ nhầm gói NTD đang dùng.
   if (status === "refunded" && data.order_type === "account_subscription" && data.tier && isPaidAccountTier(data.tier)) {
-    const { data: employer } = await supabase
-      .from("employers")
-      .select("account_type")
-      .eq("id", data.employer_id)
-      .maybeSingle();
+    const providerOrder = Boolean(data.training_provider_id);
+    const ownerId = data.training_provider_id ?? data.employer_id;
+    let ownerTier: string | null = null;
+    if (ownerId) {
+      const { data: owner } = providerOrder
+        ? await supabase.from("training_providers").select("account_type").eq("id", ownerId).maybeSingle()
+        : await supabase.from("employers").select("account_type").eq("id", ownerId).maybeSingle();
+      ownerTier = owner?.account_type ?? null;
+    }
 
-    if (employer?.account_type === data.tier) {
+    if (ownerTier === data.tier && ownerId) {
       // Tìm đơn thuê bao đã thanh toán gần nhất (khác đơn đang hoàn tiền) để khôi phục
       // ‑ nếu chu kỳ 30 ngày của đơn đó tính từ lúc thanh toán vẫn còn hiệu lực tới hiện
       // tại thì phục hồi đúng gói + hạn đó (VD premium -> basic), ngược lại hạ về Free
       // (VD premium -> free nếu chưa từng mua/gói cũ đã hết hạn).
-      const { data: previousOrders } = await supabase
+      let previousQuery = supabase
         .from("orders")
         .select("tier, paid_at")
-        .eq("employer_id", data.employer_id)
         .eq("order_type", "account_subscription")
         .eq("status", "paid")
         .neq("id", orderId)
         .not("paid_at", "is", null)
         .order("paid_at", { ascending: false })
         .limit(1);
+      previousQuery = previousQuery.eq(providerOrder ? "training_provider_id" : "employer_id", ownerId);
+      const { data: previousOrders } = await previousQuery;
 
       const previous = previousOrders?.[0];
       let restored: { account_type: string; account_tier_expires_at: string | null } = {
@@ -550,7 +566,8 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
         }
       }
 
-      await supabase.from("employers").update(restored).eq("id", data.employer_id);
+      if (providerOrder) await supabase.from("training_providers").update(restored).eq("id", ownerId);
+      else await supabase.from("employers").update(restored).eq("id", ownerId);
     }
   }
 

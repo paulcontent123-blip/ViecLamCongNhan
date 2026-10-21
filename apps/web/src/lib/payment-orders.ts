@@ -277,3 +277,39 @@ export async function setOrderCustomerConfirmed(
   if (!data) return { error: "Đơn này đã được xử lý, vui lòng tải lại trang." };
   return { view: await toOrderPaymentView(data as OrderRow) };
 }
+
+/** Xem đơn thuê bao thuộc đơn vị đào tạo đã đăng nhập; không dùng employer_id. */
+export async function getTrainingProviderOrderPaymentByCode(code: string, providerId: string): Promise<OrderPaymentView | null> {
+  if (!isOrderCode(code)) return null;
+  const { data } = await createSupabaseAdminClient()
+    .from("orders")
+    .select(ORDER_COLUMNS)
+    .eq("code", code)
+    .eq("training_provider_id", providerId)
+    .maybeSingle();
+  return data ? toOrderPaymentView(data as OrderRow) : null;
+}
+
+/** Báo/hoàn tác đã chuyển tiền, giới hạn đúng đơn và đúng đơn vị đào tạo. */
+export async function setTrainingProviderOrderCustomerConfirmed(
+  code: string,
+  providerId: string,
+  confirmed: boolean,
+): Promise<{ view: OrderPaymentView } | { error: string }> {
+  if (!isOrderCode(code)) return { error: "Mã đơn không hợp lệ." };
+  const { data, error } = await createSupabaseAdminClient()
+    .from("orders")
+    .update({
+      customer_confirmed_at: confirmed ? new Date().toISOString() : null,
+      reject_reason: confirmed ? null : undefined,
+    })
+    .eq("code", code)
+    .eq("training_provider_id", providerId)
+    .eq("status", "pending")
+    .select(ORDER_COLUMNS)
+    .maybeSingle();
+
+  if (error) return { error: "Không cập nhật được, vui lòng tải lại đơn." };
+  if (!data) return { error: "Đơn này đã được xử lý, vui lòng tải lại trang." };
+  return { view: await toOrderPaymentView(data as OrderRow) };
+}
