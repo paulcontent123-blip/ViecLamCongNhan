@@ -169,7 +169,7 @@ export default async function AdminOrdersPage({
                       </div>
                     </td>
                     <td className="px-4 py-3 text-brand-navy/60">
-                      <div>{o.employers?.company_name ?? o.training_providers?.provider_name ?? "‑"}</div>
+                      <div>{o.employers?.company_name ?? o.training_providers?.provider_name ?? o.rental_providers?.provider_name ?? "‑"}</div>
                       {o.training_provider_id && <div className="mt-1 text-[10px] font-semibold text-brand-navy/40">Đơn vị đào tạo</div>}
                     </td>
                     <td className="px-4 py-3 text-brand-navy/60">

@@ -14,7 +14,7 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
   });
   if (error) {
     const message = error.message || "";
-    if (message.includes("RENTAL_CONTACT_LIMIT")) return NextResponse.json({ error: "Đã dùng hết lượt xem liên hệ được cấp." }, { status: 403 });
+    if (message.includes("RENTAL_CONTACT_LIMIT")) return NextResponse.json({ error: "Đã dùng hết lượt xem liên hệ của gói hiện tại. Nâng cấp gói để xem thêm." }, { status: 403 });
     if (message.includes("RENTAL_PROVIDER_UNVERIFIED")) return NextResponse.json({ error: "Đơn vị cần được Admin xác minh trước khi xem liên hệ." }, { status: 403 });
     if (message.includes("RENTAL_INQUIRY_NOT_FOUND")) return NextResponse.json({ error: "Không tìm thấy yêu cầu thuộc đơn vị." }, { status: 404 });
     const requestId = logSafeSupabaseError({ route: "/api/mobile/rental-provider/inquiries/[id]/contact", operation: "view_rental_inquiry_contact", error });

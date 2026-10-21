@@ -3,6 +3,7 @@ import { getRentalProviderSession } from "@/lib/rental-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
+import { contactViewLimitForTier, effectiveAccountTier } from "@/lib/account-tiers";
 
 export async function GET(request: NextRequest) {
   const session = await getRentalProviderSession();
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
   if (id) query = query.eq("id", id);
   const [result, providerResult] = await Promise.all([
     query.range(paging.offset, paging.offset + paging.pageSize - 1),
-    supabase.from("rental_providers").select("is_verified,contact_view_limit").eq("id", session.providerId).maybeSingle(),
+    supabase.from("rental_providers").select("is_verified,account_type,account_tier_expires_at").eq("id", session.providerId).maybeSingle(),
   ]);
   if (result.error || providerResult.error) {
     const error = result.error || providerResult.error!;
@@ -51,6 +52,6 @@ export async function GET(request: NextRequest) {
   const total = result.count || 0;
   return NextResponse.json({
     ok: true, items, total, page: paging.page, pageSize: paging.pageSize, hasMore: paging.page * paging.pageSize < total,
-    usage: { verified: Boolean(providerResult.data?.is_verified), viewedCount: usageResult.count || 0, viewLimit: providerResult.data?.contact_view_limit || 0 },
+    usage: { verified: Boolean(providerResult.data?.is_verified), viewedCount: usageResult.count || 0, viewLimit: contactViewLimitForTier(effectiveAccountTier(providerResult.data?.account_type, providerResult.data?.account_tier_expires_at)) },
   });
 }

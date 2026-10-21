@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getRentalProviderSession } from "@/lib/rental-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { contactViewLimitForTier, effectiveAccountTier } from "@/lib/account-tiers";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 const schema = z.object({
@@ -18,14 +19,15 @@ export async function GET() {
   const session = await getRentalProviderSession();
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const { data, error } = await createSupabaseAdminClient().from("rental_providers")
-    .select("id,provider_name,provider_type,contact_name,contact_phone,province_code,address,description,is_verified,contact_view_limit,created_at")
+    .select("id,provider_name,provider_type,contact_name,contact_phone,province_code,address,description,is_verified,account_type,account_tier_expires_at,created_at")
     .eq("id", session.providerId).maybeSingle();
   if (error) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/rental-provider/profile", operation: "load_rental_profile", error });
     return NextResponse.json({ error: "Chưa tải được hồ sơ đối tác thuê trọ.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
   if (!data) return NextResponse.json({ error: "Không tìm thấy hồ sơ đối tác." }, { status: 404 });
-  return NextResponse.json({ ok: true, provider: { ...data, email: session.email } });
+  const tier = effectiveAccountTier(data.account_type, data.account_tier_expires_at);
+  return NextResponse.json({ ok: true, provider: { ...data, account_type: tier, account_tier_expires_at: tier === "free" ? null : data.account_tier_expires_at, contact_view_limit: contactViewLimitForTier(tier), email: session.email } });
 }
 
 export async function PATCH(request: NextRequest) {

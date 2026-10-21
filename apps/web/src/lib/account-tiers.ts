@@ -50,3 +50,15 @@ export type PaidAccountTier = (typeof PAID_ACCOUNT_TIERS)[number];
 export function isPaidAccountTier(value: string): value is PaidAccountTier {
   return (PAID_ACCOUNT_TIERS as readonly string[]).includes(value);
 }
+
+/** Gói đang có hiệu lực: gói trả phí đã quá hạn được tính như Free (khớp cách các hàm SQL hạ gói khi đọc). */
+export function effectiveAccountTier(accountType: string | null | undefined, expiresAt: string | null | undefined): AccountTier {
+  const tier: AccountTier = accountType && isAccountTier(accountType) ? accountType : "free";
+  if (tier !== "free" && expiresAt && new Date(expiresAt) <= new Date()) return "free";
+  return tier;
+}
+
+/** Hạn mức xem liên hệ mỗi tháng theo gói; dùng chung cho NTD, đơn vị đào tạo và chủ trọ. */
+export function contactViewLimitForTier(tier: AccountTier): number {
+  return ACCOUNT_TIERS[tier].candidateViewLimit;
+}

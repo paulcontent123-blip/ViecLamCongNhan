@@ -13,7 +13,8 @@ type RentalProviderRow = {
   contact_phone: string;
   province_code: string | null;
   is_verified: boolean;
-  contact_view_limit: number;
+  account_type: string;
+  account_tier_expires_at: string | null;
   created_at: string;
   users: UserRelation;
 };
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
   const id = params.get("id") || "";
   if (id && !/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã đối tác không hợp lệ." }, { status: 400 });
   let query = createSupabaseAdminClient().from("rental_providers")
-    .select("id,provider_name,provider_type,contact_name,contact_phone,province_code,is_verified,contact_view_limit,created_at,users!rental_providers_user_id_fkey!inner(email)", { count: "exact" })
+    .select("id,provider_name,provider_type,contact_name,contact_phone,province_code,is_verified,account_type,account_tier_expires_at,created_at,users!rental_providers_user_id_fkey!inner(email)", { count: "exact" })
     .order("created_at", { ascending: false }).order("id", { ascending: false });
   if (id) query = query.eq("id", id);
   if (verified) query = query.eq("is_verified", verified === "true");
