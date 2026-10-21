@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ARTICLE_CATEGORIES, type ArticleRow } from "@/lib/content";
 import { htmlToPlainText } from "@/lib/sanitize-html";
 import { ROUTES } from "@/lib/routes";
-
+//test
 export function ArticleCard({ article }: { article: ArticleRow }) {
   const meta = ARTICLE_CATEGORIES[article.category];
   // Admin bỏ trống "Mô tả ngắn" thì lấy tạm mấy dòng đầu của bài cho thẻ đỡ trống.
