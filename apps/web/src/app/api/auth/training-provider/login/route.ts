@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Email/SĐT hoặc mật khẩu không hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
   const identifier = parsed.data.identifier;
-  const query = () => supabase.from("users").select("id,email,password_hash,role,status,training_providers(id,provider_name)")
+  const query = () => supabase.from("users").select("id,email,password_hash,role,status,training_providers!training_providers_user_id_fkey(id,provider_name)")
     .eq("role", "training_provider").eq("status", "active");
   const byEmail = await query().eq("email", identifier.toLowerCase()).maybeSingle();
   if (byEmail.error) {

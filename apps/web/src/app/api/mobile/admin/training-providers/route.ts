@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   const id = params.get("id") || "";
   if (verified !== null && verified !== "true" && verified !== "false") return NextResponse.json({ error: "Giá trị lọc xác minh không hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
-  let query = supabase.from("training_providers").select("id,provider_name,provider_type,contact_name,contact_phone,province_code,tax_code,license_number,is_verified,account_type,created_at,users!inner(email)", { count: "exact" }).order("created_at", { ascending: false }).order("id", { ascending: false });
+  let query = supabase.from("training_providers").select("id,provider_name,provider_type,contact_name,contact_phone,province_code,tax_code,license_number,is_verified,account_type,created_at,users!training_providers_user_id_fkey!inner(email)", { count: "exact" }).order("created_at", { ascending: false }).order("id", { ascending: false });
   if (id) query = query.eq("id", id);
   if (verified === "true") query = query.eq("is_verified", true);
   if (verified === "false") query = query.eq("is_verified", false);
