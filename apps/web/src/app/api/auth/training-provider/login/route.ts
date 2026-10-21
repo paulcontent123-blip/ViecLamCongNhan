@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { verifyPassword } from "@/lib/auth";
 import { createTrainingProviderToken, TRAINING_PROVIDER_SESSION_COOKIE, TRAINING_PROVIDER_SESSION_MAX_AGE } from "@/lib/training-provider-session";
+import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 const schema = z.object({ identifier: z.string().trim().min(3).max(254), password: z.string().min(1).max(128) });
 export async function POST(request: NextRequest) {
@@ -13,9 +14,35 @@ export async function POST(request: NextRequest) {
   const query = () => supabase.from("users").select("id,email,password_hash,role,status,training_providers(id,provider_name)")
     .eq("role", "training_provider").eq("status", "active");
   const byEmail = await query().eq("email", identifier.toLowerCase()).maybeSingle();
-  const { data: user, error } = byEmail.data ? byEmail : await query().eq("phone", identifier).maybeSingle();
+  if (byEmail.error) {
+    const requestId = logSafeSupabaseError({
+      route: "/api/auth/training-provider/login",
+      operation: "lookup_by_email",
+      error: byEmail.error,
+    });
+    return NextResponse.json(
+      { error: "Lỗi hệ thống, vui lòng thử lại.", requestId },
+      { status: 500, headers: { "X-Request-Id": requestId } },
+    );
+  }
+
+  let user = byEmail.data;
+  if (!user) {
+    const byPhone = await query().eq("phone", identifier).maybeSingle();
+    if (byPhone.error) {
+      const requestId = logSafeSupabaseError({
+        route: "/api/auth/training-provider/login",
+        operation: "lookup_by_phone",
+        error: byPhone.error,
+      });
+      return NextResponse.json(
+        { error: "Lỗi hệ thống, vui lòng thử lại.", requestId },
+        { status: 500, headers: { "X-Request-Id": requestId } },
+      );
+    }
+    user = byPhone.data;
+  }
   const provider = Array.isArray(user?.training_providers) ? user.training_providers[0] : user?.training_providers;
-  if (error) return NextResponse.json({ error: "Lỗi hệ thống, vui lòng thử lại." }, { status: 500 });
   if (!user || !provider || !user.password_hash || !(await verifyPassword(parsed.data.password, user.password_hash))) {
     return NextResponse.json({ error: "Email/SĐT hoặc mật khẩu không đúng." }, { status: 401 });
   }

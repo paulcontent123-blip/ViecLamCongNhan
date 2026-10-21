@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTrainingProviderSession } from "@/lib/training-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { deleteImageFromCloudinary, uploadImageToCloudinary } from "@/lib/cloudinary";
 
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -14,14 +15,15 @@ export async function POST(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
   const { data: provider, error: providerError } = await supabase
     .from("training_providers")
-    .select("logo_url,is_verified")
+    .select("logo_url")
     .eq("id", session.providerId)
     .maybeSingle();
-  if (providerError || !provider) {
-    return NextResponse.json({ error: "Không tải được logo hiện tại của đơn vị." }, { status: 500, headers });
+  if (providerError) {
+    const requestId = logSafeSupabaseError({ route: "/api/mobile/training-provider/logo", operation: "load_current_logo", error: providerError });
+    return NextResponse.json({ error: "Chưa tải được logo hiện tại của đơn vị.", requestId }, { status: 503, headers: { ...headers, "X-Request-Id": requestId } });
   }
-  if (!provider.is_verified) {
-    return NextResponse.json({ error: "Đơn vị đang chờ Admin xác minh, chưa thể cập nhật logo." }, { status: 403, headers });
+  if (!provider) {
+    return NextResponse.json({ error: "Không tải được logo hiện tại của đơn vị." }, { status: 500, headers });
   }
 
   const form = await request.formData().catch(() => null);
@@ -49,19 +51,24 @@ export async function POST(request: NextRequest) {
   let update = supabase
     .from("training_providers")
     .update({ logo_url: newLogoUrl, updated_at: new Date().toISOString() })
-    .eq("id", session.providerId)
-    .eq("is_verified", true);
+    .eq("id", session.providerId);
   update = provider.logo_url
     ? update.eq("logo_url", provider.logo_url)
     : update.is("logo_url", null);
 
   const { data: saved, error: updateError } = await update.select("logo_url").maybeSingle();
   if (updateError || !saved) {
+    const updateRequestId = updateError
+      ? logSafeSupabaseError({ route: "/api/mobile/training-provider/logo", operation: "save_logo_url", error: updateError })
+      : undefined;
     const { data: current, error: readError } = await supabase
       .from("training_providers")
-      .select("logo_url,is_verified")
+      .select("logo_url")
       .eq("id", session.providerId)
       .maybeSingle();
+    const readRequestId = readError
+      ? logSafeSupabaseError({ route: "/api/mobile/training-provider/logo", operation: "read_logo_after_update", error: readError })
+      : undefined;
 
     if (!readError && current?.logo_url === newLogoUrl) {
       if (provider.logo_url && provider.logo_url !== newLogoUrl) {
@@ -73,14 +80,15 @@ export async function POST(request: NextRequest) {
     if (!readError && current && current.logo_url === provider.logo_url) {
       await deleteImageFromCloudinary(newLogoUrl).catch(() => false);
       return NextResponse.json(
-        { error: current.is_verified ? "Không lưu được logo mới. Logo hiện tại vẫn được giữ nguyên." : "Đơn vị vừa bị gỡ xác minh; logo hiện tại vẫn được giữ nguyên." },
-        { status: current.is_verified ? (updateError ? 500 : 409) : 403, headers },
+        { error: "Không lưu được logo mới. Logo hiện tại vẫn được giữ nguyên.", ...(updateRequestId ? { requestId: updateRequestId } : {}) },
+        { status: updateError ? 500 : 409, headers: updateRequestId ? { ...headers, "X-Request-Id": updateRequestId } : headers },
       );
     }
 
+    const requestId = readRequestId ?? updateRequestId;
     return NextResponse.json(
-      { error: "Chưa xác định được logo đã lưu hay chưa. Tải lại hồ sơ trước khi thử lại." },
-      { status: 503, headers },
+      { error: "Chưa xác định được logo đã lưu hay chưa. Tải lại hồ sơ trước khi thử lại.", ...(requestId ? { requestId } : {}) },
+      { status: 503, headers: requestId ? { ...headers, "X-Request-Id": requestId } : headers },
     );
   }
 

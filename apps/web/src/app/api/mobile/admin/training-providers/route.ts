@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 
 type TrainingProviderListRow = {
@@ -37,7 +38,17 @@ export async function GET(request: NextRequest) {
   if (verified === "false") query = query.eq("is_verified", false);
   if (q) { const safeQ = q.replace(/[%,._(),]/g, " "); query = query.or(`provider_name.ilike.%${safeQ}%,contact_phone.ilike.%${safeQ}%`); }
   const { data, count, error } = await query.range((page - 1) * pageSize, page * pageSize - 1);
-  if (error) return NextResponse.json({ error: "Chưa tải được danh sách đơn vị đào tạo." }, { status: 500 });
+  if (error) {
+    const requestId = logSafeSupabaseError({
+      route: "/api/mobile/admin/training-providers",
+      operation: "list_training_providers",
+      error,
+    });
+    return NextResponse.json(
+      { error: "Chưa tải được danh sách đơn vị đào tạo.", requestId },
+      { status: 500, headers: { "X-Request-Id": requestId } },
+    );
+  }
   const rows = (data || []) as unknown as TrainingProviderListRow[];
   const items = rows.map(({ users, ...provider }) => ({ ...provider, email: Array.isArray(users) ? users[0]?.email : users.email }));
   const total = count || 0;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getTrainingProviderSession } from "@/lib/training-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 const profileSchema = z.object({
   providerName: z.string().trim().min(2, "Vui lòng nhập tên đơn vị.").max(160),
@@ -19,7 +20,11 @@ export async function GET() {
   const session = await getTrainingProviderSession();
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401, headers });
   const { data, error } = await createSupabaseAdminClient().from("training_providers").select("id,provider_name,provider_slug,provider_type,contact_name,contact_phone,province_code,tax_code,license_number,description,logo_url,is_verified,account_type,account_tier_expires_at").eq("id", session.providerId).maybeSingle();
-  if (error || !data) return NextResponse.json({ error: "Chưa tải được hồ sơ đơn vị." }, { status: 500, headers });
+  if (error) {
+    const requestId = logSafeSupabaseError({ route: "/api/mobile/training-provider/profile", operation: "load_profile", error });
+    return NextResponse.json({ error: "Chưa tải được hồ sơ đơn vị.", requestId }, { status: 503, headers: { ...headers, "X-Request-Id": requestId } });
+  }
+  if (!data) return NextResponse.json({ error: "Không tìm thấy hồ sơ đơn vị." }, { status: 404, headers });
   return NextResponse.json({ ok: true, provider: data, email: session.email }, { headers });
 }
 
@@ -45,17 +50,32 @@ export async function PATCH(request: NextRequest) {
   });
 
   if (error) {
-    console.error("PATCH /api/mobile/training-provider/profile failed:", error);
+    const requestId = logSafeSupabaseError({ route: "/api/mobile/training-provider/profile", operation: "update_profile", error });
     return NextResponse.json(
-      { error: "Chưa xác định được hồ sơ đã lưu hay chưa. Tải lại hồ sơ trước khi thao tác lại." },
-      { status: 503, headers },
+      { error: "Chưa xác định được hồ sơ đã lưu hay chưa. Tải lại hồ sơ trước khi thao tác lại.", requestId },
+      { status: 503, headers: { ...headers, "X-Request-Id": requestId } },
     );
   }
   if (data !== true) {
     return NextResponse.json(
-      { error: "Đơn vị chưa được xác minh hoặc hồ sơ không thuộc phiên đăng nhập này." },
+      { error: "Không thể cập nhật hồ sơ của phiên đăng nhập này." },
       { status: 403, headers },
     );
   }
-  return NextResponse.json({ ok: true }, { headers });
+
+  const { data: savedProvider, error: readBackError } = await supabase
+    .from("training_providers")
+    .select("is_verified")
+    .eq("id", session.providerId)
+    .maybeSingle();
+  if (readBackError || !savedProvider) {
+    const requestId = readBackError
+      ? logSafeSupabaseError({ route: "/api/mobile/training-provider/profile", operation: "read_verification_after_update", error: readBackError })
+      : undefined;
+    return NextResponse.json(
+      { error: "Hồ sơ đã được gửi cập nhật nhưng chưa xác nhận được trạng thái. Tải lại hồ sơ trước khi thử lại.", ...(requestId ? { requestId } : {}) },
+      { status: 503, headers: requestId ? { ...headers, "X-Request-Id": requestId } : headers },
+    );
+  }
+  return NextResponse.json({ ok: true, isVerified: savedProvider.is_verified, verificationRequired: !savedProvider.is_verified }, { headers });
 }
