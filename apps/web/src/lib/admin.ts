@@ -9,6 +9,7 @@ import { isArticleCategory, type ArticleCategory } from "@/lib/article-categorie
 import { htmlToPlainText, sanitizeArticleHtml } from "@/lib/sanitize-html";
 import { PROVINCES, provinceName } from "@/lib/provinces";
 import { ORDER_TYPE_LABEL } from "@/lib/order-labels";
+import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import {
   SERVICE_INQUIRY_TYPE_ADVERTISING,
   SERVICE_INQUIRY_TYPE_ADVERTISING_PRICING,
@@ -322,6 +323,13 @@ export async function setEmployerVerified(employerId: string, verified: boolean)
 const ORDER_STATUSES = ["pending", "paid", "cancelled", "refunded"] as const;
 export type AdminOrderStatus = (typeof ORDER_STATUSES)[number];
 
+export class SubscriptionEntitlementSyncError extends Error {
+  constructor(public readonly requestId: string) {
+    super("subscription_entitlement_sync_failed");
+    this.name = "SubscriptionEntitlementSyncError";
+  }
+}
+
 export function isOrderStatus(value: string): value is AdminOrderStatus {
   return (ORDER_STATUSES as readonly string[]).includes(value);
 }
@@ -502,14 +510,24 @@ export async function rejectOrderPayment(orderId: string, reason: string): Promi
 
 export async function updateOrderStatus(orderId: string, status: AdminOrderStatus): Promise<boolean> {
   const supabase = createSupabaseAdminClient();
+  let paidAt = new Date().toISOString();
+  if (status === "paid") {
+    const { data: currentOrder, error: currentOrderError } = await supabase
+      .from("orders")
+      .select("status, paid_at")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (currentOrderError || !currentOrder) return false;
+    if (currentOrder.status === "paid" && currentOrder.paid_at) paidAt = currentOrder.paid_at;
+  }
   // Chỉ set paid_at khi CHUYỂN SANG "paid" ‑ các trạng thái khác (huỷ, hoàn tiền...)
   // không đụng tới paid_at để giữ lại mốc thời gian đã thanh toán trước đó (VD đơn
   // paid -> refunded vẫn cần biết đã thanh toán lúc nào).
   const { data, error } = await supabase
     .from("orders")
-    .update(status === "paid" ? { status, paid_at: new Date().toISOString() } : { status })
+    .update(status === "paid" ? { status, paid_at: paidAt } : { status })
     .eq("id", orderId)
-    .select("id, employer_id, training_provider_id, rental_provider_id, insurance_provider_id, order_type, tier, job_id, campaign_message")
+    .select("id, employer_id, training_provider_id, rental_provider_id, insurance_provider_id, order_type, tier, job_id, campaign_message, paid_at")
     .maybeSingle();
   if (error || !data) return false;
 
@@ -518,24 +536,25 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
   // về Free khi đọc (xem employer.ts getEmployerAccountTier).
   if (status === "paid" && data.order_type === "account_subscription" && data.tier && isPaidAccountTier(data.tier)) {
     const perks = ACCOUNT_TIERS[data.tier];
-    const expiresAt = new Date();
+    const expiresAt = new Date(data.paid_at ?? paidAt);
     expiresAt.setDate(expiresAt.getDate() + (perks.billingCycleDays ?? 30));
-    if (data.training_provider_id) {
-      await supabase.from("training_providers")
-        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
-        .eq("id", data.training_provider_id);
-    } else if (data.rental_provider_id) {
-      await supabase.from("rental_providers")
-        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
-        .eq("id", data.rental_provider_id);
-    } else if (data.insurance_provider_id) {
-      await supabase.from("insurance_providers")
-        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
-        .eq("id", data.insurance_provider_id);
-    } else if (data.employer_id) {
-      await supabase.from("employers")
-        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
-        .eq("id", data.employer_id);
+    const ownerTable = data.training_provider_id ? "training_providers" : data.rental_provider_id ? "rental_providers" : data.insurance_provider_id ? "insurance_providers" : data.employer_id ? "employers" : null;
+    const ownerId = data.training_provider_id ?? data.rental_provider_id ?? data.insurance_provider_id ?? data.employer_id;
+    const result = ownerTable && ownerId
+      ? await supabase.from(ownerTable)
+          .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
+          .eq("id", ownerId)
+          .select("id, account_type, account_tier_expires_at")
+          .maybeSingle()
+      : { data: null, error: new Error("subscription_owner_missing") };
+    const savedExpiry = result.data?.account_tier_expires_at ? new Date(result.data.account_tier_expires_at).getTime() : NaN;
+    if (result.error || !result.data || result.data.account_type !== data.tier || savedExpiry !== expiresAt.getTime()) {
+      const requestId = logSafeSupabaseError({
+        route: "/api/admin/orders/[id]",
+        operation: "activate_subscription_entitlement",
+        error: result.error ?? new Error("subscription_entitlement_readback_mismatch"),
+      });
+      throw new SubscriptionEntitlementSyncError(requestId);
     }
   }
 

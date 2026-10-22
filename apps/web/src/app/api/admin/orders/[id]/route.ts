@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAdminSession } from "@/lib/admin-auth";
-import { canMarkOrderPaid, isOrderStatus, rejectOrderPayment, updateOrderStatus } from "@/lib/admin";
+import { canMarkOrderPaid, isOrderStatus, rejectOrderPayment, SubscriptionEntitlementSyncError, updateOrderStatus } from "@/lib/admin";
 
 // Đổi trạng thái đơn, hoặc trả đơn về cho NTD kèm lý do ({ rejectReason }).
 const bodySchema = z.union([
@@ -36,7 +36,18 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     );
   }
 
-  const ok = await updateOrderStatus(id, parsed.data.status);
+  let ok: boolean;
+  try {
+    ok = await updateOrderStatus(id, parsed.data.status);
+  } catch (error) {
+    if (error instanceof SubscriptionEntitlementSyncError) {
+      return NextResponse.json(
+        { error: "Đã ghi nhận thanh toán nhưng chưa đồng bộ được gói. Tải lại đơn và thử Đồng bộ gói; mã yêu cầu: " + error.requestId, requestId: error.requestId },
+        { status: 503, headers: { "X-Request-Id": error.requestId } },
+      );
+    }
+    throw error;
+  }
   if (!ok) {
     return NextResponse.json({ error: "Không tìm thấy đơn hàng." }, { status: 404 });
   }

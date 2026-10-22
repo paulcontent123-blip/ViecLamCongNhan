@@ -34,6 +34,9 @@ export function OrderStatusActions({ order, statusLabel }: { order: AdminOrderRo
   // NTD đã bấm "Tôi đã thanh toán" chưa. Đơn cũ (chưa có mã) không qua luồng này nên
   // vẫn duyệt được như trước.
   const claimed = order.customer_confirmed_at !== null || order.code === null;
+  const canSyncSubscription = order.status === "paid" && order.order_type === "account_subscription" &&
+    (order.tier === "basic" || order.tier === "premium") &&
+    Boolean(order.employer_id || order.training_provider_id || order.rental_provider_id || order.insurance_provider_id);
 
   async function setStatus(next: AdminOrderStatus) {
     setLoading(next);
@@ -50,6 +53,7 @@ export function OrderStatusActions({ order, statusLabel }: { order: AdminOrderRo
       } else {
         const data = await res.json().catch(() => ({}));
         setError(data.error ?? "Không cập nhật được đơn hàng.");
+        setDetailOpen(true);
       }
     } finally {
       setLoading(null);
@@ -111,14 +115,27 @@ export function OrderStatusActions({ order, statusLabel }: { order: AdminOrderRo
         </button>
       </>
     ) : order.status === "paid" ? (
-      <button
-        type="button"
-        onClick={() => setStatus("refunded")}
-        disabled={loading !== null}
-        className="rounded-lg border border-black/10 px-2.5 py-1.5 text-[11.5px] font-bold text-brand-navy/60 transition hover:border-blue-300 hover:text-blue-600 disabled:opacity-50"
-      >
-        {loading === "refunded" ? "…" : "Đánh dấu hoàn tiền"}
-      </button>
+      <>
+        {canSyncSubscription && (
+          <button
+            type="button"
+            onClick={() => setStatus("paid")}
+            disabled={loading !== null}
+            title="Đồng bộ lại quyền lợi theo đơn đã được xác nhận thanh toán"
+            className="rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11.5px] font-bold text-white transition hover:brightness-105 disabled:opacity-50"
+          >
+            {loading === "paid" ? "Đang đồng bộ…" : "Đồng bộ gói"}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => setStatus("refunded")}
+          disabled={loading !== null}
+          className="rounded-lg border border-black/10 px-2.5 py-1.5 text-[11.5px] font-bold text-brand-navy/60 transition hover:border-blue-300 hover:text-blue-600 disabled:opacity-50"
+        >
+          {loading === "refunded" ? "…" : "Đánh dấu hoàn tiền"}
+        </button>
+      </>
     ) : null;
 
   return (
