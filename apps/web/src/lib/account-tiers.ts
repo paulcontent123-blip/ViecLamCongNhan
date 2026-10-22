@@ -58,7 +58,7 @@ export function effectiveAccountTier(accountType: string | null | undefined, exp
   return tier;
 }
 
-/** Hạn mức xem liên hệ mỗi tháng theo gói; dùng chung cho NTD, đơn vị đào tạo và chủ trọ. */
+/** Hạn mức xem liên hệ mỗi tháng theo gói; dùng chung cho NTD, đào tạo, thuê trọ và Bảo hiểm. */
 export function contactViewLimitForTier(tier: AccountTier): number {
   return ACCOUNT_TIERS[tier].candidateViewLimit;
 }

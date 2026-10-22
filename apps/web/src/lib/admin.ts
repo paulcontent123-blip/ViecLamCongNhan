@@ -333,6 +333,7 @@ export interface AdminOrderRow {
   employer_id: string | null;
   training_provider_id: string | null;
   rental_provider_id: string | null;
+  insurance_provider_id: string | null;
   order_type: string | null;
   tier: string | null;
   amount: number;
@@ -349,11 +350,12 @@ export interface AdminOrderRow {
   employers: { company_name: string; contact_phone: string | null } | null;
   training_providers: { provider_name: string; contact_phone: string | null } | null;
   rental_providers: { provider_name: string; contact_phone: string | null } | null;
+  insurance_providers: { provider_name: string; contact_phone: string | null } | null;
   jobs: { title: string } | null;
 }
 
 const ADMIN_ORDER_SELECT =
-  "id, employer_id, training_provider_id, rental_provider_id, order_type, tier, amount, payment_method, payment_ref, status, created_at, paid_at, job_id, campaign_message, code, customer_confirmed_at, reject_reason, employers(company_name, contact_phone), training_providers(provider_name, contact_phone), rental_providers(provider_name, contact_phone), jobs(title)";
+  "id, employer_id, training_provider_id, rental_provider_id, insurance_provider_id, order_type, tier, amount, payment_method, payment_ref, status, created_at, paid_at, job_id, campaign_message, code, customer_confirmed_at, reject_reason, employers(company_name, contact_phone), training_providers(provider_name, contact_phone), rental_providers(provider_name, contact_phone), insurance_providers(provider_name, contact_phone), jobs(title)";
 
 export async function getAdminOrders(
   filters: AdminListFilters & { status?: AdminOrderStatus } = {},
@@ -386,6 +388,10 @@ export async function getAdminOrders(
     const { data: matchedRentalProviders } = await supabase.from("rental_providers").select("id").ilike("provider_name", `%${q}%`);
     if (matchedRentalProviders && matchedRentalProviders.length > 0) {
       orConditions.push(`rental_provider_id.in.(${matchedRentalProviders.map((provider) => provider.id).join(",")})`);
+    }
+    const { data: matchedInsuranceProviders } = await supabase.from("insurance_providers").select("id").ilike("provider_name", `%${q}%`);
+    if (matchedInsuranceProviders && matchedInsuranceProviders.length > 0) {
+      orConditions.push(`insurance_provider_id.in.(${matchedInsuranceProviders.map((provider) => provider.id).join(",")})`);
     }
 
     // Mã đơn hiển thị dạng "DH1DECBE4D" (8 ký tự đầu của id, viết hoa). id là cột uuid
@@ -503,7 +509,7 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
     .from("orders")
     .update(status === "paid" ? { status, paid_at: new Date().toISOString() } : { status })
     .eq("id", orderId)
-    .select("id, employer_id, training_provider_id, rental_provider_id, order_type, tier, job_id, campaign_message")
+    .select("id, employer_id, training_provider_id, rental_provider_id, insurance_provider_id, order_type, tier, job_id, campaign_message")
     .maybeSingle();
   if (error || !data) return false;
 
@@ -522,6 +528,10 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
       await supabase.from("rental_providers")
         .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
         .eq("id", data.rental_provider_id);
+    } else if (data.insurance_provider_id) {
+      await supabase.from("insurance_providers")
+        .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
+        .eq("id", data.insurance_provider_id);
     } else if (data.employer_id) {
       await supabase.from("employers")
         .update({ account_type: data.tier, account_tier_expires_at: expiresAt.toISOString() })
@@ -535,9 +545,9 @@ export async function updateOrderStatus(orderId: string, status: AdminOrderStatu
   // bị 1 đơn mua gói mới hơn ghi đè từ trước, lại vô tình hạ nhầm gói NTD đang dùng.
   if (status === "refunded" && data.order_type === "account_subscription" && data.tier && isPaidAccountTier(data.tier)) {
     // Mỗi đơn thuộc đúng một chủ: bảng và cột khóa ngoại tương ứng.
-    const ownerTable = data.training_provider_id ? "training_providers" : data.rental_provider_id ? "rental_providers" : "employers";
-    const ownerColumn = data.training_provider_id ? "training_provider_id" : data.rental_provider_id ? "rental_provider_id" : "employer_id";
-    const ownerId = data.training_provider_id ?? data.rental_provider_id ?? data.employer_id;
+    const ownerTable = data.training_provider_id ? "training_providers" : data.rental_provider_id ? "rental_providers" : data.insurance_provider_id ? "insurance_providers" : "employers";
+    const ownerColumn = data.training_provider_id ? "training_provider_id" : data.rental_provider_id ? "rental_provider_id" : data.insurance_provider_id ? "insurance_provider_id" : "employer_id";
+    const ownerId = data.training_provider_id ?? data.rental_provider_id ?? data.insurance_provider_id ?? data.employer_id;
     let ownerTier: string | null = null;
     if (ownerId) {
       const { data: owner } = await supabase.from(ownerTable).select("account_type").eq("id", ownerId).maybeSingle();

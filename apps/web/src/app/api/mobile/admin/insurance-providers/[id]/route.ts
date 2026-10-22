@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     ...(parsed.data.verified !== undefined ? { is_verified: parsed.data.verified } : {}),
     ...(parsed.data.contactViewLimit !== undefined ? { contact_view_limit: parsed.data.contactViewLimit } : {}),
     updated_at: new Date().toISOString(),
-  }).eq("id", id).select("id,provider_name,is_verified,contact_view_limit").maybeSingle();
+  }).eq("id", id).select("id,provider_name,is_verified,contact_view_limit,account_type,account_tier_expires_at").maybeSingle();
   if (error) { const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/insurance-providers/[id]", operation: "update_provider", error }); return NextResponse.json({ error: "Chưa cập nhật được đối tác bảo hiểm.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } }); }
   if (!data) return NextResponse.json({ error: "Không tìm thấy đối tác bảo hiểm." }, { status: 404 });
   return NextResponse.json({ ok: true, provider: data }, { headers: { "Cache-Control": "private, no-store" } });
