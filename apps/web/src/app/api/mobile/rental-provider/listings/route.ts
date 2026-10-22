@@ -6,7 +6,7 @@ import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 import { isRentalProviderUnverifiedError, rentalListingRow, rentalListingSchema } from "@/lib/rental-provider-listing-utils";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
-const submitSchema = z.object({ ...rentalListingSchema.shape, action: z.enum(["draft", "submit"]).default("submit") });
+const submitSchema = z.object({ ...rentalListingSchema.omit({ photoUrls: true }).shape, action: z.enum(["draft", "submit"]).default("submit") });
 export async function GET(request: NextRequest) {
   const session = await getRentalProviderSession();
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });

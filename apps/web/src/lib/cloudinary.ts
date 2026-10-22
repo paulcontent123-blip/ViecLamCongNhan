@@ -29,6 +29,11 @@ function getPublicIdFromCloudinaryUrl(imageUrl: string): string | null {
   }
 }
 
+export function isCloudinaryImageInFolder(imageUrl: string, folder: string): boolean {
+  const publicId = getPublicIdFromCloudinaryUrl(imageUrl);
+  return Boolean(publicId && publicId.startsWith(`${folder}/`));
+}
+
 export async function uploadImageToCloudinary(file: File, folder: string): Promise<string> {
   if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
     throw new Error("Cloudinary chưa được cấu hình trên máy chủ.");

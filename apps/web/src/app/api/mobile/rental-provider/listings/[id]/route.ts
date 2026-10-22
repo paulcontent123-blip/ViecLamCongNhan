@@ -6,7 +6,7 @@ import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { isRentalProviderUnverifiedError, rentalListingPatchRow, rentalListingSchema } from "@/lib/rental-provider-listing-utils";
 
 const patchSchema = z.object({
-  ...rentalListingSchema.partial().shape,
+  ...rentalListingSchema.omit({ photoUrls: true }).partial().shape,
   action: z.enum(["draft", "submit"]).optional(),
   status: z.enum(["hidden", "full"]).optional(),
 }).refine((value) => Object.keys(value).length > 0, "Không có nội dung cần cập nhật.");
@@ -27,10 +27,10 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   }
   if (!current) return NextResponse.json({ error: "Không tìm thấy tin thuộc tài khoản này." }, { status: 404 });
   const updates: Record<string, unknown> = {};
-  const contentKeys = ["title", "description", "monthlyRentVnd", "areaSqm", "provinceCode", "location", "roomType", "capacity", "nearbyIndustrialZone", "amenities", "photoUrls"] as const;
+  const contentKeys = ["title", "description", "monthlyRentVnd", "areaSqm", "provinceCode", "location", "roomType", "capacity", "nearbyIndustrialZone", "amenities"] as const;
   const content = Object.fromEntries(contentKeys.filter((key) => input[key] !== undefined).map((key) => [key, input[key]]));
   if (Object.keys(content).length) {
-    const parsedContent = rentalListingSchema.partial().safeParse(content);
+    const parsedContent = rentalListingSchema.omit({ photoUrls: true }).partial().safeParse(content);
     if (!parsedContent.success) return NextResponse.json({ error: parsedContent.error.issues[0]?.message ?? "Nội dung tin không hợp lệ." }, { status: 400 });
     Object.assign(updates, rentalListingPatchRow(parsedContent.data));
   }

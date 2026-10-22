@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   if (id && !/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã tin cho thuê không hợp lệ." }, { status: 400 });
   const q = (params.get("q") || "").trim().slice(0, 100).replace(/[%,._(),]/g, " ");
   let query = createSupabaseAdminClient().from("rental_listings")
-    .select("id,provider_id,title,description,monthly_rent_vnd,province_code,location,status,rejection_reason,created_at,rental_providers!inner(provider_name,is_verified)", { count: "exact" })
+    .select("id,provider_id,title,description,monthly_rent_vnd,province_code,location,status,rejection_reason,photo_urls,created_at,rental_providers!inner(provider_name,is_verified)", { count: "exact" })
     .order("created_at", { ascending: false }).order("id", { ascending: false });
   if (paging.status) query = query.eq("status", paging.status);
   if (id) query = query.eq("id", id);
