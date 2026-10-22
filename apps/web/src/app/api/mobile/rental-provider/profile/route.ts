@@ -19,7 +19,7 @@ export async function GET() {
   const session = await getRentalProviderSession();
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const { data, error } = await createSupabaseAdminClient().from("rental_providers")
-    .select("id,provider_name,provider_type,contact_name,contact_phone,province_code,address,description,is_verified,account_type,account_tier_expires_at,created_at")
+    .select("id,provider_name,provider_type,contact_name,contact_phone,province_code,address,description,logo_url,is_verified,account_type,account_tier_expires_at,created_at")
     .eq("id", session.providerId).maybeSingle();
   if (error) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/rental-provider/profile", operation: "load_rental_profile", error });
