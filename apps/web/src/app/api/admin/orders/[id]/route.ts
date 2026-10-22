@@ -42,7 +42,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   } catch (error) {
     if (error instanceof SubscriptionEntitlementSyncError) {
       return NextResponse.json(
-        { error: "Đã ghi nhận thanh toán nhưng chưa đồng bộ được gói. Tải lại đơn và thử Đồng bộ gói; mã yêu cầu: " + error.requestId, requestId: error.requestId },
+        { code: "SUBSCRIPTION_ENTITLEMENT_SYNC_FAILED", error: "Đã ghi nhận thanh toán nhưng chưa đồng bộ được gói. Tải lại đơn và thử Đồng bộ gói; mã yêu cầu: " + error.requestId, requestId: error.requestId },
         { status: 503, headers: { "X-Request-Id": error.requestId } },
       );
     }
