@@ -148,6 +148,7 @@ export interface OrderRow {
 
 export const ORDER_TITLE: Record<string, string> = {
   account_subscription: "Gói tài khoản nhà tuyển dụng",
+  finance_inquiry: "Yêu cầu tư vấn tài chính",
   job_post: "Gói tin tuyển dụng",
   sms_blast: "Chiến dịch Blast SMS/Zalo",
   rpo_service: "Dịch vụ RPO",
@@ -381,6 +382,28 @@ export async function setInsuranceProviderOrderCustomerConfirmed(
     .select(ORDER_COLUMNS)
     .maybeSingle();
 
+  if (error) return { error: "Không cập nhật được, vui lòng tải lại đơn." };
+  if (!data) return { error: "Đơn này đã được xử lý, vui lòng tải lại trang." };
+  return { view: await toOrderPaymentView(data as OrderRow) };
+}
+
+/** Xem đơn thuê bao của đối tác Tài chính đã đăng nhập. */
+export async function getFinanceProviderOrderPaymentByCode(code: string, providerId: string): Promise<OrderPaymentView | null> {
+  if (!isOrderCode(code)) return null;
+  const { data } = await createSupabaseAdminClient().from("orders").select(ORDER_COLUMNS)
+    .eq("code", code).eq("finance_provider_id", providerId).maybeSingle();
+  return data ? toOrderPaymentView(data as OrderRow) : null;
+}
+
+/** Báo/hoàn tác đã chuyển tiền, chỉ cập nhật đúng đơn của đối tác Tài chính. */
+export async function setFinanceProviderOrderCustomerConfirmed(
+  code: string, providerId: string, confirmed: boolean,
+): Promise<{ view: OrderPaymentView } | { error: string }> {
+  if (!isOrderCode(code)) return { error: "Mã đơn không hợp lệ." };
+  const { data, error } = await createSupabaseAdminClient().from("orders")
+    .update({ customer_confirmed_at: confirmed ? new Date().toISOString() : null, reject_reason: confirmed ? null : undefined })
+    .eq("code", code).eq("finance_provider_id", providerId).eq("status", "pending")
+    .select(ORDER_COLUMNS).maybeSingle();
   if (error) return { error: "Không cập nhật được, vui lòng tải lại đơn." };
   if (!data) return { error: "Đơn này đã được xử lý, vui lòng tải lại trang." };
   return { view: await toOrderPaymentView(data as OrderRow) };

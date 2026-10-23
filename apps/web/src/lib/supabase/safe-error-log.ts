@@ -50,3 +50,9 @@ export function isInsuranceProviderUnverifiedError(error: unknown): boolean {
   const shape = error as SupabaseErrorShape;
   return shape.code === "P0001" && shape.message === "INSURANCE_PROVIDER_UNVERIFIED";
 }
+
+export function isFinanceProviderUnverifiedError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const shape = error as SupabaseErrorShape;
+  return shape.code === "P0001" && shape.message === "FINANCE_PROVIDER_UNVERIFIED";
+}
