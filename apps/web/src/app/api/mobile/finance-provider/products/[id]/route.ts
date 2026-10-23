@@ -11,7 +11,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   const { id } = await context.params; if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã sản phẩm không hợp lệ." }, { status: 400 });
   const parsed = schema.safeParse(await request.json().catch(() => null)); if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Thông tin sản phẩm không hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
-  const { data: owned, error: ownedError } = await supabase.from("finance_products").select("id,status,price_label,pricing_source_url,pricing_effective_at,pricing_approved,pricing_reviewed_at,pricing_reviewed_by").eq("id", id).eq("provider_id", session.providerId).maybeSingle();
+  const { data: owned, error: ownedError } = await supabase.from("finance_products").select("id,status,archived_at,price_label,pricing_source_url,pricing_effective_at,pricing_approved,pricing_reviewed_at,pricing_reviewed_by").eq("id", id).eq("provider_id", session.providerId).is("archived_at", null).maybeSingle();
   if (ownedError) { const requestId = logSafeSupabaseError({ route: "/api/mobile/finance-provider/products/[id]", operation: "check_ownership", error: ownedError }); return NextResponse.json({ error: "Chưa xác minh được quyền sửa sản phẩm.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } }); }
   if (!owned) return NextResponse.json({ error: "Không tìm thấy sản phẩm của đối tác." }, { status: 404 });
   const { data: provider, error: providerError } = await supabase.from("finance_providers").select("is_verified").eq("id", session.providerId).maybeSingle();
@@ -19,8 +19,28 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   const nextStatus = provider.is_verified ? "pending" : "draft";
   const row = toRow(parsed.data);
   const pricingChanged = (owned.price_label || null) !== row.price_label || (owned.pricing_source_url || null) !== row.pricing_source_url || (owned.pricing_effective_at || null) !== row.pricing_effective_at;
-  const { data, error } = await supabase.from("finance_products").update({ ...row, status: nextStatus, rejection_reason: null, ...(pricingChanged ? { pricing_approved: false, pricing_reviewed_at: null, pricing_reviewed_by: null } : {}), updated_at: new Date().toISOString() }).eq("id", id).eq("provider_id", session.providerId).select("id,status,title").maybeSingle();
+  const { data, error } = await supabase.from("finance_products").update({ ...row, status: nextStatus, rejection_reason: null, ...(pricingChanged ? { pricing_approved: false, pricing_reviewed_at: null, pricing_reviewed_by: null } : {}), updated_at: new Date().toISOString() }).eq("id", id).eq("provider_id", session.providerId).is("archived_at", null).select("id,status,title").maybeSingle();
   if (error) { if (isFinanceProviderUnverifiedError(error)) return NextResponse.json({ error: "Đối tác cần được Admin xác minh trước khi gửi sản phẩm." }, { status: 403 }); const requestId = logSafeSupabaseError({ route: "/api/mobile/finance-provider/products/[id]", operation: "update_product", error }); return NextResponse.json({ error: "Chưa cập nhật được sản phẩm.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } }); }
   if (!data) return NextResponse.json({ error: "Không tìm thấy sản phẩm của đối tác." }, { status: 404 });
   return NextResponse.json({ ok: true, product: data });
+}
+
+const archiveSchema = z.object({ expectedUpdatedAt: z.string().trim().min(1).max(64) });
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const session = await getFinanceProviderSession(); if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  const { id } = await context.params; if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã sản phẩm không hợp lệ." }, { status: 400 });
+  const parsed = archiveSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: "Tải lại danh sách rồi thử lưu trữ sản phẩm." }, { status: 400 });
+  const supabase = createSupabaseAdminClient();
+  const { data: current, error: readError } = await supabase.from("finance_products").select("id,updated_at,archived_at")
+    .eq("id", id).eq("provider_id", session.providerId).maybeSingle();
+  if (readError) { const requestId = logSafeSupabaseError({ route: "/api/mobile/finance-provider/products/[id]", operation: "check_archive", error: readError }); return NextResponse.json({ error: "Chưa xác minh được sản phẩm cần lưu trữ.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } }); }
+  if (!current) return NextResponse.json({ error: "Không tìm thấy sản phẩm của đối tác." }, { status: 404 });
+  if (current.archived_at) return NextResponse.json({ ok: true, archived: true, id }, { headers: { "Cache-Control": "private, no-store" } });
+  if (current.updated_at !== parsed.data.expectedUpdatedAt) return NextResponse.json({ error: "Sản phẩm vừa thay đổi. Tải lại danh sách trước khi lưu trữ." }, { status: 409 });
+  const { data, error } = await supabase.from("finance_products").update({ archived_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", id).eq("provider_id", session.providerId).eq("updated_at", current.updated_at).is("archived_at", null).select("id").maybeSingle();
+  if (error) { const requestId = logSafeSupabaseError({ route: "/api/mobile/finance-provider/products/[id]", operation: "archive_product", error }); return NextResponse.json({ error: "Chưa lưu trữ được sản phẩm.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } }); }
+  if (!data) return NextResponse.json({ error: "Sản phẩm vừa được cập nhật. Tải lại danh sách trước khi lưu trữ." }, { status: 409 });
+  return NextResponse.json({ ok: true, archived: true, id }, { headers: { "Cache-Control": "private, no-store" } });
 }

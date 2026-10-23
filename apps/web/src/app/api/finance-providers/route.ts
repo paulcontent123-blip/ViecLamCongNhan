@@ -10,7 +10,8 @@ const schema = z.object({
   contactPhone: z.string().trim().min(9).max(20), email: z.string().email().max(254),
   password: z.string().min(8).max(128), providerType: z.enum(["bank", "finance_company", "remittance_provider", "other"]).default("finance_company"),
   provinceCode: z.string().trim().max(32).optional(), taxCode: z.string().trim().max(32).optional(),
-  licenseNumber: z.string().trim().max(80).optional(), licenseEvidenceUrl: z.string().url().max(1000).optional().or(z.literal("")),
+  licenseNumber: z.string().trim().min(1, "Nhập số giấy phép / ủy quyền.").max(80),
+  licenseEvidenceUrl: z.string().trim().max(1000).optional().or(z.literal("")).refine(value => !value || /^https?:\/\/[^\s]+\.[^\s]+$/i.test(value), "Liên kết hồ sơ giấy phép không hợp lệ."),
 });
 const slugify = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Tham số phân trang không hợp lệ." }, { status: 400 }); }
   const { page, pageSize, status } = paging; const params = request.nextUrl.searchParams;
   let query = createSupabaseAdminClient().from("finance_products").select("*", { count: "exact" })
-    .eq("provider_id", session.providerId).order("created_at", { ascending: false }).order("id", { ascending: false });
+    .eq("provider_id", session.providerId).is("archived_at", null).order("created_at", { ascending: false }).order("id", { ascending: false });
   if (status) query = query.eq("status", status);
   const q = (params.get("q") || "").trim().slice(0, 100).replace(/[%,._(),]/g, " ");
   if (q) query = query.or(`title.ilike.%${q}%,category.ilike.%${q}%`);
