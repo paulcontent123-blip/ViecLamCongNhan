@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { createHash } from "node:crypto";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
@@ -15,6 +16,7 @@ const listingSchema = z.object({
   isNegotiable: z.boolean().default(false),
   provinceCode: z.string().trim().max(12).optional().nullable(),
   location: z.string().trim().min(2).max(200),
+  shareSellerContact: z.boolean().default(false),
 });
 
 function pageParams(params: URLSearchParams) {
@@ -46,7 +48,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Chưa tải được tin Chợ đồ cũ.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
   const total = count || 0;
-  const items = (data || []).map(({ users: _seller, ...item }) => item);
+  const items = (data || []).map(({ users, ...item }) => {
+    void users;
+    return item;
+  });
   return NextResponse.json({ ok: true, items, total, page: paging.page, pageSize: paging.pageSize, hasMore: paging.page * paging.pageSize < total });
 }
 
@@ -56,18 +61,21 @@ export async function POST(request: NextRequest) {
   const parsed = listingSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Thông tin tin đăng chưa hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
-  const { data: user, error: userError } = await supabase.from("users").select("full_name")
+  const { data: user, error: userError } = await supabase.from("users").select("full_name,phone")
     .eq("id", session.userId).eq("role", "candidate").eq("status", "active").eq("is_verified", true).maybeSingle();
   if (userError || !user) {
     const requestId = userError ? logSafeSupabaseError({ route: "/api/mobile/marketplace", operation: "load_seller_profile", error: userError }) : undefined;
     return NextResponse.json({ error: userError ? "Chưa xác minh được tài khoản người bán." : "Tài khoản không đủ điều kiện đăng tin.", ...(requestId ? { requestId } : {}) }, { status: userError ? 503 : 403, ...(requestId ? { headers: { "X-Request-Id": requestId } } : {}) });
   }
   const input = parsed.data;
+  if (input.shareSellerContact && !user.phone) return NextResponse.json({ error: "Tài khoản chưa có số điện thoại đã xác minh để chia sẻ." }, { status: 403 });
   const { data, error } = await supabase.from("secondhand_marketplace_listings").insert({
     seller_user_id: session.userId, seller_display_name: user.full_name || "Công nhân",
     title: input.title, description: input.description, category: input.category,
     item_condition: input.itemCondition, price_vnd: input.priceVnd, is_negotiable: input.isNegotiable,
     province_code: input.provinceCode || null, location: input.location,
+    seller_contact_consent_at: input.shareSellerContact ? new Date().toISOString() : null,
+    seller_contact_consent_phone_hash: input.shareSellerContact ? createHash("sha256").update(user.phone).digest("hex") : null,
   }).select("id,title,moderation_status,seller_state,photo_urls,updated_at,created_at").single();
   if (error) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/marketplace", operation: "create_marketplace_listing", error });

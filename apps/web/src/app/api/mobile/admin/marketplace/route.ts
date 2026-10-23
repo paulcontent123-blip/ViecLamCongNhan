@@ -22,6 +22,15 @@ export async function GET(request: NextRequest) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/marketplace", operation: "list_marketplace_for_admin", error });
     return NextResponse.json({ error: "Chưa tải được tin Chợ để kiểm duyệt.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
+  const sellerIds = [...new Set((data || []).map(item => item.seller_user_id))];
+  const { data: sellers, error: sellersError } = sellerIds.length
+    ? await createSupabaseAdminClient().from("users").select("id,phone").in("id", sellerIds)
+    : { data: [], error: null };
+  if (sellersError) {
+    const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/marketplace", operation: "load_marketplace_seller_contacts", error: sellersError });
+    return NextResponse.json({ error: "Chưa tải được thông tin người đăng tin Chợ.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
+  }
+  const sellerPhones = new Map((sellers || []).map(seller => [seller.id, seller.phone || null]));
   const total = count || 0;
-  return NextResponse.json({ ok: true, items: data || [], total, page, pageSize, hasMore: page * pageSize < total });
+  return NextResponse.json({ ok: true, items: (data || []).map(item => ({ ...item, seller_phone: sellerPhones.get(item.seller_user_id) || null })), total, page, pageSize, hasMore: page * pageSize < total });
 }

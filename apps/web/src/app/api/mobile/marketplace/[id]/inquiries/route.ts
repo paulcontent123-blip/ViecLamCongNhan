@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   if (!parsed.success) return NextResponse.json({ error: "Vui lòng đồng ý chia sẻ số điện thoại đã xác minh với người bán." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
   const { data: listing, error: listingError } = await supabase.from("secondhand_marketplace_listings")
-    .select("id,seller_user_id,users!secondhand_marketplace_listings_seller_user_id_fkey!inner(role,status,is_verified)").eq("id", id).eq("moderation_status", "approved").eq("seller_state", "available")
+    .select("id,seller_user_id,seller_contact_consent_at,seller_contact_consent_phone_hash,users!secondhand_marketplace_listings_seller_user_id_fkey!inner(role,status,is_verified)").eq("id", id).eq("moderation_status", "approved").eq("seller_state", "available")
     .eq("users.role", "candidate").eq("users.status", "active").eq("users.is_verified", true)
     .lte("published_at", new Date().toISOString()).gt("expires_at", new Date().toISOString()).maybeSingle();
   if (listingError) {
@@ -29,6 +30,16 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     const requestId = buyerError ? logSafeSupabaseError({ route: "/api/mobile/marketplace/[id]/inquiries", operation: "load_verified_buyer", error: buyerError }) : undefined;
     return NextResponse.json({ error: buyerError ? "Chưa xác minh được tài khoản." : "Chưa xác minh được số điện thoại của bạn.", ...(requestId ? { requestId } : {}) }, { status: buyerError ? 503 : 403, ...(requestId ? { headers: { "X-Request-Id": requestId } } : {}) });
   }
+  let sellerPhone: string | null = null;
+  if (listing.seller_contact_consent_at && listing.seller_contact_consent_phone_hash) {
+    const { data: seller, error: sellerError } = await supabase.from("users").select("phone")
+      .eq("id", listing.seller_user_id).eq("role", "candidate").eq("status", "active").eq("is_verified", true).maybeSingle();
+    if (sellerError) {
+      const requestId = logSafeSupabaseError({ route: "/api/mobile/marketplace/[id]/inquiries", operation: "load_consented_seller_contact", error: sellerError });
+      return NextResponse.json({ error: "Chưa tải được thông tin liên hệ người bán.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
+    }
+    if (seller?.phone && createHash("sha256").update(seller.phone).digest("hex") === listing.seller_contact_consent_phone_hash) sellerPhone = seller.phone;
+  }
   const { data, error } = await supabase.from("secondhand_marketplace_inquiries").insert({
     listing_id: listing.id, seller_user_id: listing.seller_user_id, buyer_user_id: session.userId,
     message: parsed.data.message || null, contact_consent_at: new Date().toISOString(),
@@ -37,5 +48,5 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     const requestId = logSafeSupabaseError({ route: "/api/mobile/marketplace/[id]/inquiries", operation: "create_marketplace_inquiry", error });
     return NextResponse.json({ error: "Chưa gửi được yêu cầu. Kiểm tra mục yêu cầu đã gửi trước khi thử tiếp.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
-  return NextResponse.json({ ok: true, inquiry: data }, { status: 201 });
+  return NextResponse.json({ ok: true, inquiry: data, hasContactRequest: true, ...(sellerPhone ? { sellerPhone } : {}) }, { status: 201 });
 }
