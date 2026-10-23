@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getAdminSession } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
-const schema = z.object({ isVerified: z.boolean(), contactViewLimit: z.number().int().min(0).max(100000), expectedUpdatedAt: z.string().datetime() });
+const schema = z.object({ isVerified: z.boolean(), contactViewLimit: z.number().int().min(0).max(100000), expectedUpdatedAt: z.string().datetime({ offset: true }) });
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
   const { id } = await context.params; if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã cơ sở y tế không hợp lệ." }, { status: 400 });
