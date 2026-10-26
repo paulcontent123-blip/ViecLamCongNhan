@@ -3,13 +3,36 @@ import { z } from "zod";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
+const PREFERRED_SHIFTS = ["day", "night", "rotating", "flexible"] as const;
+
+function todayInVietnam() {
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+const dateOfBirthSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(date.getTime())
+    && date.toISOString().slice(0, 10) === value
+    && value <= todayInVietnam();
+});
+
 const profileSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
+  dateOfBirth: dateOfBirthSchema.nullable().optional(),
   zalo: z.string().trim().max(24).optional().or(z.literal("")),
   province: z.string().trim().max(100).optional().or(z.literal("")),
   desiredIndustry: z.string().trim().max(120).optional().or(z.literal("")),
   desiredSalaryMin: z.number().int().nonnegative().max(1_000_000_000).nullable().optional(),
   experienceYears: z.number().int().nonnegative().max(70).nullable().optional(),
+  preferredShift: z.enum(PREFERRED_SHIFTS).nullable().optional(),
+  needsHousing: z.boolean().nullable().optional(),
 });
 
 export async function GET() {
@@ -18,15 +41,21 @@ export async function GET() {
   const supabase = createSupabaseAdminClient();
   const { data: user } = await supabase.from("users").select("full_name,phone").eq("id", session.userId).maybeSingle();
   const { data: candidates, error } = await supabase.from("candidates")
-    .select("id,full_name,phone,zalo,province,desired_industry,desired_salary_min,experience_years")
+    .select("id,full_name,phone,date_of_birth,zalo,province,desired_industry,desired_salary_min,experience_years,preferred_shift,needs_housing")
     .eq("user_id", session.userId).order("created_at", { ascending: false }).limit(1);
   if (error) return NextResponse.json({ error: "Không tải được hồ sơ." }, { status: 500 });
   const profile = candidates?.[0];
   return NextResponse.json({ ok: true, profile: profile ? {
-    fullName: profile.full_name, phone: session.phone, zalo: profile.zalo,
+    fullName: profile.full_name, phone: session.phone, dateOfBirth: profile.date_of_birth,
+    zalo: profile.zalo,
     province: profile.province, desiredIndustry: profile.desired_industry,
     desiredSalaryMin: profile.desired_salary_min, experienceYears: profile.experience_years,
-  } : { fullName: user?.full_name || "Công nhân", phone: session.phone, zalo: null, province: null, desiredIndustry: null, desiredSalaryMin: null, experienceYears: null } });
+    preferredShift: profile.preferred_shift, needsHousing: profile.needs_housing,
+  } : {
+    fullName: user?.full_name || "Công nhân", phone: session.phone, dateOfBirth: null,
+    zalo: null, province: null, desiredIndustry: null, desiredSalaryMin: null,
+    experienceYears: null, preferredShift: null, needsHousing: null,
+  } });
 }
 
 export async function PATCH(request: NextRequest) {
@@ -42,11 +71,14 @@ export async function PATCH(request: NextRequest) {
   const candidatePatch = {
     full_name: patch.fullName,
     phone: session.phone,
+    ...(patch.dateOfBirth !== undefined ? { date_of_birth: patch.dateOfBirth } : {}),
     ...(patch.zalo !== undefined ? { zalo: patch.zalo || null } : {}),
     ...(patch.province !== undefined ? { province: patch.province || null } : {}),
     ...(patch.desiredIndustry !== undefined ? { desired_industry: patch.desiredIndustry || null } : {}),
     ...(patch.desiredSalaryMin !== undefined ? { desired_salary_min: patch.desiredSalaryMin } : {}),
     ...(patch.experienceYears !== undefined ? { experience_years: patch.experienceYears } : {}),
+    ...(patch.preferredShift !== undefined ? { preferred_shift: patch.preferredShift } : {}),
+    ...(patch.needsHousing !== undefined ? { needs_housing: patch.needsHousing } : {}),
   };
   if (latest) {
     const { error } = await supabase.from("candidates").update(candidatePatch).eq("id", latest.id).eq("user_id", session.userId);
