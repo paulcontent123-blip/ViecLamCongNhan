@@ -13,7 +13,7 @@ const profileSchema = z.object({
 });
 
 export async function GET() {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const supabase = createSupabaseAdminClient();
   const { data: user } = await supabase.from("users").select("full_name,phone").eq("id", session.userId).maybeSingle();
@@ -30,7 +30,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const parsed = profileSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Thông tin hồ sơ chưa hợp lệ." }, { status: 400 });
@@ -60,7 +60,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE() {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const { data: deleted, error } = await createSupabaseAdminClient().rpc("delete_candidate_account", { p_user_id: session.userId });
   if (error || deleted !== true) return NextResponse.json({ error: "Không xóa được tài khoản." }, { status: 500 });

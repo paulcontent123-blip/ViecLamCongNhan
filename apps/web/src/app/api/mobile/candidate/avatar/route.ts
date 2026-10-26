@@ -18,7 +18,7 @@ function isOwnedAvatar(url: string, userId: string): boolean {
 }
 
 export async function GET() {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
 
   const { data, error } = await createSupabaseAdminClient()
@@ -34,7 +34,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
 
   const form = await request.formData().catch(() => null);

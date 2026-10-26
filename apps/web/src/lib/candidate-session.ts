@@ -13,10 +13,12 @@ function secretKey() {
 export interface CandidateSessionPayload {
   userId: string;
   phone: string;
+  authMethod?: "otp" | "password";
+  phoneVerified?: boolean;
 }
 
 export async function createCandidateSessionToken(payload: CandidateSessionPayload) {
-  return new SignJWT({ ...payload, role: "candidate" })
+  return new SignJWT({ userId: payload.userId, phone: payload.phone, authMethod: payload.authMethod ?? "otp", role: "candidate" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${CANDIDATE_SESSION_MAX_AGE}s`)
@@ -27,7 +29,9 @@ export async function verifyCandidateSessionToken(token: string): Promise<Candid
   try {
     const { payload } = await jwtVerify(token, secretKey());
     if (payload.role !== "candidate" || typeof payload.userId !== "string" || typeof payload.phone !== "string") return null;
-    return { userId: payload.userId, phone: payload.phone };
+    const authMethod = payload.authMethod === undefined ? "otp" : payload.authMethod;
+    if (authMethod !== "otp" && authMethod !== "password") return null;
+    return { userId: payload.userId, phone: payload.phone, authMethod };
   } catch {
     return null;
   }

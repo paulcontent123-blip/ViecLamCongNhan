@@ -7,7 +7,7 @@ const headers = { "Cache-Control": "private, no-store" };
 const schema = z.object({ enabled: z.boolean() });
 
 export async function GET() {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401, headers });
   const { data, error } = await createSupabaseAdminClient()
     .from("candidate_rental_visibility_consents")
@@ -18,10 +18,11 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
-  const session = await getCandidateSession();
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401, headers });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Lựa chọn chia sẻ hồ sơ không hợp lệ." }, { status: 400, headers });
+  if (parsed.data.enabled && !session.phoneVerified) return NextResponse.json({ error: "Hãy xác minh số điện thoại bằng OTP trước khi chia sẻ hồ sơ." }, { status: 403, headers });
 
   const supabase = createSupabaseAdminClient();
   const now = new Date().toISOString();

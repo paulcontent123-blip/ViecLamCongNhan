@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
   } = parsed.data;
 
   const supabase = createSupabaseAdminClient();
-  const session = await getCandidateSession();
+  // Password accounts may apply and track their own submissions before OTP,
+  // but registration rejects every phone that already has a user/profile.
+  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   const normalizedPhone = normalizeCandidatePhone(phone);
   const variants = normalizedPhone ? candidatePhoneVariants(normalizedPhone) : [phone];
 
@@ -51,7 +53,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Số điện thoại này đã được xác minh. Chủ tài khoản cần đăng nhập để cập nhật hồ sơ." }, { status: 403 });
   }
   if (session && (!normalizedPhone || session.phone !== normalizedPhone)) {
-    return NextResponse.json({ error: "Số điện thoại gửi hồ sơ phải trùng với tài khoản đã xác minh." }, { status: 403 });
+    return NextResponse.json({ error: "Số điện thoại gửi hồ sơ phải trùng với tài khoản đang đăng nhập." }, { status: 403 });
   }
 
   // Chỉ cho 1 hồ sơ/SĐT: nếu SĐT này đã tồn tại và ứng viên chưa xác nhận ghi đè,
