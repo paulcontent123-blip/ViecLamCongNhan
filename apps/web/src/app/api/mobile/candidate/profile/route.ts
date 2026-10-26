@@ -35,6 +35,18 @@ const profileSchema = z.object({
   needsHousing: z.boolean().nullable().optional(),
 });
 
+const profileFieldErrors = {
+  fullName: "Họ tên cần có từ 2 đến 100 ký tự.",
+  dateOfBirth: "Ngày sinh không hợp lệ hoặc không được là ngày trong tương lai.",
+  zalo: "Zalo không được vượt quá 24 ký tự.",
+  province: "Tỉnh/thành không được vượt quá 100 ký tự.",
+  desiredIndustry: "Ngành nghề mong muốn không được vượt quá 120 ký tự.",
+  desiredSalaryMin: "Lương tối thiểu phải là số nguyên từ 0 đến 1 tỷ đồng.",
+  experienceYears: "Kinh nghiệm phải là số nguyên từ 0 đến 70 năm.",
+  preferredShift: "Ca làm mong muốn không hợp lệ. Hãy chọn lại ca làm.",
+  needsHousing: "Lựa chọn nhu cầu hỗ trợ nhà ở không hợp lệ.",
+} as const;
+
 export async function GET() {
   const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
@@ -62,7 +74,20 @@ export async function PATCH(request: NextRequest) {
   const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const parsed = profileSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "Thông tin hồ sơ chưa hợp lệ." }, { status: 400 });
+  if (!parsed.success) {
+    const fieldErrors: Partial<Record<keyof typeof profileFieldErrors, string>> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0];
+      if (typeof field === "string" && field in profileFieldErrors) {
+        const key = field as keyof typeof profileFieldErrors;
+        fieldErrors[key] = profileFieldErrors[key];
+      }
+    }
+    return NextResponse.json({
+      error: Object.keys(fieldErrors).length ? "Vui lòng sửa các trường được đánh dấu." : "Dữ liệu hồ sơ không đúng định dạng.",
+      ...(Object.keys(fieldErrors).length ? { fieldErrors } : {}),
+    }, { status: 400 });
+  }
   const supabase = createSupabaseAdminClient();
   const { data: latest, error: readError } = await supabase.from("candidates")
     .select("id").eq("user_id", session.userId).order("created_at", { ascending: false }).limit(1).maybeSingle();
