@@ -123,7 +123,7 @@ export function scoreJob(profile: MatchProfile, job: MatchJob): ScoreResult {
 export function profileCompleteness(profile: MatchProfile): { filled: number; total: number; missing: string[] } {
   const checks: Array<[string, boolean]> = [
     ["industry", Boolean(profile.industryKey)],
-    ["location", Boolean(profile.kcnId || profile.workProvinceCode || profile.homeProvinceCode)],
+    ["location", Boolean(profile.kcnId || profile.workProvinceCode)],
     ["salary", Boolean(profile.salaryMin && profile.salaryMin > 0)],
     ["experience", profile.experienceYears != null],
     ["shift", Boolean(profile.shift)],
@@ -165,7 +165,7 @@ const sameText = (a: string, b: string) => a.length >= 3 && b.length >= 3 && (a.
 
 export function scoreRental(profile: MatchProfile, listing: RentalLite, kcnNameKey: string | null): { score: number; reasons: ServiceReason[] } {
   let score = 0; const reasons: ServiceReason[] = [];
-  const place = profile.workProvinceCode || profile.homeProvinceCode;
+  const place = profile.workProvinceCode;
   if (place && listing.provinceCode === place) { score += 50; reasons.push("same_province"); }
   const zone = listing.nearbyZone ? listing.nearbyZone.trim() : "";
   if (kcnNameKey && zone && sameText(zone.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase(), kcnNameKey)) { score += 40; reasons.push("near_work_place"); }
@@ -176,7 +176,7 @@ export function scoreRental(profile: MatchProfile, listing: RentalLite, kcnNameK
 export function scoreCourse(profile: MatchProfile, course: CourseLite): { score: number; reasons: ServiceReason[] } {
   let score = 0; const reasons: ServiceReason[] = [];
   if (profile.industryKey && course.occupationKey && sameText(profile.industryKey, course.occupationKey)) { score += 70; reasons.push("industry_training"); }
-  const place = profile.workProvinceCode || profile.homeProvinceCode;
+  const place = profile.workProvinceCode;
   if (place && course.provinceCode === place) { score += 30; reasons.push("same_province"); }
   else if (course.learningMode === "online") score += 10;
   return { score, reasons };

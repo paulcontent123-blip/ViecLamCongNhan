@@ -2,12 +2,13 @@ import "server-only";
 import { createHmac } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 // Giới hạn tần suất dùng chung (bảng api_rate_events + hàm consume_rate_limit). Khóa được băm HMAC nên không lưu IP, SĐT hay email thô.
-// Khi cơ sở dữ liệu lỗi hoặc chưa áp migration, mặc định cho qua (fail-open) và ghi log, để không chặn người dùng thật.
+// Nếu không kiểm tra được hạn mức, caller phải tạm dừng yêu cầu thay vì bỏ qua lớp chống spam.
 
 export interface RateRule { scope: string; key: string; limit: number; windowSeconds: number }
-export interface RateResult { allowed: boolean; retryAfterSeconds: number }
+export interface RateResult { allowed: boolean; available: boolean; retryAfterSeconds: number; requestId?: string }
 
 function hashKey(scope: string, key: string): string {
   const secret = process.env.ADMIN_SESSION_SECRET;
@@ -23,10 +24,10 @@ export async function consumeRateLimit(rule: RateRule): Promise<RateResult> {
     if (error) throw error;
     const row = Array.isArray(data) ? data[0] : data;
     if (!row || typeof row.allowed !== "boolean") throw new Error("Phản hồi giới hạn tần suất không hợp lệ.");
-    return { allowed: row.allowed, retryAfterSeconds: Number(row.retry_after_seconds) || 0 };
+    return { allowed: row.allowed, available: true, retryAfterSeconds: Number(row.retry_after_seconds) || 0 };
   } catch (error) {
-    console.error(JSON.stringify({ event: "rate_limit_unavailable", scope: rule.scope, message: error instanceof Error ? error.message.slice(0, 120) : "unknown" }));
-    return { allowed: true, retryAfterSeconds: 0 };
+    const requestId = logSafeSupabaseError({ route: "rate-limit", operation: rule.scope, error });
+    return { allowed: false, available: false, retryAfterSeconds: 0, requestId };
   }
 }
 
@@ -36,7 +37,14 @@ export async function consumeAll(rules: RateRule[]): Promise<RateResult> {
     const result = await consumeRateLimit(rule);
     if (!result.allowed) return result;
   }
-  return { allowed: true, retryAfterSeconds: 0 };
+  return { allowed: true, available: true, retryAfterSeconds: 0 };
+}
+
+export function rateLimitUnavailable(result: RateResult): NextResponse {
+  return NextResponse.json({ error: "Tạm thời chưa kiểm tra được giới hạn yêu cầu. Vui lòng thử lại sau.", requestId: result.requestId }, {
+    status: 503,
+    headers: { "Cache-Control": "no-store", ...(result.requestId ? { "X-Request-Id": result.requestId } : {}) },
+  });
 }
 
 export function clientIp(request: Request): string {

@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { analyzeQuestion, contactKey, contactKind, normalizeQuestionText } from "@/lib/spam-guard";
-import { clientIp, consumeAll, tooManyRequests } from "@/lib/rate-limit";
+import { clientIp, consumeAll, rateLimitUnavailable, tooManyRequests } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   question: z.string().trim().min(10, "Câu hỏi tối thiểu 10 ký tự"),
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
     { scope: "qa:ip-hour", key: clientIp(request), limit: 8, windowSeconds: 3600 },
     { scope: "qa:ip-day", key: clientIp(request), limit: 30, windowSeconds: 86400 },
   ]);
+  if (!limit.available) return rateLimitUnavailable(limit);
   if (!limit.allowed) return tooManyRequests("Bạn đã gửi quá nhiều câu hỏi trong thời gian ngắn.", limit.retryAfterSeconds);
 
   const row = { question, full_name: fullName || null, contact, status: "new" };

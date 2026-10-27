@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
-import { consumeRateLimit, tooManyRequests } from "@/lib/rate-limit";
+import { consumeRateLimit, rateLimitUnavailable, tooManyRequests } from "@/lib/rate-limit";
 import { PROVINCES } from "@/lib/provinces";
 
 const headers = { "Cache-Control": "private, no-store" };
@@ -17,14 +17,20 @@ const schema = z.object({
 });
 
 const empty = { workProvinceCode: null, kcnId: null, interestedServices: [] as string[] };
+const isMissingPreferencesTable = (error: unknown) => !!error && typeof error === "object" &&
+  String((error as { code?: unknown }).code ?? "") === "42P01";
 
 export async function GET() {
   const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401, headers });
   const { data, error } = await createSupabaseAdminClient().from("candidate_match_preferences")
     .select("work_province_code,kcn_id,interested_services").eq("user_id", session.userId).maybeSingle();
-  // Chưa áp migration: coi như chưa có tùy chọn để màn vẫn mở được.
-  if (error) return NextResponse.json({ ok: true, preferences: empty }, { headers });
+  // Chỉ lỗi bảng không tồn tại ở database mới được xem như chưa áp migration. Lỗi schema-cache PGRST205 vẫn cần kiểm tra.
+  if (error && isMissingPreferencesTable(error)) return NextResponse.json({ ok: true, preferences: empty }, { headers });
+  if (error) {
+    const requestId = logSafeSupabaseError({ route: "/api/mobile/candidate/match-preferences", operation: "load_preferences", error });
+    return NextResponse.json({ error: "Chưa tải được tùy chọn gợi ý.", requestId }, { status: 503, headers: { ...headers, "X-Request-Id": requestId } });
+  }
   return NextResponse.json({ ok: true, preferences: data ? { workProvinceCode: data.work_province_code, kcnId: data.kcn_id, interestedServices: data.interested_services ?? [] } : empty }, { headers });
 }
 
@@ -35,6 +41,7 @@ export async function PATCH(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Tùy chọn gợi ý không hợp lệ." }, { status: 400, headers });
 
   const limit = await consumeRateLimit({ scope: "ai-match-prefs", key: session.userId, limit: 20, windowSeconds: 3600 });
+  if (!limit.available) return rateLimitUnavailable(limit);
   if (!limit.allowed) return tooManyRequests("Bạn đã đổi tùy chọn quá nhiều lần.", limit.retryAfterSeconds);
 
   const supabase = createSupabaseAdminClient();
