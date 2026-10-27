@@ -106,6 +106,7 @@ export async function GET() {
   if (personalized) {
     const config = getEmbeddingConfig();
     const top = ranked.slice(0, SEMANTIC_CANDIDATES);
+    // Gemini chỉ nhận nơi làm do công nhân chọn; tỉnh cư trú chỉ là tín hiệu cấu trúc yếu và không được gửi đi.
     const profileText = buildProfileEmbeddingText({
       industry: industryText, provinceName: profile.workProvinceCode ? provinceName(profile.workProvinceCode) : null,
       kcnName, shift: profile.shift, needsHousing: profile.needsHousing, experienceYears: profile.experienceYears,
