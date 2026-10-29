@@ -8,14 +8,14 @@ import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 const categories = ["vehicle", "home_goods", "electronics", "clothing", "other"] as const;
 const conditions = ["new", "like_new", "good", "fair"] as const;
 const editSchema = z.object({
-  action: z.literal("edit"), expectedUpdatedAt: z.string().datetime(),
+  action: z.literal("edit"), expectedUpdatedAt: z.string().datetime({ offset: true }),
   title: z.string().trim().min(5).max(140), description: z.string().trim().min(20).max(5000),
   category: z.enum(categories), itemCondition: z.enum(conditions),
   priceVnd: z.number().int().min(0).max(1_000_000_000_000), isNegotiable: z.boolean(),
   provinceCode: z.string().trim().max(12).optional().nullable(), location: z.string().trim().min(2).max(200),
   shareSellerContact: z.boolean().default(false),
 });
-const stateSchema = z.object({ action: z.literal("set_state"), expectedUpdatedAt: z.string().datetime(), sellerState: z.enum(["available", "sold", "hidden"]) });
+const stateSchema = z.object({ action: z.literal("set_state"), expectedUpdatedAt: z.string().datetime({ offset: true }), sellerState: z.enum(["available", "sold", "hidden"]) });
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;

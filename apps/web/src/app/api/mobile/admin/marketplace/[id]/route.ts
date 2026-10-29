@@ -6,7 +6,7 @@ import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 const reviewSchema = z.object({
   status: z.enum(["approved", "rejected"]),
-  expectedUpdatedAt: z.string().datetime(),
+  expectedUpdatedAt: z.string().datetime({ offset: true }),
   rejectionReason: z.string().trim().max(500).optional().default(""),
 });
 
