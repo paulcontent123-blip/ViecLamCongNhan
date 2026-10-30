@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { deleteImageFromCloudinary } from "@/lib/cloudinary";
 
 const PREFERRED_SHIFTS = ["day", "night", "rotating", "flexible"] as const;
 
@@ -119,8 +120,24 @@ export async function PATCH(request: NextRequest) {
 export async function DELETE() {
   const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
-  const { data: deleted, error } = await createSupabaseAdminClient().rpc("delete_candidate_account", { p_user_id: session.userId });
+  const supabase = createSupabaseAdminClient();
+  // Lấy danh sách ảnh trước khi xóa (hàm SQL xóa luôn các dòng chứa URL) để dọn trên Cloudinary sau đó.
+  const [avatarResult, listingResult] = await Promise.all([
+    supabase.from("candidates").select("avatar_url").eq("user_id", session.userId),
+    supabase.from("secondhand_marketplace_listings").select("photo_urls").eq("seller_user_id", session.userId),
+  ]);
+  const imageUrls = [
+    ...(avatarResult.data ?? []).map(row => row.avatar_url as string | null),
+    ...(listingResult.data ?? []).flatMap(row => (row.photo_urls as string[] | null) ?? []),
+  ].filter((url): url is string => typeof url === "string" && url.length > 0);
+
+  const { data: deleted, error } = await supabase.rpc("delete_candidate_account", { p_user_id: session.userId });
+  if (error?.message?.includes("CANDIDATE_HAS_OPEN_REDEMPTIONS")) {
+    return NextResponse.json({ error: "Bạn còn yêu cầu đổi quà đang chờ xử lý. Hãy đợi Admin xử lý xong rồi xóa tài khoản." }, { status: 409 });
+  }
   if (error || deleted !== true) return NextResponse.json({ error: "Không xóa được tài khoản." }, { status: 500 });
+  // Dọn ảnh là việc phụ: lỗi Cloudinary không làm hỏng việc xóa tài khoản đã hoàn tất.
+  await Promise.allSettled(imageUrls.map(url => deleteImageFromCloudinary(url)));
   const response = NextResponse.json({ ok: true });
   response.cookies.delete("candidate_session");
   return response;
