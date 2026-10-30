@@ -13,10 +13,10 @@ export async function GET() {
       .select("id,event_type,points_delta,source_reference,description,created_at")
       .eq("user_id", session.userId).order("created_at", { ascending: false }).limit(50),
     supabase.from("candidate_reward_catalog")
-      .select("id,title,description,image_url,points_cost,stock_remaining")
+      .select("id,title,description,image_url,points_cost,stock_remaining,reward_type,value_vnd,brand,is_service")
       .eq("is_active", true).order("points_cost", { ascending: true }).limit(100),
     supabase.from("candidate_reward_redemptions")
-      .select("id,reward_title_snapshot,points_cost,status,idempotency_key,admin_note,processed_at,created_at,updated_at")
+      .select("id,reward_title_snapshot,points_cost,status,reward_type_snapshot,reward_value_vnd_snapshot,reward_brand_snapshot,fulfillment_info,idempotency_key,admin_note,processed_at,created_at,updated_at")
       .eq("user_id", session.userId).order("created_at", { ascending: false }).limit(50),
     supabase.rpc("get_candidate_online_status", { p_user_id: session.userId }),
   ]);
