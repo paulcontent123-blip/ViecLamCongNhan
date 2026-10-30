@@ -10,7 +10,8 @@ export const runtime = "nodejs";
 const bodySchema = z.object({
   phone: z.string().min(8).max(24),
   fullName: z.string().trim().min(2).max(100),
-  password: z.string().min(6).max(72),
+  province: z.string().trim().max(100).optional(),
+  password: z.string().min(8).max(72),
 });
 
 function requestIp(request: NextRequest): string {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   const phone = parsed.success ? normalizeCandidatePhone(parsed.data.phone) : null;
   if (!parsed.success || !phone || Buffer.byteLength(parsed.data.password, "utf8") > 72) {
-    return NextResponse.json({ error: "Thông tin đăng ký chưa hợp lệ. Số điện thoại cần có 10 chữ số; mật khẩu từ 6 ký tự." }, { status: 400 });
+    return NextResponse.json({ error: "Thông tin đăng ký chưa hợp lệ. Số điện thoại cần có 10 chữ số; mật khẩu từ 8 ký tự." }, { status: 400 });
   }
   if (!process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_SESSION_SECRET.length < 32) {
     return NextResponse.json({ error: "Đăng ký tài khoản hiện chưa khả dụng." }, { status: 503 });
@@ -47,6 +48,10 @@ export async function POST(request: NextRequest) {
   if (result?.created !== true || typeof result.user_id !== "string") {
     return NextResponse.json({ error: "Không thể đăng ký bằng số này. Nếu bạn đã ứng tuyển hoặc có tài khoản, hãy đăng nhập bằng OTP để xác minh và nhận hồ sơ." }, { status: 409 });
   }
+
+  // Tỉnh/thành là thông tin hồ sơ, không chặn đăng ký nếu ghi thất bại; người dùng sửa được ở màn Tài khoản.
+  const province = parsed.data.province;
+  if (province) await createSupabaseAdminClient().from("candidates").update({ province }).eq("user_id", result.user_id);
 
   const token = await createCandidateSessionToken({ userId: result.user_id, phone, authMethod: "password" });
   const response = NextResponse.json({
