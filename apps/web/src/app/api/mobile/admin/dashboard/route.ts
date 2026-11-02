@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
+import { adminCan } from "@/lib/admin-roles";
 import { getAdminDashboardStats, getAdminSidebarCounts } from "@/lib/admin";
 
 const headers = { "Cache-Control": "private, no-store" };
@@ -12,7 +13,11 @@ export async function GET() {
       return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401, headers });
     }
 
-    const [stats, counts] = await Promise.all([getAdminDashboardStats(), getAdminSidebarCounts()]);
+    const [fullStats, counts] = await Promise.all([getAdminDashboardStats(), getAdminSidebarCounts()]);
+    // Doanh thu và số đơn chờ đối soát thuộc nhóm thanh toán: Biên tập không được thấy.
+    const canSeePayments = adminCan(session.adminRole, "payments");
+    const { jobsByStatus, totalCandidates, totalApplications, totalEmployers, unverifiedEmployers, pendingOrdersCount } = fullStats;
+    const stats = canSeePayments ? fullStats : { jobsByStatus, totalCandidates, totalApplications, totalEmployers, unverifiedEmployers };
 
     return NextResponse.json({
       ok: true,
@@ -20,7 +25,7 @@ export async function GET() {
       pending: {
         pendingJobs: stats.jobsByStatus.pending,
         unverifiedEmployers: stats.unverifiedEmployers,
-        pendingOrders: stats.pendingOrdersCount,
+        ...(canSeePayments ? { pendingOrders: pendingOrdersCount } : {}),
         newQuestions: counts.newQuestions,
         newServiceInquiries: counts.newServiceInquiries,
         newKcnAdInquiries: counts.newKcnAdInquiries,

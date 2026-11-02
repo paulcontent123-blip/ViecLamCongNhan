@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
+import { ADMIN_FORBIDDEN_MESSAGE } from "@/lib/admin-auth";
+import { adminCan } from "@/lib/admin-roles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
@@ -25,7 +28,7 @@ const schema = z.object({
 });
 
 export async function GET(request: NextRequest) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin(); if (auth.error) return auth.error; }
   const id = request.nextUrl.searchParams.get("id");
   if (id && !z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Mã quà không hợp lệ." }, { status: 400 });
   let query = createSupabaseAdminClient().from("candidate_reward_catalog")
@@ -53,9 +56,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const session = auth.session;
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Thông tin quà chưa hợp lệ." }, { status: 400 });
+  // Quà tiền mặt chỉ Superadmin tạo; Biên tập tạo được thẻ quà và hiện vật.
+  if (parsed.data.rewardType === "cash" && !adminCan(session.adminRole, "cash_rewards")) return NextResponse.json({ error: ADMIN_FORBIDDEN_MESSAGE }, { status: 403 });
   const { data, error } = await createSupabaseAdminClient().from("candidate_reward_catalog").insert({
     title: parsed.data.title,
     description: parsed.data.description,
@@ -72,5 +79,6 @@ export async function POST(request: NextRequest) {
     const requestId = error ? logSafeSupabaseError({ route: "/api/mobile/admin/candidate-rewards/catalog", operation: "create_catalog_item", error }) : undefined;
     return NextResponse.json({ error: "Không tạo được quà.", ...(requestId ? { requestId } : {}) }, { status: 503, ...(requestId ? { headers: { "X-Request-Id": requestId } } : {}) });
   }
+  if (data.reward_type === "cash") await logAdminAction(session, "reward_catalog.create_cash", { type: "reward", id: data.id }, { pointsCost: data.points_cost, valueVnd: data.value_vnd, isActive: data.is_active });
   return NextResponse.json({ ok: true, item: data }, { status: 201 });
 }

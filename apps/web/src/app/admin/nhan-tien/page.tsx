@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import { listMomoWallets, listPaymentAccounts } from "@/lib/admin-payment";
 import { PaymentChannels } from "@/components/admin/PaymentChannels";
 
@@ -5,6 +6,7 @@ import { PaymentChannels } from "@/components/admin/PaymentChannels";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPaymentChannelsPage() {
+  await requireAdminPage("payments");
   const [accounts, wallets] = await Promise.all([listPaymentAccounts(), listMomoWallets()]);
 
   return (

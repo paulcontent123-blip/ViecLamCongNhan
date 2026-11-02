@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 
@@ -7,7 +7,7 @@ type ProviderRelation = { provider_name: string; is_verified: boolean } | Array<
 type VocationalCourseListRow = Record<string, unknown> & { training_providers: ProviderRelation };
 
 export async function GET(request: NextRequest) {
-  if (!(await getAdminSession())) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin("partners"); if (auth.error) return auth.error; }
   const params = request.nextUrl.searchParams;
   let paging;
   try { paging = parseEmployerListParams(params, ["draft", "pending", "approved", "rejected", "hidden", "closed"]); }

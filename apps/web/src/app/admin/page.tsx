@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAdminSession } from "@/lib/admin-auth";
+import { adminCan } from "@/lib/admin-roles";
 import { getAdminDashboardStats } from "@/lib/admin";
 import { ROUTES } from "@/lib/routes";
 
@@ -14,6 +15,8 @@ export default async function AdminDashboardPage() {
   const totalJobs =
     stats.jobsByStatus.pending + stats.jobsByStatus.approved + stats.jobsByStatus.closed + stats.jobsByStatus.expired;
 
+  const canSeeRevenue = session ? adminCan(session.adminRole, "payments") : false;
+
   const statCards = [
     { n: totalJobs.toLocaleString("vi-VN"), l: "Tổng tin tuyển dụng", d: `${stats.jobsByStatus.approved.toLocaleString("vi-VN")} đang hiển thị` },
     {
@@ -22,7 +25,7 @@ export default async function AdminDashboardPage() {
       d: `${stats.totalApplications.toLocaleString("vi-VN")} đơn ứng tuyển`,
     },
     { n: stats.totalEmployers.toLocaleString("vi-VN"), l: "Nhà tuyển dụng", d: `${stats.unverifiedEmployers} chưa xác minh` },
-    { n: fmtVnd(stats.revenueThisMonthVnd), l: "Doanh thu tháng này", d: `${stats.ordersThisMonthCount} đơn hàng tháng này` },
+    ...(canSeeRevenue ? [{ n: fmtVnd(stats.revenueThisMonthVnd), l: "Doanh thu tháng này", d: `${stats.ordersThisMonthCount} đơn hàng tháng này` }] : []),
   ];
 
   return (

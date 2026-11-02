@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 const headers = { "Cache-Control": "private, no-store" };
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401, headers });
+  { const auth = await requireAdmin("partners"); if (auth.error) return auth.error; }
   const { id } = await context.params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã đối tác không hợp lệ." }, { status: 400, headers });
   const supabase = createSupabaseAdminClient();

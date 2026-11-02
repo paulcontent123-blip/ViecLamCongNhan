@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 type ProductRow = Record<string, unknown> & { finance_providers: { id: string; provider_name: string; is_verified: boolean; license_number: string | null; license_evidence_url: string | null } | Array<{ id: string; provider_name: string; is_verified: boolean; license_number: string | null; license_evidence_url: string | null }> | null };
 export async function GET(request: NextRequest) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin("partners"); if (auth.error) return auth.error; }
   let paging; try { paging = parseEmployerListParams(request.nextUrl.searchParams, ["draft", "pending", "approved", "rejected", "hidden"]); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Tham số phân trang không hợp lệ." }, { status: 400 }); }
   let query = createSupabaseAdminClient().from("finance_products").select("*,finance_providers!inner(id,provider_name,is_verified,license_number,license_evidence_url)", { count: "exact" }).order("created_at", { ascending: false }).order("id", { ascending: false });
   if (paging.status) query = query.eq("status", paging.status);

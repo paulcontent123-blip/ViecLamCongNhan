@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { AdminUserRole, AdminUserRow } from "@/lib/admin";
+import { ADMIN_ROLE_LABEL, ADMIN_ROLES, isAdminRole, type AdminRole } from "@/lib/admin-roles";
 import { StatusPill } from "@/components/admin/StatusPill";
 
 const ROLE_OPTIONS: { value: AdminUserRole; label: string }[] = [
@@ -24,6 +25,7 @@ interface UserFormState {
   email: string;
   phone: string;
   role: AdminUserRole;
+  adminRole: AdminRole;
   password: string;
 }
 
@@ -32,6 +34,7 @@ const EMPTY_FORM: UserFormState = {
   email: "",
   phone: "",
   role: "candidate",
+  adminRole: "editor",
   password: "",
 };
 
@@ -45,6 +48,7 @@ function toForm(user: AdminUserRow): UserFormState {
     email: user.email ?? "",
     phone: user.phone ?? "",
     role: toRole(user.role),
+    adminRole: isAdminRole(user.admin_role) ? user.admin_role : "editor",
     password: "",
   };
 }
@@ -102,6 +106,7 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
           email: form.email,
           phone: form.phone,
           role: form.role,
+          ...(form.role === "admin" ? { adminRole: form.adminRole } : {}),
           password: form.password,
         }),
       });
@@ -192,6 +197,11 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
                   </td>
                   <td className="px-4 py-3">
                     <StatusPill label={role.label} tone={role.tone} />
+                    {user.role === "admin" && isAdminRole(user.admin_role) && (
+                      <div className="mt-1">
+                        <StatusPill label={ADMIN_ROLE_LABEL[user.admin_role]} tone={user.admin_role === "superadmin" ? "green" : "gray"} />
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     {user.status === "active" ? <StatusPill label="Đang hoạt động" tone="green" /> : <StatusPill label="Đã xóa" tone="red" />}
@@ -294,6 +304,27 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
                   ))}
                 </select>
               </label>
+              {form.role === "admin" && (
+                <label className="block text-[12px] font-semibold text-brand-navy/60">
+                  Cấp quyền Admin *
+                  <select
+                    value={form.adminRole}
+                    onChange={(event) => updateField("adminRole", event.target.value as AdminRole)}
+                    disabled={editingUser?.id === currentAdminId}
+                    title={editingUser?.id === currentAdminId ? "Không thể tự đổi cấp quyền của tài khoản đang đăng nhập" : undefined}
+                    className="mt-1.5 w-full rounded-lg border border-black/10 bg-white px-3 py-2.5 text-[13px] text-brand-navy outline-none focus:border-brand-orange disabled:cursor-not-allowed disabled:bg-black/[0.03] disabled:text-brand-navy/45"
+                  >
+                    {ADMIN_ROLES.map((value) => (
+                      <option key={value} value={value}>
+                        {ADMIN_ROLE_LABEL[value]}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-1 block text-[11px] font-normal text-brand-navy/45">
+                    Biên tập: nội dung, tuyển dụng, duyệt tin Chợ, quà thẻ và hiện vật. Superadmin: thêm thanh toán, đối tác, quản lý Admin, quà tiền mặt.
+                  </span>
+                </label>
+              )}
               <label className="block text-[12px] font-semibold text-brand-navy/60">
                 {isEditing ? "Mật khẩu mới" : "Mật khẩu"}{passwordRequired ? " *" : ""}
                 <input

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 import { setPartnerActive } from "@/lib/admin";
 
 const bodySchema = z.object({
@@ -8,10 +9,9 @@ const bodySchema = z.object({
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getAdminSession();
-  if (!session) {
-    return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
-  }
+  const auth = await requireAdmin("partners");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
@@ -24,5 +24,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Không tìm thấy đối tác." }, { status: 404 });
   }
 
+  await logAdminAction(session, "revenue_partner.active", { type: "revenue_partner", id }, { active: parsed.data.active });
   return NextResponse.json({ ok: true });
 }

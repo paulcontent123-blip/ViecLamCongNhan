@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { requireAdminPage } from "@/lib/admin-auth";
 import {
   getAdminOrders,
   getAdminOrderStats,
@@ -36,6 +37,7 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requireAdminPage("payments");
   const sp = toSp(await searchParams);
   const status = sp.status && isOrderStatus(sp.status) ? sp.status : undefined;
   const currentPage = Math.max(1, sp.page ? Number(sp.page) || 1 : 1);

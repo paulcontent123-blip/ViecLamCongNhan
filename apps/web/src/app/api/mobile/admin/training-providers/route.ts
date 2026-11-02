@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
@@ -20,8 +20,8 @@ type TrainingProviderListRow = {
 };
 
 export async function GET(request: NextRequest) {
-  const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin("partners");
+  if (auth.error) return auth.error;
   const params = request.nextUrl.searchParams;
   let paging;
   try { paging = parseEmployerListParams(params, []); }

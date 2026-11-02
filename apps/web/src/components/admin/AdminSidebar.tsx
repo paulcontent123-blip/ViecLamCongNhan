@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
+import { adminCan, type AdminCapability, type AdminRole } from "@/lib/admin-roles";
 
 interface AdminSidebarCounts {
   pendingJobs: number;
@@ -22,6 +23,8 @@ interface NavItem {
   label: string;
   badge?: number;
   exact?: boolean;
+  /** Mục chỉ hiện với tài khoản có quyền này (chặn thật nằm ở máy chủ). */
+  capability?: AdminCapability;
   children?: NavItem[];
 }
 
@@ -64,8 +67,8 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
     {
       label: "Hệ thống",
       items: [
-        { href: ROUTES.adminOrders, icon: "💳", label: "Đơn hàng / Thanh toán" },
-        { href: ROUTES.adminPaymentChannels, icon: "💰", label: "Kênh nhận tiền" },
+        { href: ROUTES.adminOrders, icon: "💳", label: "Đơn hàng / Thanh toán", capability: "payments" },
+        { href: ROUTES.adminPaymentChannels, icon: "💰", label: "Kênh nhận tiền", capability: "payments" },
         {
           href: ROUTES.adminAds,
           icon: "📢",
@@ -91,7 +94,7 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
             },
           ],
         },
-        { href: ROUTES.adminUsers, icon: "👤", label: "Người dùng" },
+        { href: ROUTES.adminUsers, icon: "👤", label: "Người dùng", capability: "admin_users" },
         { href: ROUTES.adminSettings, icon: "⚙️", label: "Cài đặt" },
       ],
     },
@@ -132,9 +135,11 @@ function AdminNavItem({ item, pathname, level = 0 }: { item: NavItem; pathname: 
   );
 }
 
-export function AdminSidebar({ counts }: { counts: AdminSidebarCounts }) {
+export function AdminSidebar({ counts, adminRole }: { counts: AdminSidebarCounts; adminRole: AdminRole }) {
   const pathname = usePathname();
-  const groups = buildGroups(counts);
+  const groups = buildGroups(counts)
+    .map((group) => ({ ...group, items: group.items.filter((item) => !item.capability || adminCan(adminRole, item.capability)) }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <nav className="border-b border-black/5 bg-white px-2 py-3 lg:min-h-[calc(100vh-58px)] lg:border-b-0 lg:border-r lg:px-0 lg:py-4">

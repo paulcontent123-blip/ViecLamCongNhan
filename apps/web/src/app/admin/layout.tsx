@@ -1,5 +1,6 @@
 import { getAdminSession } from "@/lib/admin-auth";
 import { getAdminSidebarCounts } from "@/lib/admin";
+import { ADMIN_ROLE_LABEL } from "@/lib/admin-roles";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 
@@ -24,14 +25,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="flex items-center gap-3">
           <span className="hidden text-[12.5px] font-semibold text-white/70 sm:inline">{session.fullName}</span>
           <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide text-brand-orange">
-            Admin
+            {ADMIN_ROLE_LABEL[session.adminRole]}
           </span>
           <LogoutButton />
         </div>
       </div>
 
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 lg:grid-cols-[220px_1fr]">
-        <AdminSidebar counts={counts} />
+        <AdminSidebar counts={counts} adminRole={session.adminRole} />
         <main className="min-w-0 p-4 sm:p-6">{children}</main>
       </div>
     </div>

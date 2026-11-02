@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 import { canMarkOrderPaid, isOrderStatus, rejectOrderPayment, SubscriptionEntitlementSyncError, updateOrderStatus } from "@/lib/admin";
 
 // Đổi trạng thái đơn, hoặc trả đơn về cho NTD kèm lý do ({ rejectReason }).
@@ -10,10 +11,9 @@ const bodySchema = z.union([
 ]);
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getAdminSession();
-  if (!session) {
-    return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
-  }
+  const auth = await requireAdmin("payments");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
@@ -25,6 +25,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if ("rejectReason" in parsed.data) {
     const ok = await rejectOrderPayment(id, parsed.data.rejectReason);
     if (!ok) return NextResponse.json({ error: "Đơn này không còn ở trạng thái chờ." }, { status: 409 });
+    await logAdminAction(session, "order.reject_payment", { type: "order", id }, { reason: parsed.data.rejectReason });
     return NextResponse.json({ ok: true });
   }
 
@@ -52,5 +53,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Không tìm thấy đơn hàng." }, { status: 404 });
   }
 
+  await logAdminAction(session, "order.status", { type: "order", id }, { status: parsed.data.status });
   return NextResponse.json({ ok: true });
 }

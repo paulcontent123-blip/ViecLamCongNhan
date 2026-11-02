@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
+import { ADMIN_ROLES } from "@/lib/admin-roles";
 import { isAdminUserRole, softDeleteAdminUser, updateAdminUser } from "@/lib/admin";
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_MAX_AGE, createAdminSessionToken } from "@/lib/admin-session";
 
@@ -9,12 +11,14 @@ const bodySchema = z.object({
   email: z.string().trim().email("Email không hợp lệ.").optional().or(z.literal("")),
   phone: z.string().trim().min(9, "Số điện thoại không hợp lệ.").optional().or(z.literal("")),
   role: z.string().refine(isAdminUserRole, "Vai trò không hợp lệ."),
+  adminRole: z.enum(ADMIN_ROLES).optional(),
   password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự.").optional().or(z.literal("")),
 });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  const auth = await requireAdmin("admin_users");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
@@ -26,8 +30,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Bạn không thể tự hạ quyền tài khoản Admin đang đăng nhập." }, { status: 409 });
   }
 
+  if (id === session.userId && parsed.data.adminRole && parsed.data.adminRole !== session.adminRole) {
+    return NextResponse.json({ error: "Bạn không thể tự đổi cấp quyền của tài khoản đang đăng nhập." }, { status: 409 });
+  }
+
   const result = await updateAdminUser(id, parsed.data);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
+  await logAdminAction(session, "user.update", { type: "user", id }, { role: result.user.role, adminRole: result.user.admin_role, passwordChanged: Boolean(parsed.data.password) });
 
   const response = NextResponse.json({ ok: true, user: result.user });
   if (id === session.userId) {
@@ -48,8 +57,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  const auth = await requireAdmin("admin_users");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const { id } = await params;
   if (id === session.userId) {
@@ -58,5 +68,6 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
 
   const result = await softDeleteAdminUser(id);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
+  await logAdminAction(session, "user.delete", { type: "user", id });
   return NextResponse.json({ ok: true });
 }

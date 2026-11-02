@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin, ADMIN_FORBIDDEN_MESSAGE } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
+import { adminCan } from "@/lib/admin-roles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
@@ -23,13 +25,27 @@ const schema = z.object({
   });
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const session = auth.session;
   const { id } = await context.params;
   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Mã quà không hợp lệ." }, { status: 400 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Thông tin quà chưa hợp lệ." }, { status: 400 });
   const values = parsed.data;
   const supabase = createSupabaseAdminClient();
+  const isSuper = adminCan(session.adminRole, "cash_rewards");
+  // Biên tập không đổi quà thành tiền mặt và không sửa quà tiền mặt hiện có.
+  if (!isSuper) {
+    if (values.rewardType === "cash") return NextResponse.json({ error: ADMIN_FORBIDDEN_MESSAGE }, { status: 403 });
+    const { data: existing, error: existingError } = await supabase.from("candidate_reward_catalog").select("reward_type").eq("id", id).maybeSingle();
+    if (existingError) {
+      const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-rewards/catalog/[id]", operation: "read_reward_type", error: existingError });
+      return NextResponse.json({ error: "Không cập nhật được quà.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
+    }
+    if (!existing) return NextResponse.json({ error: "Không tìm thấy quà." }, { status: 404 });
+    if (existing.reward_type === "cash") return NextResponse.json({ error: ADMIN_FORBIDDEN_MESSAGE }, { status: 403 });
+  }
   const typeFieldsSent = values.rewardType !== undefined || values.valueVnd !== undefined || values.brand !== undefined || values.isService !== undefined;
   if (typeFieldsSent) {
     const { data: current, error: currentError } = await supabase.from("candidate_reward_catalog")
@@ -84,5 +100,6 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     return NextResponse.json({ error: "Không cập nhật được quà.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
   if (!data) return NextResponse.json({ error: "Không tìm thấy quà." }, { status: 404 });
+  if (data.reward_type === "cash") await logAdminAction(session, "reward_catalog.update_cash", { type: "reward", id }, { pointsCost: data.points_cost, valueVnd: data.value_vnd, isActive: data.is_active });
   return NextResponse.json({ ok: true, item: data });
 }

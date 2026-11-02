@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin, ADMIN_FORBIDDEN_MESSAGE } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
+import { adminCan } from "@/lib/admin-roles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 export async function GET(request: NextRequest) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const canCash = adminCan(auth.session.adminRole, "cash_rewards");
   const params = request.nextUrl.searchParams;
   const querySchema = z.object({
     page: z.coerce.number().int().min(1).max(100000).default(1),
@@ -27,6 +31,8 @@ export async function GET(request: NextRequest) {
     .order("created_at", { ascending: false }).range((page - 1) * pageSize, page * pageSize - 1);
   if (status !== "all") query = query.eq("status", status);
   if (id) query = query.eq("id", id);
+  // Yêu cầu tiền mặt chứa số tài khoản ngân hàng: chỉ Superadmin thấy.
+  if (!canCash) query = query.or("reward_type_snapshot.is.null,reward_type_snapshot.neq.cash");
   const { data, error, count } = await query;
   if (error) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-reward-redemptions", operation: "list_redemptions", error });
@@ -61,8 +67,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const admin = auth.session;
   const bodySchema = z.object({
     id: z.string().uuid(),
     expectedStatus: z.enum(["pending", "approved"]),
@@ -82,7 +89,16 @@ export async function PATCH(request: NextRequest) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Thông tin xử lý yêu cầu chưa hợp lệ." }, { status: 400 });
   const body = parsed.data;
-  const { data, error } = await createSupabaseAdminClient().rpc("process_candidate_reward_redemption", {
+  const supabase = createSupabaseAdminClient();
+  const { data: target, error: targetError } = await supabase.from("candidate_reward_redemptions").select("reward_type_snapshot").eq("id", body.id).maybeSingle();
+  if (targetError) {
+    const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-reward-redemptions", operation: "read_redemption_type", error: targetError });
+    return NextResponse.json({ error: "Không xử lý được yêu cầu đổi quà.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
+  }
+  if (!target) return NextResponse.json({ error: "Không tìm thấy yêu cầu đổi quà." }, { status: 404 });
+  const isCash = target.reward_type_snapshot === "cash";
+  if (isCash && !adminCan(admin.adminRole, "cash_rewards")) return NextResponse.json({ error: ADMIN_FORBIDDEN_MESSAGE }, { status: 403 });
+  const { data, error } = await supabase.rpc("process_candidate_reward_redemption", {
     p_redemption_id: body.id,
     p_admin_id: admin.userId,
     p_expected_status: body.expectedStatus,
@@ -97,5 +113,6 @@ export async function PATCH(request: NextRequest) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-reward-redemptions", operation: "process_redemption", error });
     return NextResponse.json({ error: "Chưa xác định được trạng thái đổi quà đã lưu hay chưa. Tải lại trước khi thao tác tiếp.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
+  if (isCash) await logAdminAction(admin, "reward_redemption.process_cash", { type: "reward_redemption", id: body.id }, { from: body.expectedStatus, to: body.status, hasTransferReference: Boolean(body.fulfillmentInfo?.transferReference) });
   return NextResponse.json({ ok: true, redemption: data });
 }

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
 const schema = z.object({ status: z.enum(["approved", "rejected", "hidden"]), rejectionReason: z.string().trim().max(500).optional() });
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  if (!(await getAdminSession())) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin("partners"); if (auth.error) return auth.error; }
   const { id } = await context.params;
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success || (parsed.data.status === "rejected" && !parsed.data.rejectionReason)) return NextResponse.json({ error: "Khi từ chối cần ghi lý do." }, { status: 400 });

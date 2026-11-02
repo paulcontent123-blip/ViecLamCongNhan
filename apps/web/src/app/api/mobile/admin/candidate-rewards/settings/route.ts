@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
@@ -17,7 +18,7 @@ function toResponse(row: { cash_monthly_alert_vnd: number | null; cash_monthly_c
 }
 
 export async function GET() {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin("cash_rewards"); if (auth.error) return auth.error; }
   const { data, error } = await createSupabaseAdminClient().from("candidate_reward_settings").select(SELECT).eq("id", true).maybeSingle();
   if (error || !data) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-rewards/settings", operation: "read_settings", error: error || new Error("Missing settings row") });
@@ -27,8 +28,9 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
-  const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin("cash_rewards");
+  if (auth.error) return auth.error;
+  const admin = auth.session;
   const parsed = patchSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Cài đặt chưa hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
@@ -52,5 +54,9 @@ export async function PATCH(request: NextRequest) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-rewards/settings", operation: "update_settings", error: error || new Error("Empty update result") });
     return NextResponse.json({ error: "Chưa lưu được cài đặt quà.", requestId }, { status: 503, headers: { "X-Request-Id": requestId } });
   }
+  await logAdminAction(admin, "reward_settings.update", { type: "reward_settings" }, {
+    cashMonthlyAlertVnd: { from: current.cash_monthly_alert_vnd, to: data.cash_monthly_alert_vnd },
+    cashMonthlyCapVnd: { from: current.cash_monthly_cap_vnd, to: data.cash_monthly_cap_vnd },
+  });
   return NextResponse.json({ ok: true, settings: toResponse(data) });
 }

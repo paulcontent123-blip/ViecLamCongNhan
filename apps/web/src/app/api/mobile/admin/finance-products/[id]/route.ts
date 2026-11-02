@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isFinanceProviderUnverifiedError, logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 const schema = z.object({ status: z.enum(["approved", "rejected", "hidden"]), rejectionReason: z.string().trim().max(1000).optional(), pricingApproved: z.boolean().optional(), expectedUpdatedAt: z.string().trim().min(1).max(64) }).refine(value => value.status !== "rejected" || (value.rejectionReason || "").trim().length >= 3);
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const admin = await getAdminSession(); if (!admin) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin("partners");
+  if (auth.error) return auth.error;
+  const admin = auth.session;
   const { id } = await context.params; if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã sản phẩm không hợp lệ." }, { status: 400 });
   const parsed = schema.safeParse(await request.json().catch(() => null)); if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Trạng thái kiểm duyệt không hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();

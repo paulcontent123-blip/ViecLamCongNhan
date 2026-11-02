@@ -4,6 +4,7 @@ import { APPLICATION_STATUSES, type ApplicationStatus } from "@/lib/application-
 import { ACCOUNT_TIERS, isPaidAccountTier } from "@/lib/account-tiers";
 import { activateCampaignFromOrder } from "@/lib/employer";
 import { hashPassword } from "@/lib/auth";
+import { type AdminRole } from "@/lib/admin-roles";
 import { slugify } from "@/lib/slug";
 import { isArticleCategory, type ArticleCategory } from "@/lib/article-categories";
 import { htmlToPlainText, sanitizeArticleHtml } from "@/lib/sanitize-html";
@@ -699,6 +700,7 @@ export interface AdminUserRow {
   phone: string | null;
   full_name: string;
   role: string;
+  admin_role: AdminRole | null;
   status: "active" | "deleted";
   created_at: string;
 }
@@ -715,6 +717,8 @@ export interface AdminUserInput {
   email?: string;
   phone?: string;
   role: AdminUserRole;
+  /** Cấp quyền khi vai trò là Admin; bỏ trống khi tạo thì mặc định editor, khi sửa thì giữ cấp hiện có. */
+  adminRole?: AdminRole;
   password?: string;
 }
 
@@ -728,7 +732,7 @@ export type AdminUserMutationResult =
   | { ok: true; user: AdminUserRow }
   | AdminUserMutationFailure;
 
-const ADMIN_USER_SELECT = "id, email, phone, full_name, role, status, created_at";
+const ADMIN_USER_SELECT = "id, email, phone, full_name, role, admin_role, status, created_at";
 
 function normalizeUserInput(input: AdminUserInput) {
   return {
@@ -766,6 +770,18 @@ function validateAdminUserInput(input: AdminUserInput): AdminUserMutationFailure
   return null;
 }
 
+/** Số Superadmin đang hoạt động ngoài tài khoản này; null khi không đọc được. Dùng để không bao giờ để hệ thống không còn Superadmin. */
+async function countOtherActiveSuperadmins(supabase: ReturnType<typeof createSupabaseAdminClient>, excludeUserId: string): Promise<number | null> {
+  const { count, error } = await supabase
+    .from("users")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "admin")
+    .eq("status", "active")
+    .eq("admin_role", "superadmin")
+    .neq("id", excludeUserId);
+  return error ? null : count ?? 0;
+}
+
 export async function getAdminUsers(filters: { role?: string } = {}): Promise<AdminUserRow[]> {
   const supabase = createSupabaseAdminClient();
   let query = supabase
@@ -788,7 +804,7 @@ export async function createAdminUser(input: AdminUserInput): Promise<AdminUserM
   const passwordHash = input.password?.trim() ? await hashPassword(input.password.trim()) : null;
   const { data, error } = await supabase
     .from("users")
-    .insert({ ...normalized, password_hash: passwordHash, status: "active" })
+    .insert({ ...normalized, admin_role: normalized.role === "admin" ? input.adminRole ?? "editor" : null, password_hash: passwordHash, status: "active" })
     .select(ADMIN_USER_SELECT)
     .single();
 
@@ -809,7 +825,7 @@ export async function updateAdminUser(userId: string, input: AdminUserInput): Pr
   // bỏ qua lỗi "bắt buộc mật khẩu" ở đây nếu tài khoản đã có hash.
   const { data: current, error: currentError } = await supabase
     .from("users")
-    .select("id, email, phone, role, password_hash, status")
+    .select("id, email, phone, role, admin_role, password_hash, status")
     .eq("id", userId)
     .maybeSingle();
   if (currentError) return { ok: false, error: "Không đọc được người dùng.", status: 500 };
@@ -845,6 +861,13 @@ export async function updateAdminUser(userId: string, input: AdminUserInput): Pr
     }
   }
 
+  const nextAdminRole: AdminRole | null = input.role === "admin" ? input.adminRole ?? (current.admin_role as AdminRole | null) ?? "editor" : null;
+  if (current.role === "admin" && current.admin_role === "superadmin" && nextAdminRole !== "superadmin") {
+    const others = await countOtherActiveSuperadmins(supabase, userId);
+    if (others === null) return { ok: false, error: "Không kiểm tra được số lượng Superadmin.", status: 500 };
+    if (others < 1) return { ok: false, error: "Không thể hạ quyền Superadmin cuối cùng.", status: 409 };
+  }
+
   const { data: linkedEmployer, error: employerError } = await supabase
     .from("employers")
     .select("id")
@@ -859,7 +882,7 @@ export async function updateAdminUser(userId: string, input: AdminUserInput): Pr
     };
   }
 
-  const updatePayload: Record<string, string | boolean | null> = { ...normalized };
+  const updatePayload: Record<string, string | boolean | null> = { ...normalized, admin_role: nextAdminRole };
   if (input.password?.trim()) updatePayload.password_hash = await hashPassword(input.password.trim());
 
   const { data, error } = await supabase
@@ -881,7 +904,7 @@ export async function softDeleteAdminUser(userId: string): Promise<AdminUserMuta
   const supabase = createSupabaseAdminClient();
   const { data: current, error: currentError } = await supabase
     .from("users")
-    .select("id, role, status")
+    .select("id, role, admin_role, status")
     .eq("id", userId)
     .maybeSingle();
   if (currentError) return { ok: false, error: "Không đọc được người dùng.", status: 500 };
@@ -900,6 +923,11 @@ export async function softDeleteAdminUser(userId: string): Promise<AdminUserMuta
     if (countError) return { ok: false, error: "Không kiểm tra được số lượng Admin.", status: 500 };
     if ((count ?? 0) <= 1) {
       return { ok: false, error: "Không thể xóa Admin cuối cùng.", status: 409 };
+    }
+    if (current.admin_role === "superadmin") {
+      const others = await countOtherActiveSuperadmins(supabase, userId);
+      if (others === null) return { ok: false, error: "Không kiểm tra được số lượng Superadmin.", status: 500 };
+      if (others < 1) return { ok: false, error: "Không thể xóa Superadmin cuối cùng.", status: 409 };
     }
   }
 

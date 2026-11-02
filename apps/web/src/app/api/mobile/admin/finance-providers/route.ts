@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 
 type ProviderRow = { id: string; provider_name: string; provider_type: string; contact_name: string; contact_phone: string; province_code: string | null; tax_code: string | null; license_number: string | null; license_evidence_url: string | null; is_verified: boolean; contact_view_limit: number; account_type: string; account_tier_expires_at: string | null; created_at: string; users: { email: string } | Array<{ email: string }> };
 export async function GET(request: NextRequest) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin("partners"); if (auth.error) return auth.error; }
   let paging; try { paging = parseEmployerListParams(request.nextUrl.searchParams, []); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Tham số phân trang không hợp lệ." }, { status: 400 }); }
   const params = request.nextUrl.searchParams; const verified = params.get("verified");
   if (verified !== null && verified !== "true" && verified !== "false") return NextResponse.json({ error: "Giá trị lọc xác minh không hợp lệ." }, { status: 400 });

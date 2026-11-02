@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 const schema = z.object({ verified: z.boolean().optional(), contactViewLimit: z.number().int().min(0).max(100000).optional() }).refine(value => value.verified !== undefined || value.contactViewLimit !== undefined);
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  const auth = await requireAdmin("partners"); if (auth.error) return auth.error;
   const { id } = await context.params; if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã đối tác không hợp lệ." }, { status: 400 });
   const parsed = schema.safeParse(await request.json().catch(() => null)); if (!parsed.success) return NextResponse.json({ error: "Thông tin cập nhật không hợp lệ." }, { status: 400 });
   const supabase = createSupabaseAdminClient();
@@ -44,5 +45,6 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   }
   if (expectedUpdatedAt && !data) return NextResponse.json({ error: "Hồ sơ đối tác vừa thay đổi. Tải lại danh sách rồi kiểm tra lại trước khi xác minh." }, { status: 409 });
   if (!data) return NextResponse.json({ error: "Không tìm thấy đối tác tài chính." }, { status: 404 });
+  await logAdminAction(auth.session, "partner.verify", { type: "finance_provider", id: String(data.id) }, { isVerified: data.is_verified });
   return NextResponse.json({ ok: true, provider: data }, { headers: { "Cache-Control": "private, no-store" } });
 }

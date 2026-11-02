@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 type ProviderRow = { id: string; provider_name: string; provider_type: string; contact_name: string; contact_phone: string; province_code: string | null; address: string | null; tax_code: string | null; license_number: string | null; license_evidence_url: string | null; is_verified: boolean; contact_view_limit: number; created_at: string; updated_at: string; users: { email: string } | Array<{ email: string }> };
 export async function GET(request: NextRequest) {
-  if (!await getAdminSession()) return NextResponse.json({ error: "Vui lòng đăng nhập Admin." }, { status: 401 });
+  { const auth = await requireAdmin("partners"); if (auth.error) return auth.error; }
   let paging; try { paging = parseEmployerListParams(request.nextUrl.searchParams, []); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Tham số danh sách không hợp lệ." }, { status: 400 }); }
   const params = request.nextUrl.searchParams; const verified = params.get("verified");
   if (verified !== null && verified !== "true" && verified !== "false") return NextResponse.json({ error: "Giá trị lọc xác minh không hợp lệ." }, { status: 400 });

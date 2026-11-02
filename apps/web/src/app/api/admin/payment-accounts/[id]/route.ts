@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
 import { activatePaymentAccount, deletePaymentAccount, updatePaymentAccount } from "@/lib/admin-payment";
 import { paymentAccountSchema } from "@/lib/payment-schemas";
 
@@ -8,8 +9,9 @@ import { paymentAccountSchema } from "@/lib/payment-schemas";
 const bodySchema = z.union([z.object({ activate: z.literal(true) }), paymentAccountSchema]);
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  const auth = await requireAdmin("payments");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
@@ -20,14 +22,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const result =
     "activate" in parsed.data ? await activatePaymentAccount(id) : await updatePaymentAccount(id, parsed.data);
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: 404 });
+  await logAdminAction(session, "activate" in parsed.data ? "payment_account.activate" : "payment_account.update", { type: "payment_account", id });
   return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  const auth = await requireAdmin("payments");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const { id } = await params;
   await deletePaymentAccount(id);
+  await logAdminAction(session, "payment_account.delete", { type: "payment_account", id });
   return NextResponse.json({ ok: true });
 }

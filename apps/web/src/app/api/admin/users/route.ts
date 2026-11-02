@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
+import { logAdminAction } from "@/lib/admin-audit";
+import { ADMIN_ROLES } from "@/lib/admin-roles";
 import { createAdminUser, isAdminUserRole } from "@/lib/admin";
 
 const bodySchema = z.object({
@@ -8,12 +10,14 @@ const bodySchema = z.object({
   email: z.string().trim().email("Email không hợp lệ.").optional().or(z.literal("")),
   phone: z.string().trim().min(9, "Số điện thoại không hợp lệ.").optional().or(z.literal("")),
   role: z.string().refine(isAdminUserRole, "Vai trò không hợp lệ."),
+  adminRole: z.enum(ADMIN_ROLES).optional(),
   password: z.string().min(8, "Mật khẩu tối thiểu 8 ký tự.").optional().or(z.literal("")),
 });
 
 export async function POST(request: NextRequest) {
-  const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
+  const auth = await requireAdmin("admin_users");
+  if (auth.error) return auth.error;
+  const session = auth.session;
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
@@ -22,5 +26,6 @@ export async function POST(request: NextRequest) {
 
   const result = await createAdminUser(parsed.data);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
+  await logAdminAction(session, "user.create", { type: "user", id: result.user.id }, { role: result.user.role, adminRole: result.user.admin_role });
   return NextResponse.json({ ok: true, user: result.user }, { status: 201 });
 }

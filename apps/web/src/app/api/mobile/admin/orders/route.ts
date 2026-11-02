@@ -5,7 +5,7 @@ import {
   getAdminOrderStats,
   type AdminOrderStatus,
 } from "@/lib/admin";
-import { getAdminSession } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 
 const headers = { "Cache-Control": "private, no-store" };
@@ -14,8 +14,8 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getAdminSession();
-    if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401, headers });
+    const auth = await requireAdmin("payments");
+    if (auth.error) return auth.error;
 
     const searchParams = request.nextUrl.searchParams;
     const { page, pageSize, offset, status } = parseEmployerListParams(searchParams, statuses);
