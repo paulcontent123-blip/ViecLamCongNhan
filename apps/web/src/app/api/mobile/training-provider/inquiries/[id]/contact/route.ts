@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { getTrainingProviderSession } from "@/lib/training-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { inquiryForwardedToProvider, notForwardedResponse } from "@/lib/worker-inquiry-forwarding";
 export async function POST(_request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getTrainingProviderSession();
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const { id } = await context.params;
+  const forwarded = await inquiryForwardedToProvider("vocational_inquiries", id, session.providerId);
+  if (forwarded !== "yes") return notForwardedResponse(forwarded);
   const now = new Date();
   const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
   const { data, error } = await createSupabaseAdminClient().rpc("view_vocational_inquiry_contact", { p_provider_id: session.providerId, p_inquiry_id: id, p_period_start: periodStart });

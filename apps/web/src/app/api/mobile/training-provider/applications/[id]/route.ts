@@ -15,7 +15,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   if (!parsed.success) return NextResponse.json({ error: "Trạng thái hồ sơ không hợp lệ." }, { status: 400 });
   const { data, error } = await createSupabaseAdminClient().from("vocational_applications")
     .update({ status: parsed.data.status, updated_at: new Date().toISOString() })
-    .eq("id", id).eq("provider_id", session.providerId)
+    .eq("id", id).eq("provider_id", session.providerId).eq("routed_to", "provider")
     .select("id,status,updated_at").maybeSingle();
   if (error) return NextResponse.json({ error: "Chưa cập nhật được trạng thái hồ sơ." }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Không tìm thấy hồ sơ thuộc đơn vị này." }, { status: 404 });

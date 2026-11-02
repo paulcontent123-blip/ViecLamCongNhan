@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   if (id && !/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã yêu cầu không hợp lệ." }, { status: 400 });
   let query = createSupabaseAdminClient().from("insurance_inquiries")
     .select("id,product_id,full_name,message,status,contact_consent,created_at,insurance_products(title)", { count: "exact" })
-    .eq("provider_id", session.providerId).order("created_at", { ascending: false }).order("id", { ascending: false });
+    .eq("provider_id", session.providerId).eq("routed_to", "provider").order("created_at", { ascending: false }).order("id", { ascending: false });
   if (id) query = query.eq("id", id); if (paging.status) query = query.eq("status", paging.status);
   const q = (params.get("q") || "").trim().slice(0, 100).replace(/[%,._(),]/g, " ");
   if (q) query = query.or(`full_name.ilike.%${q}%,message.ilike.%${q}%`);

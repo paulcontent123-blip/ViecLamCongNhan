@@ -61,6 +61,7 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
           label: "Nhà tuyển dụng",
           badge: counts.unverifiedEmployers || undefined,
         },
+        { href: ROUTES.adminWorkerInquiries, icon: "🙋", label: "Yêu cầu dịch vụ công nhân" },
         { href: ROUTES.adminBlast, icon: "📲", label: "Blast campaigns" },
       ],
     },

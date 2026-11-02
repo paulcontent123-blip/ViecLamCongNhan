@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { getFinanceProviderSession } from "@/lib/finance-provider-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { inquiryForwardedToProvider, notForwardedResponse } from "@/lib/worker-inquiry-forwarding";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 export async function POST(_request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getFinanceProviderSession(); if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const { id } = await context.params; if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã yêu cầu không hợp lệ." }, { status: 400 });
+  const forwarded = await inquiryForwardedToProvider("finance_inquiries", id, session.providerId);
+  if (forwarded !== "yes") return notForwardedResponse(forwarded);
   const now = new Date(); const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString().slice(0, 10);
   const { data, error } = await createSupabaseAdminClient().rpc("view_finance_inquiry_contact", { p_provider_id: session.providerId, p_inquiry_id: id, p_period_start: periodStart });
   if (error) {

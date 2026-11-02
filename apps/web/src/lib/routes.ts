@@ -20,6 +20,7 @@ export const ROUTES = {
  adminQA: "/admin/hoi-dap",
   adminServicePackages: "/admin/dich-vu-tron-goi",
  adminServiceInquiries: "/admin/tu-van",
+  adminWorkerInquiries: "/admin/yeu-cau-cong-nhan",
   adminApplications: "/admin/ung-tuyen",
   adminCandidates: "/admin/ung-vien",
   adminEmployers: "/admin/nha-tuyen-dung",

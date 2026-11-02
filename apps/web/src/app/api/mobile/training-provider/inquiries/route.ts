@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   if (id && !/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "Mã yêu cầu không hợp lệ." }, { status: 400 });
   let query = createSupabaseAdminClient().from("vocational_inquiries")
     .select("id,course_id,full_name,status,message,created_at,vocational_courses(title)", { count: "exact" })
-    .eq("provider_id", session.providerId).order("created_at", { ascending: false }).order("id", { ascending: false });
+    .eq("provider_id", session.providerId).eq("routed_to", "provider").order("created_at", { ascending: false }).order("id", { ascending: false });
   if (id) query = query.eq("id", id);
   if (status) query = query.eq("status", status);
   const q = (params.get("q") || "").trim().slice(0, 100).replace(/[%,._(),]/g, " ");

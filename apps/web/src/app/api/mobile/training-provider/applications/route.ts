@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
   let query = supabase.from("vocational_applications")
     .select("id,course_id,full_name,status,message,created_at,updated_at,vocational_courses(title)", { count: "exact" })
     .eq("provider_id", session.providerId)
+    .eq("routed_to", "provider")
     .order("created_at", { ascending: false })
     .order("id", { ascending: false });
   if (id) query = query.eq("id", id);
