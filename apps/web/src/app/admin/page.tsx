@@ -63,13 +63,15 @@ export default async function AdminDashboardPage() {
               <span>🏢 Nhà tuyển dụng chưa xác minh</span>
               <strong className="text-brand-orange">{stats.unverifiedEmployers}</strong>
             </Link>
-            <Link
-              href={ROUTES.adminOrders}
-              className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-[12.5px] font-semibold text-brand-navy transition hover:border-emerald-300"
-            >
-              <span>💳 Đơn hàng chờ xác nhận</span>
-              <strong className="text-emerald-600">{stats.pendingOrdersCount}</strong>
-            </Link>
+            {canSeeRevenue && (
+              <Link
+                href={ROUTES.adminOrders}
+                className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-[12.5px] font-semibold text-brand-navy transition hover:border-emerald-300"
+              >
+                <span>💳 Đơn hàng chờ xác nhận</span>
+                <strong className="text-emerald-600">{stats.pendingOrdersCount}</strong>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -94,12 +96,14 @@ export default async function AdminDashboardPage() {
             >
               📨 Xem đơn ứng tuyển ({stats.totalApplications.toLocaleString("vi-VN")})
             </Link>
-            <Link
-              href={ROUTES.adminOrders}
-              className="rounded-lg bg-[#f6f7f9] px-3 py-2.5 text-left text-[12.5px] font-bold text-brand-navy transition hover:bg-black/5"
-            >
-              💳 Xử lý đơn hàng chờ xác nhận ({stats.pendingOrdersCount})
-            </Link>
+            {canSeeRevenue && (
+              <Link
+                href={ROUTES.adminOrders}
+                className="rounded-lg bg-[#f6f7f9] px-3 py-2.5 text-left text-[12.5px] font-bold text-brand-navy transition hover:bg-black/5"
+              >
+                💳 Xử lý đơn hàng chờ xác nhận ({stats.pendingOrdersCount})
+              </Link>
+            )}
           </div>
         </div>
       </div>
