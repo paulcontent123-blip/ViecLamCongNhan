@@ -214,7 +214,9 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
                       <button
                         type="button"
                         onClick={() => openEdit(user)}
-                        className="rounded-lg border border-black/10 px-2.5 py-1.5 text-[11.5px] font-bold text-brand-navy/65 transition hover:border-brand-orange hover:text-brand-orange"
+                        disabled={user.status === "deleted"}
+                        title={user.status === "deleted" ? "Tài khoản đã xóa không thể sửa" : undefined}
+                        className="rounded-lg border border-black/10 px-2.5 py-1.5 text-[11.5px] font-bold text-brand-navy/65 transition hover:border-brand-orange hover:text-brand-orange disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-black/10 disabled:hover:text-brand-navy/65"
                       >
                         Sửa
                       </button>

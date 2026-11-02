@@ -5,6 +5,7 @@ import { ACCOUNT_TIERS, isPaidAccountTier } from "@/lib/account-tiers";
 import { activateCampaignFromOrder } from "@/lib/employer";
 import { hashPassword } from "@/lib/auth";
 import { type AdminRole } from "@/lib/admin-roles";
+import { mutateAdminAccount } from "@/lib/admin-account-mutations";
 import { slugify } from "@/lib/slug";
 import { isArticleCategory, type ArticleCategory } from "@/lib/article-categories";
 import { htmlToPlainText, sanitizeArticleHtml } from "@/lib/sanitize-html";
@@ -725,7 +726,7 @@ export interface AdminUserInput {
 type AdminUserMutationFailure = {
   ok: false;
   error: string;
-  status: 400 | 404 | 409 | 500;
+  status: 400 | 403 | 404 | 409 | 500;
 };
 
 export type AdminUserMutationResult =
@@ -795,29 +796,17 @@ export async function getAdminUsers(filters: { role?: string } = {}): Promise<Ad
   return (data ?? []) as AdminUserRow[];
 }
 
-export async function createAdminUser(input: AdminUserInput): Promise<AdminUserMutationResult> {
+export async function createAdminUser(input: AdminUserInput, actorId: string): Promise<AdminUserMutationResult> {
   const validationError = validateAdminUserInput(input);
   if (validationError) return validationError;
 
-  const supabase = createSupabaseAdminClient();
   const normalized = normalizeUserInput(input);
   const passwordHash = input.password?.trim() ? await hashPassword(input.password.trim()) : null;
-  const { data, error } = await supabase
-    .from("users")
-    .insert({ ...normalized, admin_role: normalized.role === "admin" ? input.adminRole ?? "editor" : null, password_hash: passwordHash, status: "active" })
-    .select(ADMIN_USER_SELECT)
-    .single();
-
-  if (error || !data) {
-    if (error?.code === "23505") {
-      return { ok: false, error: "Email hoặc số điện thoại đã được sử dụng.", status: 409 };
-    }
-    return { ok: false, error: "Không tạo được người dùng, vui lòng thử lại.", status: 500 };
-  }
-  return { ok: true, user: data as AdminUserRow };
+  const result = await mutateAdminAccount(actorId, "create", null, { ...normalized, admin_role: normalized.role === "admin" ? input.adminRole ?? "editor" : null, password_hash: passwordHash });
+  return result.ok ? { ok: true, user: result.user as unknown as AdminUserRow } : result;
 }
 
-export async function updateAdminUser(userId: string, input: AdminUserInput): Promise<AdminUserMutationResult> {
+export async function updateAdminUser(userId: string, input: AdminUserInput, actorId: string): Promise<AdminUserMutationResult> {
   const supabase = createSupabaseAdminClient();
   const validationError = validateAdminUserInput(input);
 
@@ -825,7 +814,7 @@ export async function updateAdminUser(userId: string, input: AdminUserInput): Pr
   // bỏ qua lỗi "bắt buộc mật khẩu" ở đây nếu tài khoản đã có hash.
   const { data: current, error: currentError } = await supabase
     .from("users")
-    .select("id, email, phone, role, admin_role, password_hash, status")
+    .select("id, full_name, email, phone, role, admin_role, password_hash, status")
     .eq("id", userId)
     .maybeSingle();
   if (currentError) return { ok: false, error: "Không đọc được người dùng.", status: 500 };
@@ -885,22 +874,12 @@ export async function updateAdminUser(userId: string, input: AdminUserInput): Pr
   const updatePayload: Record<string, string | boolean | null> = { ...normalized, admin_role: nextAdminRole };
   if (input.password?.trim()) updatePayload.password_hash = await hashPassword(input.password.trim());
 
-  const { data, error } = await supabase
-    .from("users")
-    .update(updatePayload)
-    .eq("id", userId)
-    .select(ADMIN_USER_SELECT)
-    .maybeSingle();
-  if (error || !data) {
-    if (error?.code === "23505") {
-      return { ok: false, error: "Email hoặc số điện thoại đã được sử dụng.", status: 409 };
-    }
-    return { ok: false, error: "Không cập nhật được người dùng, vui lòng thử lại.", status: 500 };
-  }
-  return { ok: true, user: data as AdminUserRow };
+  const expected = { full_name: current.full_name, email: current.email, phone: current.phone, role: current.role, admin_role: current.admin_role, status: current.status };
+  const result = await mutateAdminAccount(actorId, "update", userId, updatePayload, expected);
+  return result.ok ? { ok: true, user: result.user as unknown as AdminUserRow } : result;
 }
 
-export async function softDeleteAdminUser(userId: string): Promise<AdminUserMutationFailure | { ok: true }> {
+export async function softDeleteAdminUser(userId: string, actorId: string): Promise<AdminUserMutationFailure | { ok: true }> {
   const supabase = createSupabaseAdminClient();
   const { data: current, error: currentError } = await supabase
     .from("users")
@@ -931,15 +910,8 @@ export async function softDeleteAdminUser(userId: string): Promise<AdminUserMuta
     }
   }
 
-  const { data, error } = await supabase
-    .from("users")
-    .update({ status: "deleted", password_hash: null })
-    .eq("id", userId)
-    .eq("status", "active")
-    .select("id")
-    .maybeSingle();
-  if (error || !data) return { ok: false, error: "Không cập nhật được trạng thái xóa, vui lòng thử lại.", status: 500 };
-  return { ok: true };
+  const result = await mutateAdminAccount(actorId, "delete", userId, {});
+  return result.ok ? { ok: true } : result;
 }
 
 // ─────────────────────────── Sidebar ───────────────────────────

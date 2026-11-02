@@ -34,7 +34,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Bạn không thể tự đổi cấp quyền của tài khoản đang đăng nhập." }, { status: 409 });
   }
 
-  const result = await updateAdminUser(id, parsed.data);
+  const result = await updateAdminUser(id, parsed.data, session.userId);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
   await logAdminAction(session, "user.update", { type: "user", id }, { role: result.user.role, adminRole: result.user.admin_role, passwordChanged: Boolean(parsed.data.password) });
 
@@ -66,7 +66,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
     return NextResponse.json({ error: "Bạn không thể xóa tài khoản Admin đang đăng nhập." }, { status: 409 });
   }
 
-  const result = await softDeleteAdminUser(id);
+  const result = await softDeleteAdminUser(id, session.userId);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
   await logAdminAction(session, "user.delete", { type: "user", id });
   return NextResponse.json({ ok: true });

@@ -7,5 +7,5 @@ import { adminCapabilities } from "@/lib/admin-roles";
 export async function GET() {
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ loggedIn: false });
-  return NextResponse.json({ loggedIn: true, fullName: session.fullName, adminRole: session.adminRole, capabilities: adminCapabilities(session.adminRole) });
+  return NextResponse.json({ loggedIn: true, userId: session.userId, fullName: session.fullName, adminRole: session.adminRole, capabilities: adminCapabilities(session.adminRole) });
 }

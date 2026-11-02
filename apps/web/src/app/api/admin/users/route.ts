@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Dữ liệu không hợp lệ." }, { status: 400 });
   }
 
-  const result = await createAdminUser(parsed.data);
+  const result = await createAdminUser(parsed.data, session.userId);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
   await logAdminAction(session, "user.create", { type: "user", id: result.user.id }, { role: result.user.role, adminRole: result.user.admin_role });
   return NextResponse.json({ ok: true, user: result.user }, { status: 201 });

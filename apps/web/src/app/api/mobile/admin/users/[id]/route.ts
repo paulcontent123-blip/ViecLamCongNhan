@@ -3,6 +3,10 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { MOBILE_ACCOUNT_FIELDS, publicAdminAccount, validAdminAccountId } from "@/lib/mobile-admin-users";
+import { z } from "zod";
+import { mutateAdminAccount } from "@/lib/admin-account-mutations";
+import { logAdminAction } from "@/lib/admin-audit";
+import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_MAX_AGE, createAdminSessionToken } from "@/lib/admin-session";
 
 const headers = { "Cache-Control": "private, no-store" };
 
@@ -20,4 +24,35 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/users/[id]", operation: "read_account", error });
     return NextResponse.json({ error: "Chưa tải được thông tin tài khoản.", requestId }, { status: 503, headers: { ...headers, "X-Request-Id": requestId } });
   }
+}
+
+const updateSchema = z.object({
+  fullName: z.string().trim().min(2).max(100),
+  email: z.string().trim().email().max(254).nullable(),
+  adminRole: z.enum(["editor", "superadmin"]).nullable(),
+  expected: z.object({ full_name: z.string(), email: z.string().nullable(), phone: z.string().nullable(), role: z.string(), admin_role: z.enum(["editor", "superadmin"]).nullable(), status: z.enum(["active", "deleted"]) }).strict(),
+}).strict();
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAdmin("admin_users");
+  if (auth.error) return auth.error;
+  const { id } = await params;
+  if (!validAdminAccountId(id)) return NextResponse.json({ error: "Mã tài khoản không hợp lệ." }, { status: 400, headers });
+  const parsed = updateSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: "Thông tin tài khoản chưa hợp lệ." }, { status: 400, headers });
+  const { expected, fullName, email, adminRole } = parsed.data;
+  if ((expected.role === "admin" && (!email || !adminRole)) || (expected.role !== "admin" && (email !== expected.email || adminRole !== null))) {
+    return NextResponse.json({ error: "Không thể đổi thông tin liên hệ hoặc vai trò của tài khoản này tại đây." }, { status: 400, headers });
+  }
+  const result = await mutateAdminAccount(auth.session.userId, "update", id, {
+    full_name: fullName, email: expected.role === "admin" ? email?.toLowerCase() ?? null : expected.email, phone: expected.phone, role: expected.role, admin_role: adminRole,
+  }, expected);
+  if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status, headers });
+  await logAdminAction(auth.session, "user.update", { type: "user", id }, { role: result.user.role, adminRole: result.user.admin_role, previousAdminRole: expected.admin_role });
+  const response = NextResponse.json({ ok: true, user: publicAdminAccount(result.user) }, { headers });
+  if (id === auth.session.userId) {
+    const token = await createAdminSessionToken({ userId: id, email: String(result.user.email || ""), fullName: String(result.user.full_name || "") });
+    response.cookies.set(ADMIN_SESSION_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: ADMIN_SESSION_MAX_AGE });
+  }
+  return response;
 }
