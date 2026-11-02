@@ -98,6 +98,47 @@ test('csv has a BOM, only the agreed columns, spaced phone numbers and no formul
   assert.equal(lines.length, 4);
 });
 
+// ── Gợi ý tên đối tác nhận ──
+function partnerClient(tables) {
+  const log = [];
+  return {
+    log,
+    from(table) {
+      const query = {};
+      query.select = column => { log.push([table, 'select', column]); return query; };
+      query.order = (column, options) => { log.push([table, 'order', column, options && options.ascending]); return query; };
+      query.limit = count => { log.push([table, 'limit', count]); return query; };
+      query.then = (resolve, reject) => Promise.resolve(tables[table] ?? { data: [], error: null }).then(resolve, reject);
+      return query;
+    },
+  };
+}
+
+test('partner suggestions cover every partner type, merge duplicates and sort in Vietnamese order', async () => {
+  const client = partnerClient({
+    training_providers: { data: [{ provider_name: 'Trung tâm Nghề Việt' }], error: null },
+    rental_providers: { data: [{ provider_name: 'Nhà trọ An Cư' }], error: null },
+    insurance_providers: { data: [{ provider_name: 'Manulife' }, { provider_name: ' ' }], error: null },
+    finance_providers: { data: [{ provider_name: 'manulife' }, { provider_name: 'Ngân hàng ABC' }], error: null },
+    health_providers: { data: [{ provider_name: 'Phòng khám Ánh Dương' }], error: null },
+    revenue_partners: { data: [{ partner_name: 'Ví Pay' }], error: null },
+  });
+  const options = plain(await lead.loadLeadPartnerOptions(client));
+  assert.deepEqual(options.map(option => option.name), ['Manulife', 'Ngân hàng ABC', 'Nhà trọ An Cư', 'Phòng khám Ánh Dương', 'Trung tâm Nghề Việt', 'Ví Pay']);
+  assert.equal(options.find(option => option.name === 'Manulife').label, 'Bảo hiểm'); // giữ bản đầu tiên khi trùng tên
+  assert.deepEqual([...new Set(client.log.map(entry => entry[0]))].sort(), ['finance_providers', 'health_providers', 'insurance_providers', 'rental_providers', 'revenue_partners', 'training_providers']);
+  assert.ok(client.log.filter(entry => entry[1] === 'limit').every(entry => entry[2] === 300));
+});
+
+test('partner suggestions skip a type that fails to load instead of breaking the page', async () => {
+  const client = partnerClient({
+    training_providers: { data: null, error: { message: 'boom' } },
+    insurance_providers: { data: [{ provider_name: 'Bảo Việt' }], error: null },
+  });
+  const options = plain(await lead.loadLeadPartnerOptions(client));
+  assert.deepEqual(options, [{ name: 'Bảo Việt', label: 'Bảo hiểm' }]);
+});
+
 // ── Route xuất ──
 function exportRoute({ auth = 'ok', result = { data: [finance], error: null } } = {}) {
   const log = [];

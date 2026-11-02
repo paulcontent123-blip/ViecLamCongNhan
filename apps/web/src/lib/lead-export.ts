@@ -56,6 +56,42 @@ export function leadExportQuery(
   return query;
 }
 
+/** Nguồn gợi ý cho ô "Đối tác nhận": đủ 5 loại đối tác có tài khoản và đối tác doanh thu. */
+export const LEAD_PARTNER_SOURCES = [
+  { table: "training_providers", column: "provider_name", label: "Học nghề" },
+  { table: "rental_providers", column: "provider_name", label: "Thuê trọ" },
+  { table: "insurance_providers", column: "provider_name", label: "Bảo hiểm" },
+  { table: "finance_providers", column: "provider_name", label: "Tài chính" },
+  { table: "health_providers", column: "provider_name", label: "Y tế" },
+  { table: "revenue_partners", column: "partner_name", label: "Đối tác doanh thu" },
+] as const;
+
+export interface LeadPartnerOption { name: string; label: string }
+
+/**
+ * Tên các đối tác để gợi ý khi nhập "Đối tác nhận" (tối đa 300 mỗi loại). Gợi ý thôi: Admin vẫn gõ tên đơn vị khác.
+ * Một loại đọc lỗi thì bỏ qua loại đó, không làm hỏng trang. Trùng tên (không phân biệt hoa thường) giữ bản đầu tiên.
+ */
+export async function loadLeadPartnerOptions(client: SupabaseClient): Promise<LeadPartnerOption[]> {
+  const results = await Promise.all(LEAD_PARTNER_SOURCES.map(async (source) => {
+    const { data, error } = await client.from(source.table).select(source.column).order(source.column, { ascending: true }).limit(300);
+    if (error || !data) return [] as LeadPartnerOption[];
+    return (data as unknown as Record<string, unknown>[])
+      .map((row) => String(row[source.column] ?? "").trim())
+      .filter((name) => name.length >= 2)
+      .map((name) => ({ name, label: source.label }));
+  }));
+  const seen = new Set<string>();
+  const options: LeadPartnerOption[] = [];
+  for (const option of results.flat()) {
+    const key = option.name.toLocaleLowerCase("vi");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    options.push(option);
+  }
+  return options.sort((a, b) => a.name.localeCompare(b.name, "vi"));
+}
+
 export interface LeadRow {
   kind: string;
   id: string;

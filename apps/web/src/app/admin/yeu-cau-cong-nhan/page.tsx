@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/admin-auth";
 import { adminCan } from "@/lib/admin-roles";
-import { FINANCE_CATEGORIES, FINANCE_CATEGORY_LABEL, LEAD_MAX_EXPORT, leadExportQuery, parseLeadExtras } from "@/lib/lead-export";
+import { FINANCE_CATEGORIES, FINANCE_CATEGORY_LABEL, LEAD_MAX_EXPORT, leadExportQuery, loadLeadPartnerOptions, parseLeadExtras } from "@/lib/lead-export";
 import { PROVINCES } from "@/lib/provinces";
 import { ADMIN_PAGE_SIZE } from "@/lib/admin";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -71,6 +71,8 @@ export default async function AdminWorkerInquiriesPage({ searchParams }: { searc
   const total = list.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
   const newCount = pending.count ?? 0;
+
+  const partnerOptions = canExport ? await loadLeadPartnerOptions(supabase) : [];
 
   // Khối xuất CSV (Superadmin): số liên hệ đã đồng ý chia sẻ khớp bộ lọc kind/status/q của trang và nhóm nhu cầu, tỉnh bên dưới.
   let exportError: string | null = null;
@@ -153,7 +155,7 @@ export default async function AdminWorkerInquiriesPage({ searchParams }: { searc
             <div className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[12px] font-medium text-red-700">{exportError}</div>
           ) : (
             <div className="mt-3">
-              <WorkerInquiryExport filters={exportFilters} eligible={exportCount} maxExport={LEAD_MAX_EXPORT} />
+              <WorkerInquiryExport filters={exportFilters} eligible={exportCount} maxExport={LEAD_MAX_EXPORT} partnerOptions={partnerOptions} />
             </div>
           )}
         </div>
