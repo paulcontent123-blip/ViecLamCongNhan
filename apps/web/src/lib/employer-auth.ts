@@ -5,7 +5,8 @@ import {
   verifyEmployerSessionToken,
   type EmployerSessionPayload,
 } from "@/lib/employer-session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { readSessionUser } from "@/lib/session-user";
+import { isSessionRevoked } from "@/lib/session-revocation";
 
 /**
  * Đọc + verify phiên NTD từ cookie trong Server Component / Route Handler.
@@ -19,13 +20,9 @@ export async function getEmployerSession(): Promise<EmployerSessionPayload | nul
   if (!session) return null;
 
   // Thu hồi ngay cả phiên JWT cũ khi tài khoản đã được đánh dấu Đã xóa.
-  const supabase = createSupabaseAdminClient();
-  const { data: user } = await supabase
-    .from("users")
-    .select("role, status")
-    .eq("id", session.userId)
-    .maybeSingle();
+  const { data: user } = await readSessionUser(session.userId);
   if (!user || user.role !== "employer" || user.status !== "active") return null;
+  if (isSessionRevoked(session, user.password_changed_at)) return null;
 
   return session;
 }

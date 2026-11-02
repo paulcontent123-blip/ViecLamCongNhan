@@ -15,6 +15,8 @@ export interface CandidateSessionPayload {
   phone: string;
   authMethod?: "otp" | "password";
   phoneVerified?: boolean;
+  /** Thời điểm cấp phiên (giây), dùng để thu hồi phiên khi đổi mật khẩu. */
+  iat?: number;
 }
 
 export async function createCandidateSessionToken(payload: CandidateSessionPayload) {
@@ -31,7 +33,7 @@ export async function verifyCandidateSessionToken(token: string): Promise<Candid
     if (payload.role !== "candidate" || typeof payload.userId !== "string" || typeof payload.phone !== "string") return null;
     const authMethod = payload.authMethod === undefined ? "otp" : payload.authMethod;
     if (authMethod !== "otp" && authMethod !== "password") return null;
-    return { userId: payload.userId, phone: payload.phone, authMethod };
+    return { userId: payload.userId, phone: payload.phone, authMethod, iat: typeof payload.iat === "number" ? payload.iat : undefined };
   } catch {
     return null;
   }

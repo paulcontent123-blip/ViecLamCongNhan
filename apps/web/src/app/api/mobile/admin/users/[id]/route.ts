@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
-import { MOBILE_ACCOUNT_FIELDS, publicAdminAccount, validAdminAccountId } from "@/lib/mobile-admin-users";
+import { MOBILE_ACCOUNT_FIELDS, accountExpectedSchema, publicAdminAccount, validAdminAccountId } from "@/lib/mobile-admin-users";
 import { z } from "zod";
 import { mutateAdminAccount } from "@/lib/admin-account-mutations";
+import { softDeleteAdminUser } from "@/lib/admin";
 import { logAdminAction } from "@/lib/admin-audit";
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_MAX_AGE, createAdminSessionToken } from "@/lib/admin-session";
 
@@ -30,7 +31,7 @@ const updateSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
   email: z.string().trim().email().max(254).nullable(),
   adminRole: z.enum(["editor", "superadmin"]).nullable(),
-  expected: z.object({ full_name: z.string(), email: z.string().nullable(), phone: z.string().nullable(), role: z.string(), admin_role: z.enum(["editor", "superadmin"]).nullable(), status: z.enum(["active", "deleted"]) }).strict(),
+  expected: accountExpectedSchema,
 }).strict();
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -55,4 +56,21 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     response.cookies.set(ADMIN_SESSION_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: ADMIN_SESSION_MAX_AGE });
   }
   return response;
+}
+
+const deleteSchema = z.object({ expected: accountExpectedSchema }).strict();
+
+// Xóa tài khoản: công nhân được dọn dữ liệu đầy đủ; vai trò khác đánh dấu đã xóa. Không xóa chính mình, không xóa Superadmin cuối cùng.
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireAdmin("admin_users");
+  if (auth.error) return auth.error;
+  const { id } = await params;
+  if (!validAdminAccountId(id)) return NextResponse.json({ error: "Mã tài khoản không hợp lệ." }, { status: 400, headers });
+  const parsed = deleteSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: "Thông tin tài khoản chưa hợp lệ." }, { status: 400, headers });
+  const { expected } = parsed.data;
+  const result = await softDeleteAdminUser(id, auth.session.userId, expected);
+  if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status, headers });
+  await logAdminAction(auth.session, "user.delete", { type: "user", id }, { role: expected.role, cleanup: expected.role === "candidate" ? "candidate_full" : "soft" });
+  return NextResponse.json({ ok: true }, { headers });
 }

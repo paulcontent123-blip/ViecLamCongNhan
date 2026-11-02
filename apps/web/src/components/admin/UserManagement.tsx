@@ -128,7 +128,11 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
 
   async function handleDelete(user: AdminUserRow) {
     if (user.id === currentAdminId) return;
-    if (!window.confirm(`Đánh dấu tài khoản "${user.full_name}" là Đã xóa? Tài khoản sẽ không thể đăng nhập và email vẫn được giữ lại.`)) return;
+    const message =
+      user.role === "candidate"
+        ? `Xóa tài khoản công nhân "${user.full_name}"? Hồ sơ, đơn ứng tuyển, tin Chợ, ảnh và thông tin nhận quà sẽ bị xóa, không thể khôi phục; số điện thoại được giải phóng. Chưa xóa được nếu công nhân còn yêu cầu đổi quà đang xử lý.`
+        : `Đánh dấu tài khoản "${user.full_name}" là Đã xóa? Tài khoản sẽ không thể đăng nhập và email vẫn được giữ lại.`;
+    if (!window.confirm(message)) return;
 
     setDeletingId(user.id);
     setError(null);

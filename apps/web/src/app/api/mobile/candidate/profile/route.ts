@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { deleteImageFromCloudinary } from "@/lib/cloudinary";
+import { collectCandidateImageUrls, deleteCloudinaryImages } from "@/lib/candidate-account-cleanup";
 
 const PREFERRED_SHIFTS = ["day", "night", "rotating", "flexible"] as const;
 
@@ -122,14 +122,7 @@ export async function DELETE() {
   if (!session) return NextResponse.json({ error: "Vui lòng đăng nhập lại." }, { status: 401 });
   const supabase = createSupabaseAdminClient();
   // Lấy danh sách ảnh trước khi xóa (hàm SQL xóa luôn các dòng chứa URL) để dọn trên Cloudinary sau đó.
-  const [avatarResult, listingResult] = await Promise.all([
-    supabase.from("candidates").select("avatar_url").eq("user_id", session.userId),
-    supabase.from("secondhand_marketplace_listings").select("photo_urls").eq("seller_user_id", session.userId),
-  ]);
-  const imageUrls = [
-    ...(avatarResult.data ?? []).map(row => row.avatar_url as string | null),
-    ...(listingResult.data ?? []).flatMap(row => (row.photo_urls as string[] | null) ?? []),
-  ].filter((url): url is string => typeof url === "string" && url.length > 0);
+  const imageUrls = await collectCandidateImageUrls(session.userId);
 
   const { data: deleted, error } = await supabase.rpc("delete_candidate_account", { p_user_id: session.userId });
   if (error?.message?.includes("CANDIDATE_HAS_OPEN_REDEMPTIONS")) {
@@ -137,7 +130,7 @@ export async function DELETE() {
   }
   if (error || deleted !== true) return NextResponse.json({ error: "Không xóa được tài khoản." }, { status: 500 });
   // Dọn ảnh là việc phụ: lỗi Cloudinary không làm hỏng việc xóa tài khoản đã hoàn tất.
-  await Promise.allSettled(imageUrls.map(url => deleteImageFromCloudinary(url)));
+  await deleteCloudinaryImages(imageUrls);
   const response = NextResponse.json({ ok: true });
   response.cookies.delete("candidate_session");
   return response;

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken, type AdminSessionPayload } from "@/lib/admin-session";
 import { adminCan, isAdminRole, type AdminCapability, type AdminRole } from "@/lib/admin-roles";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { readSessionUser } from "@/lib/session-user";
+import { isSessionRevoked } from "@/lib/session-revocation";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 import { ROUTES } from "@/lib/routes";
 
@@ -25,11 +27,7 @@ export async function getAdminSession(): Promise<AdminSession | null> {
   // JWT còn hạn nhưng tài khoản có thể đã bị Admin đánh dấu Đã xóa sau khi
   // token được cấp. Kiểm tra lại DB để thu hồi ngay phiên đang tồn tại.
   const supabase = createSupabaseAdminClient();
-  const { data: user, error } = await supabase
-    .from("users")
-    .select("role, status, admin_role")
-    .eq("id", session.userId)
-    .maybeSingle();
+  const { data: user, error } = await readSessionUser(session.userId, "admin_role");
 
   if (error) {
     // 42703: cột admin_role chưa có (web được deploy trước migration phân quyền). Giữ hành vi cũ, coi như
@@ -44,6 +42,8 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     return null;
   }
   if (!user || user.role !== "admin" || user.status !== "active") return null;
+  // Mật khẩu đã bị đổi hoặc đặt lại sau khi phiên này được cấp.
+  if (isSessionRevoked(session, user.password_changed_at)) return null;
   // Tài khoản Admin chưa có cấp quyền (không nên xảy ra nhờ ràng buộc DB) chỉ được quyền thấp nhất.
   const adminRole: AdminRole = isAdminRole(user.admin_role) ? user.admin_role : "editor";
 

@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import { createHmac } from "node:crypto";
 import { CANDIDATE_SESSION_COOKIE, verifyCandidateSessionToken, type CandidateSessionPayload } from "@/lib/candidate-session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { readSessionUser } from "@/lib/session-user";
+import { isSessionRevoked } from "@/lib/session-revocation";
 
 export function normalizeCandidatePhone(value: string): string | null {
   const digits = value.replace(/\D/g, "");
@@ -38,10 +40,9 @@ export async function getCandidateSession(options: { allowUnverifiedPasswordSess
   const token = (await cookies()).get(CANDIDATE_SESSION_COOKIE)?.value;
   const session = token ? await verifyCandidateSessionToken(token) : null;
   if (!session) return null;
-  const { data: user } = await createSupabaseAdminClient()
-    .from("users").select("role,status,is_verified,phone,password_hash")
-    .eq("id", session.userId).maybeSingle();
+  const { data: user } = await readSessionUser(session.userId, "is_verified,phone,password_hash");
   if (!user || user.role !== "candidate" || user.status !== "active" || normalizeCandidatePhone(user.phone || "") !== session.phone) return null;
+  if (isSessionRevoked(session, user.password_changed_at)) return null;
   const phoneVerified = user.is_verified === true;
   if (!phoneVerified && !(options.allowUnverifiedPasswordSession && session.authMethod === "password" && Boolean(user.password_hash))) return null;
   return { ...session, phoneVerified };

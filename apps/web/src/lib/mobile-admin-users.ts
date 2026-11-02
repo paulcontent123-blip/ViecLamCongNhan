@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { z } from "zod";
 
 export const MOBILE_ACCOUNT_ROLES = ["admin", "candidate", "employer", "agency", "training_provider", "rental_provider", "insurance_provider", "finance_provider", "health_provider"] as const;
 export const MOBILE_ACCOUNT_FIELDS = "id,full_name,email,phone,role,admin_role,status,is_verified,created_at";
@@ -21,6 +22,12 @@ export function parseAdminAccountFilters(params: URLSearchParams) {
 }
 
 export function validAdminAccountId(id: string) { return UUID.test(id); }
+
+// Bản tài khoản app đã đọc, gửi kèm thao tác ghi để máy chủ từ chối nếu tài khoản đã đổi (ACCOUNT_CHANGED).
+export const accountExpectedSchema = z.object({
+  full_name: z.string(), email: z.string().nullable(), phone: z.string().nullable(), role: z.string(),
+  admin_role: z.enum(["editor", "superadmin"]).nullable(), status: z.enum(["active", "deleted"]),
+}).strict();
 
 // Chỉ trả thông tin nhận diện; không bao giờ trả hash mật khẩu hay dữ liệu phiên.
 export function publicAdminAccount(row: Record<string, unknown>) {

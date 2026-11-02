@@ -6,6 +6,7 @@ import { activateCampaignFromOrder } from "@/lib/employer";
 import { hashPassword } from "@/lib/auth";
 import { type AdminRole } from "@/lib/admin-roles";
 import { mutateAdminAccount } from "@/lib/admin-account-mutations";
+import { collectCandidateImageUrls, deleteCloudinaryImages } from "@/lib/candidate-account-cleanup";
 import { slugify } from "@/lib/slug";
 import { isArticleCategory, type ArticleCategory } from "@/lib/article-categories";
 import { htmlToPlainText, sanitizeArticleHtml } from "@/lib/sanitize-html";
@@ -879,7 +880,8 @@ export async function updateAdminUser(userId: string, input: AdminUserInput, act
   return result.ok ? { ok: true, user: result.user as unknown as AdminUserRow } : result;
 }
 
-export async function softDeleteAdminUser(userId: string, actorId: string): Promise<AdminUserMutationFailure | { ok: true }> {
+/** Xóa tài khoản: công nhân được dọn dữ liệu đầy đủ (kể cả ảnh Cloudinary) như khi tự xóa; vai trò khác chỉ đánh dấu đã xóa. */
+export async function softDeleteAdminUser(userId: string, actorId: string, expected: Record<string, unknown> | null = null): Promise<AdminUserMutationFailure | { ok: true }> {
   const supabase = createSupabaseAdminClient();
   const { data: current, error: currentError } = await supabase
     .from("users")
@@ -910,8 +912,11 @@ export async function softDeleteAdminUser(userId: string, actorId: string): Prom
     }
   }
 
-  const result = await mutateAdminAccount(actorId, "delete", userId, {});
-  return result.ok ? { ok: true } : result;
+  const images = current.role === "candidate" ? await collectCandidateImageUrls(userId) : [];
+  const result = await mutateAdminAccount(actorId, "delete", userId, {}, expected);
+  if (!result.ok) return result;
+  if (images.length) await deleteCloudinaryImages(images);
+  return { ok: true };
 }
 
 // ─────────────────────────── Sidebar ───────────────────────────
