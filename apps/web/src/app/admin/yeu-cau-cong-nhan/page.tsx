@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/admin-auth";
+import { adminCan } from "@/lib/admin-roles";
+import { FINANCE_CATEGORIES, FINANCE_CATEGORY_LABEL, LEAD_MAX_EXPORT, leadExportQuery, parseLeadExtras } from "@/lib/lead-export";
+import { PROVINCES } from "@/lib/provinces";
 import { ADMIN_PAGE_SIZE } from "@/lib/admin";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { ROUTES } from "@/lib/routes";
@@ -8,6 +11,7 @@ import { WORKER_INQUIRY_KINDS, parseWorkerInquiryFilters, workerInquiryForwardin
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { WorkerInquiryActions } from "@/components/admin/WorkerInquiryActions";
+import { WorkerInquiryExport } from "@/components/admin/WorkerInquiryExport";
 
 // Danh sách đổi ngay sau mỗi thao tác chuyển hoặc đóng.
 export const dynamic = "force-dynamic";
@@ -40,7 +44,8 @@ function toSp(searchParams: Record<string, string | string[] | undefined>): Reco
 }
 
 export default async function AdminWorkerInquiriesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  await requireAdminPage();
+  const session = await requireAdminPage();
+  const canExport = adminCan(session.adminRole, "lead_export");
   const sp = toSp(await searchParams);
   const currentPage = Math.max(1, sp.page ? Number(sp.page) || 1 : 1);
   const canForward = workerInquiryForwardingEnabled();
@@ -66,6 +71,24 @@ export default async function AdminWorkerInquiriesPage({ searchParams }: { searc
   const total = list.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / ADMIN_PAGE_SIZE));
   const newCount = pending.count ?? 0;
+
+  // Khối xuất CSV (Superadmin): số liên hệ đã đồng ý chia sẻ khớp bộ lọc kind/status/q của trang và nhóm nhu cầu, tỉnh bên dưới.
+  let exportError: string | null = null;
+  let exportCount = 0;
+  const exportFilters = { kind: filters.kind, status: filters.status, q: filters.q, category: "", province: "" };
+  if (canExport && !filterError) {
+    try {
+      const extras = parseLeadExtras(new URLSearchParams(sp as Record<string, string>), filters.kind);
+      exportFilters.category = extras.category;
+      exportFilters.province = extras.province;
+      const counted = await leadExportQuery(supabase, filters, extras, { head: true });
+      if (counted.error) exportError = "Chưa đếm được số liên hệ có thể xuất.";
+      else exportCount = counted.count ?? 0;
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      exportError = error.message;
+    }
+  }
 
   const pill = (active: boolean) => `rounded-full px-3 py-1.5 text-[12px] font-bold transition ${active ? "bg-brand-orange text-white" : "bg-white text-brand-navy/60 hover:bg-black/5"}`;
   const link = (overrides: Record<string, string | undefined>) => `${ROUTES.adminWorkerInquiries}${buildQuery(sp, overrides)}`;
@@ -97,6 +120,44 @@ export default async function AdminWorkerInquiriesPage({ searchParams }: { searc
       <div className="mb-4 rounded-xl border border-brand-orange/15 bg-gradient-to-br from-brand-orange-light to-transparent px-4 py-3 text-[12.5px] text-brand-navy/60">
         🔒 Yêu cầu do công nhân chủ động gửi cho Admin. Chỉ Admin xem và liên hệ tư vấn; thông tin không được chuyển cho đối tác.
       </div>
+
+      {canExport && (
+        <div className="mb-4 rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+          <div className="text-[14px] font-extrabold text-brand-navy">📤 Xuất liên hệ cho đối tác</div>
+          <p className="mt-1 text-[12px] leading-relaxed text-brand-navy/50">
+            Chỉ xuất liên hệ của công nhân đã tick đồng ý chia sẻ và yêu cầu còn ở Admin, theo bộ lọc loại, trạng thái, tìm kiếm đang chọn
+            cùng nhóm nhu cầu và tỉnh/thành (chỉ Tài chính). Tệp gồm họ tên, số điện thoại, tỉnh/thành, nhu cầu, ngày gửi. Hệ thống không đánh dấu đã giao: hãy tự ghi lại để không gửi trùng.
+          </p>
+          <form method="get" action={ROUTES.adminWorkerInquiries} className="mt-3 flex flex-wrap items-end gap-3">
+            {sp.kind && <input type="hidden" name="kind" value={sp.kind} />}
+            {sp.routed && <input type="hidden" name="routed" value={sp.routed} />}
+            {sp.status && <input type="hidden" name="status" value={sp.status} />}
+            {sp.q && <input type="hidden" name="q" value={sp.q} />}
+            <label className="text-[11.5px] font-semibold text-brand-navy/50">
+              Nhóm nhu cầu (Tài chính)
+              <select name="category" defaultValue={sp.category ?? ""} className="mt-1 block rounded-lg border border-black/10 bg-white px-3 py-2 text-[12.5px] text-brand-navy outline-none focus:border-brand-orange">
+                <option value="">Tất cả</option>
+                {FINANCE_CATEGORIES.map((category) => <option key={category} value={category}>{FINANCE_CATEGORY_LABEL[category]}</option>)}
+              </select>
+            </label>
+            <label className="text-[11.5px] font-semibold text-brand-navy/50">
+              Tỉnh/thành (Tài chính)
+              <select name="province" defaultValue={sp.province ?? ""} className="mt-1 block rounded-lg border border-black/10 bg-white px-3 py-2 text-[12.5px] text-brand-navy outline-none focus:border-brand-orange">
+                <option value="">Tất cả</option>
+                {PROVINCES.map((province) => <option key={province.code} value={province.code}>{province.name}</option>)}
+              </select>
+            </label>
+            <button type="submit" className="rounded-lg border border-brand-orange/30 bg-brand-orange-light px-4 py-2 text-[12.5px] font-bold text-brand-orange transition hover:bg-brand-orange/15">Áp dụng</button>
+          </form>
+          {exportError ? (
+            <div className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[12px] font-medium text-red-700">{exportError}</div>
+          ) : (
+            <div className="mt-3">
+              <WorkerInquiryExport filters={exportFilters} eligible={exportCount} maxExport={LEAD_MAX_EXPORT} />
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="mb-2 flex flex-wrap gap-2">
         {[{ key: "admin", label: "Đang ở Admin" }, { key: "provider", label: "Đã gửi đối tác (trước đây)" }, { key: "all", label: "Tất cả" }].map((tab) => (

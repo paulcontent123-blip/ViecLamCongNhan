@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCandidateSession } from "@/lib/candidate-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { shareConsentColumns } from "@/lib/lead-export";
 
 const schema = z.object({
   courseId: z.string().uuid(),
@@ -9,6 +10,7 @@ const schema = z.object({
   phone: z.string().trim().min(9).max(20),
   email: z.string().trim().email().max(254).optional().or(z.literal("")),
   message: z.string().trim().max(1000).optional(),
+  shareConsent: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -44,6 +46,7 @@ export async function POST(request: NextRequest) {
     phone,
     email: input.email || null,
     message: input.message || null,
+    ...shareConsentColumns(input.shareConsent),
   }).select("id").single();
 
   if (error?.code === "23505") {

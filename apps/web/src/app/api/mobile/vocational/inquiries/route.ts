@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getCandidateSession } from "@/lib/candidate-auth";
+import { shareConsentColumns } from "@/lib/lead-export";
 
-const schema = z.object({ courseId: z.string().uuid(), fullName: z.string().trim().min(2).max(120), phone: z.string().trim().min(9).max(20), email: z.string().trim().email().max(254).optional().or(z.literal("")), message: z.string().trim().max(1000).optional() });
+const schema = z.object({ courseId: z.string().uuid(), fullName: z.string().trim().min(2).max(120), phone: z.string().trim().min(9).max(20), email: z.string().trim().email().max(254).optional().or(z.literal("")), message: z.string().trim().max(1000).optional(), shareConsent: z.boolean().optional() });
 export async function POST(request: NextRequest) {
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Thông tin yêu cầu không hợp lệ." }, { status: 400 });
@@ -18,6 +19,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase.from("vocational_inquiries").insert({
     course_id: course.id, provider_id: course.provider_id, user_id: candidate?.userId || null,
     full_name: input.fullName, phone, email: input.email || null, message: input.message || null,
+    ...shareConsentColumns(input.shareConsent),
   }).select("id").single();
   if (error?.code === "23505") return NextResponse.json({ error: "Số điện thoại này đã gửi yêu cầu cho khóa học." }, { status: 409 });
   if (error || !data) return NextResponse.json({ error: "Chưa gửi được yêu cầu. Vui lòng thử lại." }, { status: 500 });
