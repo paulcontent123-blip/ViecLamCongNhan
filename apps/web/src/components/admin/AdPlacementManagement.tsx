@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { adImageHint, adImageSizeError } from "@/lib/ad-image";
-import { AD_MAX_KCN, adCreateSchema, adToday, type AdPlacement } from "@/lib/ads";
+import { adCreateSchema, adToday, type AdPlacement } from "@/lib/ads";
 
 export interface AdminAdItem {
   id: string;
@@ -26,11 +26,10 @@ export interface KcnOption { id: string; label: string }
 const PLACEMENTS: { value: AdPlacement; label: string }[] = [
   { value: "homepage_banner", label: "Banner trang chủ" },
   { value: "sidebar", label: "Sidebar (chỉ web)" },
-  { value: "kcn_banner", label: "Banner KCN / Bundle 5 KCN" },
   { value: "service_card", label: "Card nhà trọ/dịch vụ" },
 ];
 const PLACEMENT_LABEL = Object.fromEntries(PLACEMENTS.map((item) => [item.value, item.label])) as Record<AdPlacement, string>;
-const maxKcn = (placement: AdPlacement) => (placement === "kcn_banner" ? AD_MAX_KCN : placement === "service_card" ? 1 : 0);
+const maxKcn = (placement: AdPlacement) => (placement === "service_card" ? 1 : 0);
 
 interface FormState {
   placement: AdPlacement;
@@ -232,7 +231,7 @@ function AdForm({ editing, initial, kcnOptions, onClose }: { editing: AdminAdIte
 
         {limit > 0 && (
           <div className="md:col-span-2">
-            <div className={label}>{form.placement === "kcn_banner" ? `KCN áp dụng (1 đến ${limit}; chọn 5 là gói Bundle 5 KCN)` : "KCN áp dụng (chọn 1)"}</div>
+            <div className={label}>KCN áp dụng (chọn 1)</div>
             <div className="mt-2 flex flex-wrap gap-2">
               {form.kcnIds.map((id) => (
                 <span key={id} className="inline-flex items-center gap-2 rounded-full bg-brand-orange-light px-3 py-1 text-[12px] font-semibold text-brand-orange">
@@ -278,7 +277,7 @@ function AdForm({ editing, initial, kcnOptions, onClose }: { editing: AdminAdIte
 
         <label className={`${label} md:col-span-2`}>
           Ghi chú nội bộ (khách, gói, giá đã chốt; không hiển thị cho người dùng)
-          <textarea value={form.customerNote} maxLength={500} rows={2} disabled={disabled} onChange={(event) => set({ customerNote: event.target.value })} placeholder="Ví dụ: Công ty A, Bundle 5 KCN, 2.5tr, đã chuyển khoản" className={input} />
+          <textarea value={form.customerNote} maxLength={500} rows={2} disabled={disabled} onChange={(event) => set({ customerNote: event.target.value })} placeholder="Ví dụ: Công ty A, 300k/tháng, đã chuyển khoản" className={input} />
         </label>
       </div>
 
@@ -307,7 +306,7 @@ export function AdPlacementManagement({ ads, kcnOptions, loadError }: { ads: Adm
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[16px] font-extrabold text-brand-navy">📣 Quảng cáo hiển thị</h1>
-          <p className="mt-1 text-[12.5px] text-brand-navy/50">Banner trang chủ, sidebar, banner KCN / Bundle 5 KCN và card nhà trọ/dịch vụ · {shown.length.toLocaleString("vi-VN")} quảng cáo</p>
+          <p className="mt-1 text-[12.5px] text-brand-navy/50">Banner trang chủ, sidebar và card nhà trọ/dịch vụ · {shown.length.toLocaleString("vi-VN")} quảng cáo</p>
         </div>
         <div className="flex gap-2">
           <select value={filter} onChange={(event) => setFilter(event.target.value as AdPlacement | "")} className="rounded-lg border border-black/10 bg-white px-3 py-2 text-[12.5px] text-brand-navy outline-none focus:border-brand-orange">
@@ -319,7 +318,7 @@ export function AdPlacementManagement({ ads, kcnOptions, loadError }: { ads: Adm
       </div>
 
       <div className="mb-4 rounded-xl border border-brand-orange/15 bg-gradient-to-br from-brand-orange-light to-transparent px-4 py-3 text-[12.5px] text-brand-navy/60">
-        Bán theo hướng tư vấn, chốt ngoài hệ thống: tạo quảng cáo sau khi khách đã chốt. Banner và sidebar chỉ một quảng cáo tại một chỗ trong cùng thời gian; card không giới hạn, card HOT xếp đầu.
+        Bán theo hướng tư vấn, chốt ngoài hệ thống: tạo quảng cáo sau khi khách đã chốt. Banner trang chủ và sidebar chỉ một quảng cáo tại một chỗ trong cùng thời gian; card không giới hạn, card HOT xếp đầu.
       </div>
 
       {editing && <AdForm key={editing.ad?.id ?? "new"} editing={editing.ad} initial={editing.initial} kcnOptions={kcnOptions} onClose={() => setEditing(null)} />}

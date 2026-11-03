@@ -14,8 +14,7 @@ const errorOf = value => { const result = parse(value); return result.success ? 
 test('each placement accepts its valid shape and applies defaults', () => {
   assert.equal(parse({ ...base, placement: 'homepage_banner' }).success, true);
   assert.equal(parse({ ...base, placement: 'sidebar', showOnApp: false }).success, true);
-  assert.equal(parse({ ...base, placement: 'kcn_banner', kcnIds: [K1] }).success, true);
-  assert.equal(parse({ ...base, placement: 'kcn_banner', kcnIds: kcns(5) }).success, true, 'Bundle 5 KCN');
+  assert.equal(parse({ ...base, placement: 'service_card', kcnIds: [K1] }).success, true, 'card có ảnh');
   assert.equal(parse({ title: 'Nhà trọ Sao Mai', placement: 'service_card', kcnIds: [K1], startsOn: '2026-11-01', endsOn: '2026-11-30', isHot: true }).success, true, 'card chỉ có chữ');
   const parsed = parse({ ...base, placement: 'homepage_banner' }).data;
   assert.deepEqual([parsed.showOnWeb, parsed.showOnApp, parsed.status, parsed.isHot, parsed.kcnIds], [true, true, 'active', false, []]);
@@ -25,11 +24,10 @@ test('invalid combinations are rejected with a clear message', () => {
   assert.match(errorOf({ ...base, placement: 'sidebar' }), /Sidebar chỉ hiển thị trên web/, 'sidebar mặc định bật cả app');
   assert.match(errorOf({ ...base, placement: 'sidebar', showOnApp: false, showOnWeb: false }), /ít nhất một nơi|Sidebar chỉ/);
   assert.match(errorOf({ ...base, placement: 'homepage_banner', kcnIds: [K1] }), /toàn site/);
-  assert.match(errorOf({ ...base, placement: 'kcn_banner', kcnIds: [] }), /từ 1 đến 5 KCN/);
-  assert.match(errorOf({ ...base, placement: 'kcn_banner', kcnIds: kcns(6) }), /Tối đa 5/);
-  assert.match(errorOf({ ...base, placement: 'kcn_banner', kcnIds: [K1, K1] }), /trùng/);
-  assert.match(errorOf({ title: 'Nhà trọ', placement: 'service_card', kcnIds: [K1, K2], startsOn: base.startsOn, endsOn: base.endsOn }), /đúng 1 KCN/);
-  assert.match(errorOf({ ...base, placement: 'kcn_banner', kcnIds: [K1], isHot: true }), /HOT chỉ dùng cho card/);
+  assert.notEqual(errorOf({ ...base, placement: 'kcn_banner', kcnIds: [K1] }), null, 'Banner KCN đã bỏ (đã có ở trang Quảng cáo theo KCN)');
+  assert.match(errorOf({ title: 'Nhà trọ', placement: 'service_card', kcnIds: [], startsOn: base.startsOn, endsOn: base.endsOn }), /đúng 1 KCN/);
+  assert.match(errorOf({ title: 'Nhà trọ', placement: 'service_card', kcnIds: [K1, K2], startsOn: base.startsOn, endsOn: base.endsOn }), /Tối đa 1 KCN/);
+  assert.match(errorOf({ ...base, placement: 'homepage_banner', isHot: true }), /HOT chỉ dùng cho card/);
   assert.match(errorOf({ title: 'Banner', placement: 'homepage_banner', startsOn: base.startsOn, endsOn: base.endsOn }), /cần ảnh/);
   assert.match(errorOf({ ...base, placement: 'homepage_banner', endsOn: '2026-10-31' }), /Ngày kết thúc/);
   assert.match(errorOf({ ...base, placement: 'homepage_banner', startsOn: '2026-02-30' }), /không hợp lệ/);
@@ -51,13 +49,11 @@ test('links must be https (images) or https/tel (links); javascript and http are
 });
 
 // ── Chống trùng chỗ ──
-const slot = (over = {}) => ({ id: 'a', placement: 'kcn_banner', kcn_ids: [K1], show_on_web: true, show_on_app: true, starts_on: '2026-11-01', ends_on: '2026-11-30', status: 'active', ...over });
+const slot = (over = {}) => ({ id: 'a', placement: 'homepage_banner', kcn_ids: [], show_on_web: true, show_on_app: true, starts_on: '2026-11-01', ends_on: '2026-11-30', status: 'active', ...over });
 
-test('single-slot placements refuse overlapping ads in the same channel, KCN and dates', () => {
+test('single-slot placements refuse overlapping ads in the same channel and dates', () => {
   const existing = [slot()];
-  assert.ok(ads.findSlotConflict(slot({ id: 'b' }), existing), 'cùng KCN, cùng ngày');
-  assert.ok(ads.findSlotConflict(slot({ id: 'b', kcn_ids: [K2, K1] }), existing), 'Bundle có chung 1 KCN');
-  assert.equal(ads.findSlotConflict(slot({ id: 'b', kcn_ids: [K2] }), existing), null, 'KCN khác thì không trùng');
+  assert.ok(ads.findSlotConflict(slot({ id: 'b' }), existing), 'cùng chỗ, cùng ngày');
   assert.equal(ads.findSlotConflict(slot({ id: 'b', starts_on: '2026-12-01', ends_on: '2026-12-31' }), existing), null, 'liền kề sau không trùng');
   assert.ok(ads.findSlotConflict(slot({ id: 'b', starts_on: '2026-11-30', ends_on: '2026-12-31' }), existing), 'trùng đúng 1 ngày cuối');
   assert.equal(ads.findSlotConflict(slot({ id: 'b', show_on_app: false }), [slot({ show_on_web: false })]), null, 'web và app tách nhau');
@@ -66,8 +62,8 @@ test('single-slot placements refuse overlapping ads in the same channel, KCN and
   assert.equal(ads.findSlotConflict(slot({ id: 'b', status: 'paused' }), existing), null, 'tạm dừng không bị chặn');
   assert.equal(ads.findSlotConflict(slot({ id: 'a' }), existing), null, 'sửa chính nó không tự trùng');
   assert.equal(ads.findSlotConflict(slot({ id: 'b', placement: 'service_card' }), [slot({ placement: 'service_card' })]), null, 'card không giới hạn');
-  assert.ok(ads.findSlotConflict(slot({ id: 'b', placement: 'homepage_banner', kcn_ids: [] }), [slot({ placement: 'homepage_banner', kcn_ids: [] })]), 'banner trang chủ chỉ một');
-  assert.equal(ads.findSlotConflict(slot({ id: 'b', placement: 'sidebar', kcn_ids: [] }), [slot({ placement: 'homepage_banner', kcn_ids: [] })]), null, 'khác vị trí');
+  assert.ok(ads.findSlotConflict(slot({ id: 'b', placement: 'sidebar' }), [slot({ placement: 'sidebar' })]), 'sidebar chỉ một');
+  assert.equal(ads.findSlotConflict(slot({ id: 'b', placement: 'sidebar' }), [slot({ placement: 'homepage_banner' })]), null, 'khác vị trí');
 });
 
 // ── Chọn quảng cáo để hiển thị ──
@@ -86,11 +82,11 @@ test('only running ads for the right channel are shown, and the last day still c
   assert.equal(pick([row({ show_on_app: false })], { channel: 'web' }).length, 1);
 });
 
-test('KCN ads show only for their KCN; single-slot placements return one ad; cards put HOT first', () => {
-  const banner = row({ placement: 'kcn_banner', kcn_ids: [K1, K2] });
-  assert.equal(pick([banner], { placement: 'kcn_banner', kcnId: K2 }).length, 1, 'Bundle hiện ở KCN thứ 2');
-  assert.equal(pick([banner], { placement: 'kcn_banner', kcnId: K3 }).length, 0);
-  assert.equal(pick([banner], { placement: 'kcn_banner' }).length, 0, 'không biết KCN thì không hiện');
+test('cards show only for their KCN; single-slot placements return one ad; cards put HOT first', () => {
+  const kcnCard = row({ placement: 'service_card', kcn_ids: [K1] });
+  assert.equal(pick([kcnCard], { placement: 'service_card', kcnId: K1 }).length, 1);
+  assert.equal(pick([kcnCard], { placement: 'service_card', kcnId: K3 }).length, 0, 'KCN khác thì không hiện');
+  assert.equal(pick([kcnCard], { placement: 'service_card' }).length, 0, 'không biết KCN thì không hiện');
   assert.equal(pick([row({ id: 'old' }), row({ id: 'new', starts_on: '2026-11-10' })]).map(ad => ad.id).join(), 'new', 'dữ liệu lỡ có hai: lấy cái mới hơn, chỉ một');
 
   const card = (id, over) => row({ id, placement: 'service_card', kcn_ids: [K1], ...over });
@@ -130,7 +126,7 @@ test('image dimensions are read from PNG, JPEG and WEBP headers and anything els
 
 test('each placement accepts only its frame ratio and width range', () => {
   const err = (placement, w, h) => img.adImageSizeError(placement, w, h);
-  for (const placement of ['homepage_banner', 'kcn_banner']) {
+  for (const placement of ['homepage_banner']) {
     assert.equal(err(placement, 1200, 400), null, 'đúng chuẩn');
     assert.equal(err(placement, 3000, 1000), null);
     assert.equal(err(placement, 1200, 408), null, 'lệch dưới 2%');

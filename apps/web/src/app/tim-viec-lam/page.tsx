@@ -3,7 +3,7 @@ import { getJobs, JOBS_PAGE_SIZE } from "@/lib/jobs";
 import { getKcnList } from "@/lib/kcn";
 import { validAdId } from "@/lib/ads";
 import { getRunningAds } from "@/lib/ads-queries";
-import { AdBanner, AdServiceCard, AdSidebar } from "@/components/ads/AdSlots";
+import { AdServiceCard, AdSidebar } from "@/components/ads/AdSlots";
 import { ROUTES } from "@/lib/routes";
 import { buildQuery } from "@/lib/url";
 import { FilterSidebar } from "@/components/timviec/FilterSidebar";
@@ -60,9 +60,9 @@ export default async function TimViecLamPage({
   const currentPage = Math.max(1, sp.page ? Number(sp.page) || 1 : 1);
   const hasActiveFilters = FILTER_PARAM_KEYS.some((k) => sp[k]);
 
-  // Quảng cáo: sidebar toàn site; banner và card HOT chỉ khi đang xem một KCN cụ thể.
+  // Quảng cáo: sidebar toàn site; card (HOT trước) chỉ khi đang xem một KCN cụ thể.
   const adKcnId = tab === "jobs" && sp.kcnId && validAdId(sp.kcnId) ? sp.kcnId : null;
-  const [{ jobs, total }, kcnList, [sidebarAd], [kcnBanner], serviceCards] = await Promise.all([
+  const [{ jobs, total }, kcnList, [sidebarAd], serviceCards] = await Promise.all([
     tab === "jobs"
       ? getJobs({
           province: sp.province,
@@ -83,7 +83,6 @@ export default async function TimViecLamPage({
       : Promise.resolve({ jobs: [], total: 0 }),
     tab === "kcn" ? getKcnList() : Promise.resolve([]),
     tab === "jobs" ? getRunningAds({ placement: "sidebar", channel: "web" }) : Promise.resolve([]),
-    adKcnId ? getRunningAds({ placement: "kcn_banner", channel: "web", kcnId: adKcnId }) : Promise.resolve([]),
     adKcnId ? getRunningAds({ placement: "service_card", channel: "web", kcnId: adKcnId }) : Promise.resolve([]),
   ]);
 
@@ -151,12 +150,6 @@ export default async function TimViecLamPage({
                 <Link href={`${ROUTES.timViecLam}?tab=jobs`} className="underline">
                   ✕ Xóa tất cả bộ lọc
                 </Link>
-              </div>
-            )}
-
-            {kcnBanner && (
-              <div className="mb-5">
-                <AdBanner ad={kcnBanner} />
               </div>
             )}
 

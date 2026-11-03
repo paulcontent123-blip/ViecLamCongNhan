@@ -17,7 +17,6 @@ const BANNER: AdImageSpec = { ratio: [3, 1], minWidth: 1200, maxWidth: 4000, rec
 
 export const AD_IMAGE_SPECS: Record<AdPlacement, AdImageSpec> = {
   homepage_banner: BANNER,
-  kcn_banner: BANNER,
   sidebar: { ratio: [1, 2], minWidth: 300, maxWidth: 1200, recommended: [300, 600], frame: "ảnh dọc 1:2" },
   service_card: { ratio: [16, 9], minWidth: 640, maxWidth: 2400, recommended: [1280, 720], frame: "ảnh 16:9" },
 };

@@ -2,13 +2,14 @@ import { z } from "zod";
 
 // Quảng cáo do Admin quản lý. Không import server-only để test được ngoài Next.
 
-export const AD_PLACEMENTS = ["homepage_banner", "sidebar", "kcn_banner", "service_card"] as const;
+export const AD_PLACEMENTS = ["homepage_banner", "sidebar", "service_card"] as const;
 export type AdPlacement = (typeof AD_PLACEMENTS)[number];
 export const AD_STATUSES = ["active", "paused"] as const;
 
-/** Banner và sidebar chỉ có một quảng cáo tại một vị trí (và một KCN) trong cùng thời gian; card thì nhiều, HOT xếp đầu. */
-export const SINGLE_SLOT_PLACEMENTS: readonly AdPlacement[] = ["homepage_banner", "sidebar", "kcn_banner"];
-export const AD_MAX_KCN = 5;
+/** Banner trang chủ và sidebar chỉ có một quảng cáo tại một vị trí trong cùng thời gian; card thì nhiều, HOT xếp đầu. */
+export const SINGLE_SLOT_PLACEMENTS: readonly AdPlacement[] = ["homepage_banner", "sidebar"];
+/** Quảng cáo theo KCN chỉ có card, mỗi card đúng một KCN. (Quảng cáo KCN dạng banner/gói 5 KCN đã có sẵn ở trang Quảng cáo theo KCN, không làm lại ở đây.) */
+export const AD_MAX_KCN = 1;
 
 export const AD_FIELDS =
   "id, placement, title, body, image_url, link_url, is_hot, kcn_ids, show_on_web, show_on_app, starts_on, ends_on, status, customer_note, created_at, updated_at";
@@ -89,7 +90,6 @@ export function adRuleError(ad: z.infer<typeof baseSchema>): string | null {
   if (ad.placement === "sidebar" && (ad.showOnApp || !ad.showOnWeb)) return "Sidebar chỉ hiển thị trên web.";
   if (ad.isHot && ad.placement !== "service_card") return "Nhãn HOT chỉ dùng cho card nhà trọ/dịch vụ.";
   if ((ad.placement === "homepage_banner" || ad.placement === "sidebar") && kcnCount !== 0) return "Vị trí này áp dụng toàn site, không chọn KCN.";
-  if (ad.placement === "kcn_banner" && (kcnCount < 1 || kcnCount > AD_MAX_KCN)) return "Banner KCN cần chọn từ 1 đến 5 KCN.";
   if (ad.placement === "service_card" && kcnCount !== 1) return "Card nhà trọ/dịch vụ cần chọn đúng 1 KCN.";
   if (ad.placement !== "service_card" && !ad.imageUrl) return "Vị trí này cần ảnh quảng cáo.";
   return null;
@@ -117,7 +117,7 @@ interface SlotLike {
 }
 
 /**
- * Tìm quảng cáo đang chiếm chỗ mà quảng cáo mới/sửa sẽ trùng: cùng vị trí, cùng kênh, cùng KCN (nếu có), trùng khoảng ngày.
+ * Tìm quảng cáo đang chiếm chỗ mà quảng cáo mới/sửa sẽ trùng: cùng vị trí, cùng kênh, trùng khoảng ngày.
  * Chỉ áp dụng cho vị trí một chỗ; card không giới hạn. Quảng cáo tạm dừng không chiếm chỗ.
  */
 export function findSlotConflict<T extends SlotLike>(candidate: SlotLike, existing: readonly T[]): T | null {
@@ -128,8 +128,7 @@ export function findSlotConflict<T extends SlotLike>(candidate: SlotLike, existi
       other.status === "active" &&
       other.placement === candidate.placement &&
       ((candidate.show_on_web && other.show_on_web) || (candidate.show_on_app && other.show_on_app)) &&
-      other.starts_on <= candidate.ends_on && candidate.starts_on <= other.ends_on &&
-      (candidate.placement !== "kcn_banner" || other.kcn_ids.some((id) => candidate.kcn_ids.includes(id))),
+      other.starts_on <= candidate.ends_on && candidate.starts_on <= other.ends_on,
     ) ?? null
   );
 }
