@@ -14,7 +14,8 @@ const headers = { "Cache-Control": "private, no-store" };
 
 // Phiên của đúng vai trò mà app báo (app biết đang đăng nhập vai trò nào); người gửi luôn lấy từ phiên, không từ body.
 const SESSION_READERS: Record<BugReportRole, () => Promise<{ userId: string } | null>> = {
-  candidate: () => getCandidateSession(),
+  // Như mọi route dành cho công nhân: tài khoản đăng nhập bằng mật khẩu nhưng chưa xác minh số điện thoại vẫn được gửi báo lỗi.
+  candidate: () => getCandidateSession({ allowUnverifiedPasswordSession: true }),
   employer: () => getEmployerSession(),
   training_provider: () => getTrainingProviderSession(),
   rental_provider: () => getRentalProviderSession(),

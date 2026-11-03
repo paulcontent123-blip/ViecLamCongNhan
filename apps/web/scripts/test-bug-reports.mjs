@@ -54,7 +54,7 @@ function createRoute({ sessionFor = {}, same = { data: [], error: null }, recent
   const log = [];
   const readers = {};
   for (const role of bugReports.BUG_REPORT_ROLES) {
-    readers[role] = async () => { log.push(['session', role]); const value = sessionFor[role]; if (value instanceof Error) throw value; return value === undefined ? null : value; };
+    readers[role] = async (...args) => { log.push(['session', role, ...plain(args)]); const value = sessionFor[role]; if (value instanceof Error) throw value; return value === undefined ? null : value; };
   }
   const client = {
     from(table) {
@@ -95,8 +95,15 @@ test('sending a bug report validates first, then reads only the session of the s
   for (const role of bugReports.BUG_REPORT_ROLES) {
     const api = createRoute({ sessionFor: { [role]: { userId: USER } } });
     assert.equal((await api.post({ ...valid, role })).status, 201, role);
-    assert.deepEqual(api.log.filter(entry => entry[0] === 'session'), [['session', role]], role);
+    assert.deepEqual(api.log.filter(entry => entry[0] === 'session').map(entry => entry.slice(0, 2)), [['session', role]], role);
   }
+});
+
+// Lỗi đã gặp: công nhân đăng nhập bằng mật khẩu nhưng chưa xác minh số điện thoại bị báo "cần đăng nhập" vì route không bật phép này.
+test('a worker signed in by password with an unverified phone can send a bug report, like on every other worker route', async () => {
+  const api = createRoute({ sessionFor: ok });
+  assert.equal((await api.post(valid)).status, 201);
+  assert.deepEqual(api.log.find(entry => entry[0] === 'session'), ['session', 'candidate', { allowUnverifiedPasswordSession: true }]);
 });
 
 test('a missing, failing or wrong-role session is 401 and nothing is stored', async () => {
