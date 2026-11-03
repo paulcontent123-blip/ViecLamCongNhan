@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getJobs, JOBS_PAGE_SIZE } from "@/lib/jobs";
 import { getKcnList } from "@/lib/kcn";
+import { validAdId } from "@/lib/ads";
+import { getRunningAds } from "@/lib/ads-queries";
+import { AdBanner, AdServiceCard, AdSidebar } from "@/components/ads/AdSlots";
 import { ROUTES } from "@/lib/routes";
 import { buildQuery } from "@/lib/url";
 import { FilterSidebar } from "@/components/timviec/FilterSidebar";
@@ -57,7 +60,9 @@ export default async function TimViecLamPage({
   const currentPage = Math.max(1, sp.page ? Number(sp.page) || 1 : 1);
   const hasActiveFilters = FILTER_PARAM_KEYS.some((k) => sp[k]);
 
-  const [{ jobs, total }, kcnList] = await Promise.all([
+  // Quảng cáo: sidebar toàn site; banner và card HOT chỉ khi đang xem một KCN cụ thể.
+  const adKcnId = tab === "jobs" && sp.kcnId && validAdId(sp.kcnId) ? sp.kcnId : null;
+  const [{ jobs, total }, kcnList, [sidebarAd], [kcnBanner], serviceCards] = await Promise.all([
     tab === "jobs"
       ? getJobs({
           province: sp.province,
@@ -77,6 +82,9 @@ export default async function TimViecLamPage({
         })
       : Promise.resolve({ jobs: [], total: 0 }),
     tab === "kcn" ? getKcnList() : Promise.resolve([]),
+    tab === "jobs" ? getRunningAds({ placement: "sidebar", channel: "web" }) : Promise.resolve([]),
+    adKcnId ? getRunningAds({ placement: "kcn_banner", channel: "web", kcnId: adKcnId }) : Promise.resolve([]),
+    adKcnId ? getRunningAds({ placement: "service_card", channel: "web", kcnId: adKcnId }) : Promise.resolve([]),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / JOBS_PAGE_SIZE));
@@ -146,10 +154,28 @@ export default async function TimViecLamPage({
               </div>
             )}
 
+            {kcnBanner && (
+              <div className="mb-5">
+                <AdBanner ad={kcnBanner} />
+              </div>
+            )}
+
             <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
-              <FilterSidebar sp={sp} />
+              <div>
+                <FilterSidebar sp={sp} />
+                <AdSidebar ad={sidebarAd} />
+              </div>
 
               <div>
+                {/* Card nhà trọ/dịch vụ của KCN đang xem: nằm đầu danh sách (HOT trước), chỉ ở trang đầu. */}
+                {currentPage === 1 && serviceCards.length > 0 && (
+                  <div className="mb-4 grid gap-4 sm:grid-cols-2">
+                    {serviceCards.map((card) => (
+                      <AdServiceCard key={card.id} ad={card} />
+                    ))}
+                  </div>
+                )}
+
                 {jobs.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-black/10 bg-white p-10 text-center text-[13.5px] text-brand-navy/45">
                     Không tìm thấy tin tuyển dụng phù hợp. Thử bỏ bớt bộ lọc.
