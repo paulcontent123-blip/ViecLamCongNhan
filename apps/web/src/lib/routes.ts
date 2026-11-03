@@ -31,6 +31,7 @@ export const ROUTES = {
   adminKcnAds: "/admin/quang-cao/kcn",
   adminKcnAdInquiries: "/admin/quang-cao/kcn/yeu-cau",
   adminAdPricing: "/admin/quang-cao/bang-gia",
+  adminAdPlacements: "/admin/hien-thi-quang-cao",
   adminAdPricingInquiries: "/admin/quang-cao/bang-gia/yeu-cau",
   adminUsers: "/admin/nguoi-dung",
   adminPaymentChannels: "/admin/nhan-tien",

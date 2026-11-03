@@ -87,6 +87,11 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
               badge: counts.newServicePartnerInquiries || undefined,
             },
             {
+              href: ROUTES.adminAdPlacements,
+              icon: "📣",
+              label: "Banner / Card hiển thị",
+            },
+            {
               href: ROUTES.adminAdPricing,
               icon: "💰",
               label: "Bảng giá quảng cáo",
