@@ -6,6 +6,7 @@ import { JOB_ADDONS } from "@/lib/packages";
 import { PAYMENT_STATE_LABEL, paymentState } from "@/lib/payment";
 import { BuyPackageButton } from "@/components/ntd/BuyPackageButton";
 import { CampaignPurchaseCard } from "@/components/ntd/CampaignPurchaseCard";
+import { formatDateTime } from "@/lib/format-date";
 
 // Trạng thái hiển thị suy ra từ orders.status + việc NTD đã bấm "Tôi đã thanh toán"
 // chưa (xem lib/payment.ts): tạo đơn xong mà chưa chuyển tiền vẫn là "Chưa thanh toán".
@@ -159,7 +160,7 @@ export default async function EmployerOrdersPage() {
                           {order.code ?? `DH${order.id.slice(0, 8).toUpperCase()}`}
                         </div>
                         <div className="text-[11px] text-brand-navy/40">
-                          {new Date(order.created_at).toLocaleString("vi-VN")}
+                          {formatDateTime(order.created_at)}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-brand-navy/60">

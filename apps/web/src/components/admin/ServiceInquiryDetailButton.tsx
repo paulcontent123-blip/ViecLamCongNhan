@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ServiceInquiryRow } from "@/types/db";
+import { formatDateTime } from "@/lib/format-date";
 
 const STATUS_LABEL: Record<ServiceInquiryRow["status"], { label: string; className: string }> = {
   new: { label: "Chưa tư vấn", className: "bg-amber-50 text-amber-700" },
@@ -47,7 +48,7 @@ export function ServiceInquiryDetailButton({ inquiry }: { inquiry: ServiceInquir
             <div className="space-y-4 p-5 sm:p-6">
               <div className="grid gap-3 rounded-xl border border-black/5 bg-black/[0.02] p-4 text-[13px] sm:grid-cols-2">
                 <div><span className="text-brand-navy/45">Loại: </span><span className="font-semibold text-brand-navy">{inquiry.type}</span></div>
-                <div><span className="text-brand-navy/45">Thời gian: </span><span className="font-semibold text-brand-navy">{new Date(inquiry.created_at).toLocaleString("vi-VN")}</span></div>
+                <div><span className="text-brand-navy/45">Thời gian: </span><span className="font-semibold text-brand-navy">{formatDateTime(inquiry.created_at)}</span></div>
                 <div><span className="text-brand-navy/45">Doanh nghiệp: </span><span className="font-semibold text-brand-navy">{inquiry.company_name}</span></div>
                 <div><span className="text-brand-navy/45">Trạng thái: </span><span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${STATUS_LABEL[inquiry.status].className}`}>{STATUS_LABEL[inquiry.status].label}</span></div>
                 <div><span className="text-brand-navy/45">Số điện thoại: </span><a href={`tel:${inquiry.phone}`} className="font-semibold text-brand-orange">{inquiry.phone}</a></div>

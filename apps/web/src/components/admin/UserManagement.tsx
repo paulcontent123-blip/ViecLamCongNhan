@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { AdminUserRole, AdminUserRow } from "@/lib/admin";
 import { ADMIN_ROLE_LABEL, ADMIN_ROLES, isAdminRole, type AdminRole } from "@/lib/admin-roles";
 import { StatusPill } from "@/components/admin/StatusPill";
+import { formatDate } from "@/lib/format-date";
 
 const ROLE_OPTIONS: { value: AdminUserRole; label: string }[] = [
   { value: "admin", label: "Admin" },
@@ -211,7 +212,7 @@ export function UserManagement({ users, currentAdminId }: { users: AdminUserRow[
                     {user.status === "active" ? <StatusPill label="Đang hoạt động" tone="green" /> : <StatusPill label="Đã xóa" tone="red" />}
                   </td>
                   <td className="px-4 py-3 text-[12px] text-brand-navy/40">
-                    {new Date(user.created_at).toLocaleDateString("vi-VN")}
+                    {formatDate(user.created_at)}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1.5">

@@ -12,6 +12,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { WorkerInquiryActions } from "@/components/admin/WorkerInquiryActions";
 import { WorkerInquiryExport } from "@/components/admin/WorkerInquiryExport";
+import { formatDateTime } from "@/lib/format-date";
 
 // Danh sách đổi ngay sau mỗi thao tác chuyển hoặc đóng.
 export const dynamic = "force-dynamic";
@@ -196,12 +197,12 @@ export default async function AdminWorkerInquiriesPage({ searchParams }: { searc
                 {item.routed_to === "admin" ? <StatusPill label={status.label} tone={status.tone} /> : <StatusPill label="Đã gửi đối tác" tone="green" />}
               </div>
               <div className="mt-1 text-[12.5px] text-brand-navy/60">{item.subject} · {item.provider_name}</div>
-              <div className="text-[11.5px] text-brand-navy/40">Gửi lúc {new Date(item.created_at).toLocaleString("vi-VN")}</div>
+              <div className="text-[11.5px] text-brand-navy/40">Gửi lúc {formatDateTime(item.created_at)}</div>
               <div className="mt-2 text-[12.5px] text-brand-navy">SĐT: <span className="font-semibold">{item.phone}</span>{item.email ? ` · Email: ${item.email}` : ""}</div>
               {item.message && <div className="mt-1 whitespace-pre-line text-[12.5px] text-brand-navy/70">{item.message}</div>}
               {item.routed_to === "provider" && (
                 <div className="mt-1 text-[11.5px] text-brand-navy/50">
-                  Đã chuyển lúc {item.forwarded_at ? new Date(item.forwarded_at).toLocaleString("vi-VN") : "(trước khi có hàng đợi Admin)"} · Đối tác: {PARTNER_STATUS[item.partner_status] ?? item.partner_status}
+                  Đã chuyển lúc {item.forwarded_at ? formatDateTime(item.forwarded_at) : "(trước khi có hàng đợi Admin)"} · Đối tác: {PARTNER_STATUS[item.partner_status] ?? item.partner_status}
                 </div>
               )}
               <WorkerInquiryActions

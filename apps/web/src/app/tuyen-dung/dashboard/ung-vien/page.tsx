@@ -10,6 +10,7 @@ import { provinceName } from "@/lib/provinces";
 import { industryLabel } from "@/lib/industries";
 import { ApplicationStatusSelect } from "@/components/ntd/ApplicationStatusSelect";
 import { CandidateRevealButton } from "@/components/ntd/CandidateRevealButton";
+import { formatDateTime } from "@/lib/format-date";
 
 export default async function EmployerApplicationsPage() {
   const session = await getEmployerSession();
@@ -82,9 +83,9 @@ export default async function EmployerApplicationsPage() {
               </div>
 
               <div className="mt-2 text-[11.5px] text-brand-navy/35">
-                Ứng tuyển lúc {new Date(app.created_at).toLocaleString("vi-VN")}
+                Ứng tuyển lúc {formatDateTime(app.created_at)}
                 {app.updated_at !== app.created_at && (
-                  <> · Cập nhật lúc {new Date(app.updated_at).toLocaleString("vi-VN")}</>
+                  <> · Cập nhật lúc {formatDateTime(app.updated_at)}</>
                 )}
               </div>
             </div>

@@ -6,6 +6,7 @@ import type { AdminOrderStatus, AdminOrderRow } from "@/lib/admin";
 import { ORDER_TYPE_LABEL } from "@/lib/order-labels";
 import { isPaymentMethod, PAYMENT_METHOD_META } from "@/lib/payment-method";
 import { StatusPill } from "@/components/admin/StatusPill";
+import { formatDateTime } from "@/lib/format-date";
 
 const STATUS_TONE: Record<string, "amber" | "green" | "gray" | "blue"> = {
   pending: "amber",
@@ -241,13 +242,13 @@ export function OrderStatusActions({ order, statusLabel }: { order: AdminOrderRo
               {order.payment_ref && <DetailRow label="Mã tham chiếu">{order.payment_ref}</DetailRow>}
               <DetailRow label="NTD báo đã chuyển">
                 {order.customer_confirmed_at
-                  ? new Date(order.customer_confirmed_at).toLocaleString("vi-VN")
+                  ? formatDateTime(order.customer_confirmed_at)
                   : "Chưa báo"}
               </DetailRow>
               {order.reject_reason && <DetailRow label="Lý do đã trả lại">{order.reject_reason}</DetailRow>}
-              <DetailRow label="Ngày tạo đơn">{new Date(order.created_at).toLocaleString("vi-VN")}</DetailRow>
+              <DetailRow label="Ngày tạo đơn">{formatDateTime(order.created_at)}</DetailRow>
               {order.paid_at && (
-                <DetailRow label="Ngày xác nhận thanh toán">{new Date(order.paid_at).toLocaleString("vi-VN")}</DetailRow>
+                <DetailRow label="Ngày xác nhận thanh toán">{formatDateTime(order.paid_at)}</DetailRow>
               )}
               {order.campaign_message && (
                 <div className="border-t border-black/5 py-2.5 text-[13px]">

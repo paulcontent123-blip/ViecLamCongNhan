@@ -1,5 +1,6 @@
 import { getAdminBlasts } from "@/lib/admin";
 import { StatusPill } from "@/components/admin/StatusPill";
+import { formatDateTime } from "@/lib/format-date";
 
 const STATUS_LABEL: Record<string, { label: string; tone: "amber" | "green" | "gray" | "red" }> = {
   queued: { label: "Đang chờ", tone: "amber" },
@@ -46,7 +47,7 @@ export default async function AdminBlastPage() {
                     <td className="px-4 py-3">
                       <div className="font-bold text-brand-navy">{b.campaign_name || "‑"}</div>
                       <div className="text-[11px] text-brand-navy/40">
-                        {new Date(b.created_at).toLocaleString("vi-VN")}
+                        {formatDateTime(b.created_at)}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-brand-navy/60">{b.employers?.company_name ?? "‑"}</td>

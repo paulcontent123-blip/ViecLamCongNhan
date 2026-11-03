@@ -7,6 +7,7 @@ import { buildQuery } from "@/lib/url";
 import { JobActions } from "@/components/admin/JobActions";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { formatDate } from "@/lib/format-date";
 
 const STATUS_LABEL: Record<AdminJobStatus, { label: string; tone: "amber" | "green" | "gray" | "red" }> = {
   pending: { label: "Chờ duyệt", tone: "amber" },
@@ -127,7 +128,7 @@ export default async function AdminJobsPage({
                       <StatusPill label={st.label} tone={st.tone} />
                     </td>
                     <td className="px-4 py-3 text-[12px] text-brand-navy/40">
-                      {new Date(job.created_at).toLocaleDateString("vi-VN")}
+                      {formatDate(job.created_at)}
                     </td>
                     <td className="px-4 py-3">
                       <JobActions jobId={job.id} status={job.status} />

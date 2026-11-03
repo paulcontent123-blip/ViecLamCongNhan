@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { ServiceInquiryRow } from "@/types/db";
+import { formatDateTime } from "@/lib/format-date";
 
 const TYPE_LABEL: Record<string, string> = {
   "Dịch vụ trọn gói": "Dịch vụ trọn gói",
@@ -94,7 +95,7 @@ export function EmployerServiceInquiryList({ inquiries }: { inquiries: ServiceIn
               return (
                 <tr key={inquiry.id} className="border-t border-black/5 align-top">
                   <td className="whitespace-nowrap px-4 py-3 text-[11.5px] text-brand-navy/50">
-                    {new Date(inquiry.created_at).toLocaleString("vi-VN")}
+                    {formatDateTime(inquiry.created_at)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-brand-navy/55">{TYPE_LABEL[inquiry.type] ?? inquiry.type}</td>
                   <td className="max-w-[220px] px-4 py-3 font-bold text-brand-orange">{inquiry.service_name}</td>

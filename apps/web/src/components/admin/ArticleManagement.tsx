@@ -10,6 +10,7 @@ import { slugify } from "@/lib/slug";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ArticleToc } from "@/components/tintuc/ArticleToc";
+import { formatDate, formatDateTime } from "@/lib/format-date";
 
 interface ArticleFormState {
   title: string;
@@ -283,7 +284,7 @@ export function ArticleManagement({ articles }: { articles: AdminArticleRow[] })
                         <div>
                           <div className="font-bold text-brand-navy">{article.title}</div>
                           <div className="mt-0.5 text-[11px] text-brand-navy/40">
-                            /{article.slug} · {new Date(article.created_at).toLocaleDateString("vi-VN")}
+                            /{article.slug} · {formatDate(article.created_at)}
                           </div>
                         </div>
                       </div>
@@ -584,7 +585,7 @@ export function ArticleManagement({ articles }: { articles: AdminArticleRow[] })
               </button>
               {isEditing && (
                 <span className="ml-auto text-[11.5px] text-brand-navy/40">
-                  Cập nhật lần cuối: {new Date(editing.updated_at).toLocaleString("vi-VN")}
+                  Cập nhật lần cuối: {formatDateTime(editing.updated_at)}
                 </span>
               )}
             </div>

@@ -10,6 +10,7 @@ import {
 import { ACCOUNT_TIERS } from "@/lib/account-tiers";
 import { provinceName } from "@/lib/provinces";
 import { ROUTES } from "@/lib/routes";
+import { formatDate } from "@/lib/format-date";
 
 const TIER_LABEL: Record<string, string> = {
   free: "Free",
@@ -151,7 +152,7 @@ export default async function EmployerDashboardOverviewPage() {
                       <td className="py-2.5 pr-3 font-mono text-brand-navy/60">{job.view_count}</td>
                       <td className="py-2.5 pr-3 font-mono text-brand-navy/60">{job.apply_count}</td>
                       <td className="py-2.5 text-brand-navy/45">
-                        {job.expires_at ? new Date(job.expires_at).toLocaleDateString("vi-VN") : "‑"}
+                        {job.expires_at ? formatDate(job.expires_at) : "‑"}
                       </td>
                     </tr>
                   );

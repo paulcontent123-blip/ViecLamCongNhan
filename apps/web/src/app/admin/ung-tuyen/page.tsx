@@ -15,6 +15,7 @@ import { buildQuery } from "@/lib/url";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { AdminApplicationStatusSelect } from "@/components/admin/ApplicationStatusSelect";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { formatDateTime } from "@/lib/format-date";
 
 const APPLICATION_STATUS_META: Record<ApplicationStatus, { tone: "amber" | "green" | "gray" | "red" | "blue" }> = {
   new: { tone: "gray" },
@@ -166,12 +167,12 @@ export default async function AdminApplicationsPage({
                       <StatusPill label={APPLICATION_STATUS_LABEL[applicationStatus]} tone={statusMeta.tone} />
                       <div className="mt-1 text-[11px] text-brand-navy/35">
                         {application.updated_at !== application.created_at
-                          ? `Cập nhật ${new Date(application.updated_at).toLocaleString("vi-VN")}`
+                          ? `Cập nhật ${formatDateTime(application.updated_at)}`
                           : "Chưa cập nhật"}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-[12px] text-brand-navy/45">
-                      {new Date(application.created_at).toLocaleString("vi-VN")}
+                      {formatDateTime(application.created_at)}
                     </td>
                     <td className="px-4 py-3">
                       <AdminApplicationStatusSelect

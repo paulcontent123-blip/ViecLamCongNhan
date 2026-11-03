@@ -12,6 +12,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ServicePackageAdminNav } from "@/components/admin/ServicePackageAdminNav";
 import { ServiceInquiryStatusButton } from "@/components/admin/ServiceInquiryStatusButton";
 import { ServiceInquiryDetailButton } from "@/components/admin/ServiceInquiryDetailButton";
+import { formatDateTime } from "@/lib/format-date";
 
 function toSp(searchParams: Record<string, string | string[] | undefined>): Record<string, string | undefined> {
   const out: Record<string, string | undefined> = {};
@@ -115,7 +116,7 @@ export default async function AdminServiceInquiriesPage({
               {inquiries.map((inquiry) => (
                 <tr key={inquiry.id} className="border-t border-black/5 align-top">
                   <td className="whitespace-nowrap px-4 py-3 text-[11.5px] text-brand-navy/50">
-                    {new Date(inquiry.created_at).toLocaleString("vi-VN")}
+                    {formatDateTime(inquiry.created_at)}
                   </td>
                   <td className="max-w-[190px] px-4 py-3 font-bold text-brand-orange">{inquiry.service_name}</td>
                   <td className="px-4 py-3 font-bold text-brand-navy">{inquiry.company_name}</td>

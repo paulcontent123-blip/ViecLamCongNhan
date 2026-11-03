@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { AdminQARow as AdminQARowType } from "@/lib/admin";
 import { StatusPill } from "@/components/admin/StatusPill";
+import { formatDateTime } from "@/lib/format-date";
 
 const STATUS_META = {
   new: { label: "Câu hỏi mới", tone: "amber" as const },
@@ -90,7 +91,7 @@ export function QARow({ question }: { question: AdminQARowType }) {
           <div className="text-[14px] font-bold text-brand-navy">{question.question}</div>
           <div className="mt-1 text-[12px] text-brand-navy/45">
             {question.full_name || "Ẩn danh"} · {question.contact ?? "‑"} ·{" "}
-            {new Date(question.created_at).toLocaleString("vi-VN")}
+            {formatDateTime(question.created_at)}
           </div>
         </div>
         <StatusPill label={status.label} tone={status.tone} />

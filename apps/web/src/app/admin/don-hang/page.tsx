@@ -15,6 +15,7 @@ import { PAYMENT_STATE_LABEL, PAYMENT_STATE_TONE, paymentState } from "@/lib/pay
 import { StatusPill } from "@/components/admin/StatusPill";
 import { OrderStatusActions } from "@/components/admin/OrderStatusActions";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { formatDateTime } from "@/lib/format-date";
 
 // NTD đã bấm "Xác nhận thanh toán" ở modal thì đơn mới được tạo (xem
 // BuyPackageButton.tsx) ‑ nên "pending" ở đây luôn có nghĩa "NTD đã tự khai đã
@@ -167,7 +168,7 @@ export default async function AdminOrdersPage({
                         {o.code ?? `DH${o.id.slice(0, 8).toUpperCase()}`}
                       </div>
                       <div className="text-[11px] text-brand-navy/40">
-                        {new Date(o.created_at).toLocaleString("vi-VN")}
+                        {formatDateTime(o.created_at)}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-brand-navy/60">

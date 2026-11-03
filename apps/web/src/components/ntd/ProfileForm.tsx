@@ -7,6 +7,7 @@ import { EMPLOYER_INDUSTRIES } from "@/lib/industries";
 import { ACCOUNT_TIERS, isAccountTier } from "@/lib/account-tiers";
 import type { EmployerProfile } from "@/lib/employer";
 import { IndustrySelect } from "@/components/shared/IndustrySelect";
+import { formatDate } from "@/lib/format-date";
 
 export function ProfileForm({ profile }: { profile: EmployerProfile }) {
   const router = useRouter();
@@ -103,7 +104,7 @@ export function ProfileForm({ profile }: { profile: EmployerProfile }) {
             <span className="font-semibold text-brand-navy">
               {isAccountTier(profile.account_type) ? ACCOUNT_TIERS[profile.account_type].label : profile.account_type}
               {profile.account_type !== "free" && profile.account_tier_expires_at && (
-                <> · hết hạn {new Date(profile.account_tier_expires_at).toLocaleDateString("vi-VN")}</>
+                <> · hết hạn {formatDate(profile.account_tier_expires_at)}</>
               )}
             </span>
           </div>

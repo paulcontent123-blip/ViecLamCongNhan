@@ -7,6 +7,7 @@ import { htmlToPlainText } from "@/lib/sanitize-html";
 import { ROUTES } from "@/lib/routes";
 import { ArticleCard } from "@/components/tintuc/ArticleCard";
 import { ArticleToc } from "@/components/tintuc/ArticleToc";
+import { formatDate } from "@/lib/format-date";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -63,7 +64,7 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
           {article.title}
         </h1>
         <div className="mt-3 text-[12.5px] text-brand-navy/45">
-          📅 {article.published_at ? new Date(article.published_at).toLocaleDateString("vi-VN") : "‑"} · ⏱{" "}
+          📅 {article.published_at ? formatDate(article.published_at) : "‑"} · ⏱{" "}
           {article.read_minutes} phút đọc
           {article.author_name ? ` · ✍ ${article.author_name}` : ""}
         </div>
