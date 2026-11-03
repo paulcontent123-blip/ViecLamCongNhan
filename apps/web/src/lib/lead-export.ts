@@ -8,7 +8,7 @@ import { normalizePhone } from "@/lib/phone";
 // Không có bảng ghi lô: mỗi lần xuất chỉ được ghi vào admin_audit_log, nên không tự biết liên hệ nào đã giao cho đối tác nào.
 
 /** Phiên bản văn bản đồng ý chia sẻ mà app đang hiển thị; ghi cùng bản ghi để biết công nhân đã đồng ý bản nào. */
-export const LEAD_SHARE_CONSENT_VERSION = "2026-11-v1";
+export const LEAD_SHARE_CONSENT_VERSION = "2026-11-v2";
 
 /** Cột ghi thêm khi công nhân tick đồng ý chia sẻ; không tick (hoặc app bản cũ không gửi) thì không ghi gì. */
 export function shareConsentColumns(shareConsent: boolean | undefined, now: Date = new Date()) {
