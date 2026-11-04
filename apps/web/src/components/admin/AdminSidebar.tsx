@@ -66,6 +66,23 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
       ],
     },
     {
+      // Các mục trước đây chỉ làm được trên app Admin; nay dùng chung api/mobile/admin/* với app.
+      label: "Đối tác & Ứng dụng",
+      items: [
+        {
+          href: ROUTES.adminPartners,
+          icon: "🤝",
+          label: "Đối tác dịch vụ",
+          capability: "partners",
+          exact: true,
+          // Mục con nằm trong mục cha nên đã theo quyền của cha; lọc quyền chỉ chạy ở cấp một.
+          children: [{ href: ROUTES.adminPartnerContent, icon: "✅", label: "Duyệt nội dung" }],
+        },
+        { href: ROUTES.adminMarketplace, icon: "🛒", label: "Chợ đồ cũ" },
+        { href: ROUTES.adminBugReports, icon: "🐞", label: "Báo lỗi ứng dụng" },
+      ],
+    },
+    {
       label: "Hệ thống",
       items: [
         { href: ROUTES.adminOrders, icon: "💳", label: "Đơn hàng / Thanh toán", capability: "payments" },

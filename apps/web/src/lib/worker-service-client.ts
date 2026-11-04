@@ -36,10 +36,15 @@ export type RequestOptions = {
   signal?: AbortSignal;
 };
 
-type RawResponse = { status: number; ok: boolean; data: unknown };
+export type RawResponse = { status: number; ok: boolean; data: unknown };
 
-/** Trả về phản hồi đã đọc JSON. Ném lỗi NETWORK/TIMEOUT khi chưa chắc máy chủ đã nhận yêu cầu. */
-async function requestJson(url: string, init: RequestInit, options: RequestOptions): Promise<RawResponse> {
+/**
+ * Trả về phản hồi đã đọc JSON. Ném lỗi NETWORK/TIMEOUT khi chưa chắc máy chủ đã nhận yêu cầu.
+ *
+ * Xuất ra ngoài để khu Admin (`mobile-admin-client.ts`) dùng chung một lớp truyền tải, thay vì viết lại
+ * phần hết thời gian chờ và đọc JSON.
+ */
+export async function requestJson(url: string, init: RequestInit, options: RequestOptions): Promise<RawResponse> {
   const { fetchImpl = globalThis.fetch, timeoutMs = DEFAULT_TIMEOUT_MS, signal } = options;
   const controller = new AbortController();
   const onAbort = () => controller.abort();

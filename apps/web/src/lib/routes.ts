@@ -40,6 +40,11 @@ export const ROUTES = {
   adminAdPricing: "/admin/quang-cao/bang-gia",
   adminAdPlacements: "/admin/hien-thi-quang-cao",
   adminAdPricingInquiries: "/admin/quang-cao/bang-gia/yeu-cau",
+  // Khu đối tác và các mục trước đây chỉ có trên app Admin (dùng chung api/mobile/admin/*)
+  adminPartners: "/admin/doi-tac",
+  adminPartnerContent: "/admin/doi-tac/noi-dung",
+  adminMarketplace: "/admin/cho-do-cu",
+  adminBugReports: "/admin/bao-loi",
   adminUsers: "/admin/nguoi-dung",
   adminPaymentChannels: "/admin/nhan-tien",
   adminSettings: "/admin/cai-dat",
