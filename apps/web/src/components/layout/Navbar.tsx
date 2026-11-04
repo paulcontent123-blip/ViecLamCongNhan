@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ROUTES } from "@/lib/routes";
 import { useAuthModal } from "@/components/layout/AuthModalContext";
+import { WORKER_SERVICE_LIST } from "@/lib/worker-services";
 
 const timViecItems = [
   { href: `${ROUTES.timViecLam}?tab=jobs`, icon: "🔍", label: "Tìm việc theo ngành / lương" },
@@ -21,6 +22,14 @@ const tuyenDungItemsPublic = [
   { href: `${ROUTES.tuyenDung}?tab=goi`, icon: "💼", label: "Gói đăng tin tuyển dụng" },
   { href: `${ROUTES.tuyenDung}?tab=blast`, icon: "📲", label: "Dịch vụ Blast SMS / Zalo" },
 ];
+
+// Khu dịch vụ cho công nhân: lấy từ cùng một nguồn với các trang trong khu, để thêm hoặc đổi tên
+// một dịch vụ thì chỉ sửa `WORKER_SERVICES` ‑ menu không lệch với trang.
+const dichVuCongNhanItems = WORKER_SERVICE_LIST.map((item) => ({
+  href: item.href,
+  icon: item.icon,
+  label: item.title,
+}));
 
 const simpleLinks = [
   { href: ROUTES.quangCaoHopTac, label: "Quảng cáo / Hợp tác" },
@@ -222,6 +231,7 @@ export function Navbar() {
         </Link>
         <NavDropdown label="Tìm việc làm" href={ROUTES.timViecLam} items={timViecItems} />
         <NavDropdown label="Tuyển dụng" href={ROUTES.tuyenDung} items={tuyenDungItemsPublic} />
+        <NavDropdown label="Dịch vụ công nhân" href={ROUTES.dichVuCongNhan} items={dichVuCongNhanItems} />
         {simpleLinks.map((link) => (
           <Link
             key={link.href}
@@ -266,6 +276,16 @@ export function Navbar() {
           ))}
           <div className="px-3 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wide text-brand-navy/40">Tuyển dụng</div>
           {tuyenDungItemsPublic.map((item) => (
+            <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 text-[14px] text-brand-navy/85" onClick={() => setMobileOpen(false)}>
+              {item.icon} {item.label}
+            </Link>
+          ))}
+          <div className="px-3 pt-2 pb-1 text-[11px] font-bold uppercase tracking-wide text-brand-navy/40">
+            <Link href={ROUTES.dichVuCongNhan} onClick={() => setMobileOpen(false)}>
+              Dịch vụ công nhân
+            </Link>
+          </div>
+          {dichVuCongNhanItems.map((item) => (
             <Link key={item.href} href={item.href} className="rounded-lg px-3 py-2.5 text-[14px] text-brand-navy/85" onClick={() => setMobileOpen(false)}>
               {item.icon} {item.label}
             </Link>

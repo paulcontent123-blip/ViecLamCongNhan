@@ -7,6 +7,13 @@ export const ROUTES = {
   tuyenDung: "/tuyen-dung",
   quangCaoHopTac: "/quang-cao-hop-tac",
   dichVuTronGoi: "/dich-vu-tron-goi",
+  // Khu dịch vụ cho công nhân (đọc qua api/mobile/*, cùng dữ liệu với app)
+  dichVuCongNhan: "/dich-vu-cong-nhan",
+  hocNghe: "/dich-vu-cong-nhan/hoc-nghe",
+  thueTro: "/dich-vu-cong-nhan/thue-tro",
+  baoHiem: "/dich-vu-cong-nhan/bao-hiem",
+  taiChinh: "/dich-vu-cong-nhan/tai-chinh",
+  yTe: "/dich-vu-cong-nhan/y-te",
   tinTucQuyenLoi: "/tin-tuc-quyen-loi",
   quyenLoi: "/tin-tuc-quyen-loi/quyen-loi",
   hoiDap: "/tin-tuc-quyen-loi/hoi-dap",

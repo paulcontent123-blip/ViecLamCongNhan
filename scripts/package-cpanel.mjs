@@ -138,10 +138,16 @@ if (process.platform === "win32") {
   console.log("Nén thành .zip...");
   const { execFileSync } = await import("node:child_process");
   try {
-    // tar.exe có sẵn trên Windows 10/11 và không phụ thuộc module PowerShell.
-    execFileSync("tar.exe", ["-a", "-c", "-f", zip, "-C", out, "."], { stdio: "inherit" });
+    // Gọi thẳng bsdtar của Windows (System32) thay vì "tar.exe" theo PATH: nếu máy
+    // có Git for Windows thì PATH trỏ vào GNU tar trước, mà GNU tar hiểu "D:\..."
+    // là host:path nên báo "Cannot connect to D:" rồi rơi xuống Compress-Archive.
+    const systemTar = path.join(process.env.SystemRoot || "C:\\Windows", "System32", "tar.exe");
+    const tarBin = (await exists(systemTar)) ? systemTar : "tar.exe";
+    execFileSync(tarBin, ["-a", "-c", "-f", zip, "-C", out, "."], { stdio: "inherit" });
   } catch {
-    // Fallback cho máy Windows cũ không có tar.exe.
+    // Fallback cho máy Windows cũ không có tar.exe. Lưu ý: Compress-Archive ghi tên
+    // entry bằng dấu "\", một số trình giải nén trên Linux coi đó là tên file chứ
+    // không phải thư mục — giải nén xong nên kiểm tra lại cây thư mục trên server.
     console.warn("tar.exe không khả dụng, chuyển sang Compress-Archive...");
     await rm(zip, { force: true });
     execFileSync(

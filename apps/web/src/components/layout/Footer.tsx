@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ROUTES } from "@/lib/routes";
+import { WORKER_SERVICE_LIST } from "@/lib/worker-services";
 
 const footerLinkClass =
   "text-[13px] leading-5 text-white/55 transition-colors hover:text-white";
@@ -9,7 +10,7 @@ export function Footer() {
   return (
     <footer className="mt-auto bg-[#0d1117] px-4 pb-6 pt-11 text-white sm:px-8 lg:px-[52px]">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-[1.7fr_1fr_1fr_1fr_1fr]">
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href={ROUTES.home} className="inline-block text-[20px] font-black tracking-[-0.03em]">
               ViecLam<span className="text-brand-orange">CongNhan</span>.com
@@ -70,6 +71,19 @@ export function Footer() {
               <Link href={ROUTES.quangCaoHopTac} className={footerLinkClass}>
                 Liên hệ hợp tác
               </Link>
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white/40">
+              Dịch vụ công nhân
+            </div>
+            <div className="flex flex-col gap-2">
+              {WORKER_SERVICE_LIST.map((item) => (
+                <Link key={item.key} href={item.href} className={footerLinkClass}>
+                  {item.title}
+                </Link>
+              ))}
             </div>
           </div>
 

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { absoluteUrl } from "@/lib/site-url";
 import { ROUTES } from "@/lib/routes";
+import { WORKER_SERVICE_LIST } from "@/lib/worker-services";
 
 // Xây lại tối đa 1 lần/giờ. Tin tuyển dụng mới không cần xuất hiện trong sitemap
 // tức thì, mà mỗi lần dựng là 4 query xuống Supabase ‑ không nên chạy mỗi request.
@@ -66,6 +67,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl(ROUTES.quyenLoi), lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: absoluteUrl(ROUTES.hoiDap), lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: absoluteUrl(ROUTES.ungVien), lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // Khu dịch vụ cho công nhân. Chỉ đưa trang danh sách: nội dung từng khóa học, tin cho thuê, sản phẩm
+    // được trình duyệt tải qua api/mobile nên không có URL riêng để Google đọc (xem ghi chú ở các trang này).
+    { url: absoluteUrl(ROUTES.dichVuCongNhan), lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    ...WORKER_SERVICE_LIST.map((item) => ({
+      url: absoluteUrl(item.href),
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.7,
+    })),
   ];
 
   return [
