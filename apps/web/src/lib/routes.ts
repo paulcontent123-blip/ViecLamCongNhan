@@ -43,7 +43,6 @@ export const ROUTES = {
   // Khu đối tác và các mục trước đây chỉ có trên app Admin (dùng chung api/mobile/admin/*)
   adminPartners: "/admin/doi-tac",
   adminPartnerContent: "/admin/doi-tac/noi-dung",
-  adminMarketplace: "/admin/cho-do-cu",
   adminBugReports: "/admin/bao-loi",
   adminUsers: "/admin/nguoi-dung",
   adminPaymentChannels: "/admin/nhan-tien",
@@ -94,6 +93,11 @@ export const ROUTES = {
   thueTroDoiTacProfile: "/doi-tac/thue-tro/dashboard/thong-tin",
   thueTroDoiTacOrders: "/doi-tac/thue-tro/dashboard/goi-dich-vu",
   thueTroDoiTacBooked: "/doi-tac/thue-tro/dashboard/dich-vu-da-dat",
+  // Tài khoản công nhân (dùng chung api/auth/candidate/* và api/mobile/candidate/* với app)
+  congNhanLogin: "/cong-nhan/dang-nhap",
+  congNhanAccount: "/cong-nhan/tai-khoan",
+  congNhanMatches: "/cong-nhan/goi-y",
+  congNhanSaved: "/cong-nhan/viec-da-luu",
   ntdLogin: "/tuyen-dung/dang-nhap",
   ntdDashboard: "/tuyen-dung/dashboard",
   ntdDashboardPostJob: "/tuyen-dung/dashboard/dang-tin",

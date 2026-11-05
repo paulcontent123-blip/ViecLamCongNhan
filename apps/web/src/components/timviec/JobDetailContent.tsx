@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SaveJobButton } from "@/components/congnhan/SaveJobButton";
 import type { JobWithRelations } from "@/types/db";
 import { ROUTES } from "@/lib/routes";
 import { provinceName } from "@/lib/provinces";
@@ -110,12 +111,15 @@ export function JobDetailContent({ job }: { job: JobWithRelations }) {
 
       <div className="sticky bottom-0 -mx-6 mt-6 flex items-center justify-between gap-3 border-t border-black/5 bg-white px-6 py-4 sm:-mx-0 sm:rounded-b-2xl">
         <div className="text-[16px] font-extrabold text-brand-orange">{formatSalary(job.salary_min, job.salary_max)}</div>
-        <Link
-          href={applyHref}
-          className="whitespace-nowrap rounded-xl bg-brand-orange px-6 py-3 text-[14px] font-bold text-white shadow-sm transition hover:brightness-105"
-        >
-          Ứng tuyển ngay →
-        </Link>
+        <div className="flex items-start gap-2">
+          <SaveJobButton jobId={job.id} />
+          <Link
+            href={applyHref}
+            className="whitespace-nowrap rounded-xl bg-brand-orange px-6 py-3 text-[14px] font-bold text-white shadow-sm transition hover:brightness-105"
+          >
+            Ứng tuyển ngay →
+          </Link>
+        </div>
       </div>
     </div>
   );

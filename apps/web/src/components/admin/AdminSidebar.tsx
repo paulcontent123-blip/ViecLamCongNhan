@@ -78,7 +78,6 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
           // Mục con nằm trong mục cha nên đã theo quyền của cha; lọc quyền chỉ chạy ở cấp một.
           children: [{ href: ROUTES.adminPartnerContent, icon: "✅", label: "Duyệt nội dung" }],
         },
-        { href: ROUTES.adminMarketplace, icon: "🛒", label: "Chợ đồ cũ" },
         { href: ROUTES.adminBugReports, icon: "🐞", label: "Báo lỗi ứng dụng" },
       ],
     },

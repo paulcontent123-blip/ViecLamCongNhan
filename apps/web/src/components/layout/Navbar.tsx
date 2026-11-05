@@ -145,6 +145,16 @@ function AuthNavButton({
             >
               🏢 Nhà tuyển dụng
             </Link>
+            <Link
+              href={ROUTES.congNhanAccount}
+              onClick={() => {
+                setOpen(false);
+                onNavigate?.();
+              }}
+              className="block rounded-lg px-3 py-2.5 text-[13px] font-medium text-brand-navy/85 hover:bg-brand-orange-light hover:text-brand-orange"
+            >
+              👷 Công nhân
+            </Link>
           </div>
         )}
       </div>

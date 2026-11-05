@@ -44,6 +44,9 @@ export function Footer() {
               <Link href={ROUTES.ungVien} className={footerLinkClass}>
                 Để lại thông tin
               </Link>
+              <Link href={ROUTES.congNhanAccount} className={footerLinkClass}>
+                Tài khoản công nhân
+              </Link>
               <Link href={`${ROUTES.timViecLam}?tab=jobs`} className={footerLinkClass}>
                 Việc làm theo ngành
               </Link>
