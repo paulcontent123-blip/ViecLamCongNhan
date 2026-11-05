@@ -192,3 +192,37 @@ export async function setConsent(kind: ConsentKind, enabled: boolean): Promise<b
   }
   throw uncertain;
 }
+
+// ───────── Yêu cầu xóa tài khoản (cần Admin xác nhận) ─────────
+
+export type DeletionRequest = {
+  id: string;
+  status: "pending" | "rejected" | string;
+  reason: string | null;
+  requested_at: string;
+  handled_at: string | null;
+  admin_note: string | null;
+};
+
+/** Yêu cầu gần nhất đang chờ hoặc bị từ chối; null nếu chưa gửi. */
+export async function getDeletionRequest(): Promise<DeletionRequest | null> {
+  const data = await account.get<{ request?: unknown }>("candidate/deletion-request");
+  return data.request && typeof data.request === "object" ? (data.request as DeletionRequest) : null;
+}
+
+/** Gửi yêu cầu xóa. Lặp lại an toàn: đang có yêu cầu chờ thì máy chủ trả lại chính yêu cầu đó, không tạo trùng. */
+export async function requestDeletion(reason?: string): Promise<DeletionRequest> {
+  const data = await account.post<{ request?: unknown }>("candidate/deletion-request", reason ? { reason } : {}, {
+    uncertainMessage: "Chưa xác định yêu cầu xóa tài khoản đã gửi hay chưa. Tải lại trang để kiểm tra.",
+  });
+  if (!data.request || typeof data.request !== "object") {
+    throw new MobileApiError("Chưa xác nhận được yêu cầu xóa tài khoản đã gửi.", 0, "UNCERTAIN");
+  }
+  return data.request as DeletionRequest;
+}
+
+export async function cancelDeletion(): Promise<void> {
+  await account.delete("candidate/deletion-request", {
+    uncertainMessage: "Chưa xác định yêu cầu đã được rút lại hay chưa. Tải lại trang để kiểm tra.",
+  });
+}

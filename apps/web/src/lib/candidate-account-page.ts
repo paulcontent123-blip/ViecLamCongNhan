@@ -4,18 +4,19 @@ import { getCandidateSession } from "@/lib/candidate-auth";
 import { ROUTES } from "@/lib/routes";
 
 /**
- * Chặn trang tài khoản công nhân khi chưa đăng nhập.
+ * Chặn trang tài khoản công nhân khi chưa đăng nhập hoặc CHƯA được Admin xác nhận.
  *
+ * Công nhân đăng ký bằng số điện thoại + mật khẩu nên `users.is_verified = false` cho tới khi Admin xác nhận. Gọi
+ * `getCandidateSession()` KHÔNG kèm `allowUnverifiedPasswordSession` thì phiên chưa xác nhận trả về null, nên web chặn đúng
+ * nhóm này mà không cần sửa BE (app vẫn dùng chế độ cho phép phiên chưa xác minh như cũ).
  * Middleware chỉ bảo vệ /admin và /tuyen-dung/dashboard, nên trang tự chặn ở đây thay vì sửa middleware.
- * Cho phép phiên mật khẩu chưa xác minh số điện thoại, giống các route mobile/candidate. Chặn thật vẫn ở máy chủ:
- * mọi route api/mobile/candidate/* tự kiểm tra phiên và trả 401.
  */
 export async function requireCandidatePage() {
-  const session = await getCandidateSession({ allowUnverifiedPasswordSession: true });
+  const session = await getCandidateSession();
   if (!session) redirect(ROUTES.congNhanLogin);
   return session;
 }
 
 export async function getCandidatePageSession() {
-  return getCandidateSession({ allowUnverifiedPasswordSession: true });
+  return getCandidateSession();
 }

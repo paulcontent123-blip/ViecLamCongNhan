@@ -27,7 +27,10 @@ import {
 } from "@/lib/candidate-account";
 import {
   CandidateFieldError,
-  deleteAccount,
+  cancelDeletion,
+  getDeletionRequest,
+  requestDeletion,
+  type DeletionRequest,
   getAvatar,
   getConsent,
   getProfile,
@@ -41,7 +44,7 @@ import {
   type CandidateSession,
   type ConsentKind,
 } from "@/lib/candidate-account-client";
-import { formatDate } from "@/lib/format-date";
+import { formatDate, formatDateTime } from "@/lib/format-date";
 import { industryLabel, JOB_INDUSTRIES } from "@/lib/industries";
 import { MobileApiError } from "@/lib/mobile-session-client";
 import { PORTAL_ACCENT as accent } from "@/lib/portal-accent";
@@ -174,6 +177,9 @@ export function CandidateAccount() {
         </Link>
         <Link href={ROUTES.congNhanSaved} className="rounded-xl border border-black/10 bg-white px-4 py-2 text-[12.5px] font-bold text-brand-navy/70 transition hover:border-brand-orange hover:text-brand-orange">
           ❤️ Việc đã lưu
+        </Link>
+        <Link href={ROUTES.baoLoi} className="rounded-xl border border-black/10 bg-white px-4 py-2 text-[12.5px] font-bold text-brand-navy/70 transition hover:border-brand-orange hover:text-brand-orange">
+          🐞 Báo lỗi
         </Link>
       </div>
 
@@ -688,8 +694,9 @@ function Sharing(props: { verified: boolean; locked: boolean; onUncertain: (mess
   );
 }
 
-// ───────── Đăng xuất / xoá tài khoản ─────────
+// ───────── Đăng xuất / yêu cầu xóa tài khoản ─────────
 
+/** Xóa tài khoản cần Admin xác nhận: công nhân chỉ GỬI yêu cầu, tài khoản vẫn dùng được trong lúc chờ. */
 function DangerZone({
   locked,
   onUncertain,
@@ -700,8 +707,33 @@ function DangerZone({
   onExpired: () => void;
 }) {
   const router = useRouter();
-  const [busy, setBusy] = useState<"" | "logout" | "delete">("");
+  const [busy, setBusy] = useState<"" | "logout" | "request" | "cancel">("");
   const [error, setError] = useState("");
+  const [request, setRequest] = useState<DeletionRequest | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    getDeletionRequest()
+      .then((value) => {
+        if (!alive) return;
+        setRequest(value);
+        setLoaded(true);
+      })
+      .catch((err) => {
+        if (!alive) return;
+        if (isSessionExpired(err)) onExpired();
+        else {
+          setError(messageOf(err, "Chưa tải được trạng thái yêu cầu xóa tài khoản."));
+          setLoaded(true);
+        }
+      });
+    return () => {
+      alive = false;
+    };
+    // Chỉ tải một lần khi mở màn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function doLogout() {
     if (busy) return;
@@ -717,28 +749,50 @@ function DangerZone({
     }
   }
 
-  async function doDelete() {
+  async function requestDelete() {
     if (busy || locked) return;
     const ok = window.confirm(
-      "Xóa tài khoản công nhân?\n\nHồ sơ, ảnh đại diện, đơn ứng tuyển và các dữ liệu gắn với tài khoản sẽ bị xóa, không thể khôi phục. Yêu cầu bạn đã gửi cho đối tác vẫn được đối tác giữ nhưng không còn gắn với tài khoản. Bạn chưa xóa được nếu còn yêu cầu đổi quà đang chờ xử lý.",
+      "Gửi yêu cầu xóa tài khoản?\n\nKhi Admin xác nhận, hồ sơ, ảnh đại diện, đơn ứng tuyển và các dữ liệu gắn với tài khoản sẽ bị xóa, không thể khôi phục. Yêu cầu bạn đã gửi cho đối tác vẫn được đối tác giữ nhưng không còn gắn với tài khoản. Trong lúc chờ Admin, bạn vẫn dùng tài khoản bình thường và có thể rút lại yêu cầu.",
     );
     if (!ok) return;
-    setBusy("delete");
+    setBusy("request");
     setError("");
     try {
-      await deleteAccount();
-      router.replace(ROUTES.congNhanLogin);
-      router.refresh();
+      setRequest(await requestDeletion());
     } catch (err) {
       if (isSessionExpired(err)) {
         onExpired();
         return;
       }
-      setError(messageOf(err, "Chưa xóa được tài khoản."));
-      if (err instanceof MobileApiError && err.uncertain) onUncertain(messageOf(err, "Chưa xác định tài khoản đã xóa hay chưa."));
+      setError(messageOf(err, "Chưa gửi được yêu cầu xóa tài khoản."));
+      // Gửi lặp lại an toàn (đang có yêu cầu chờ thì không tạo trùng), nhưng vẫn báo rõ để người dùng kiểm tra.
+      if (err instanceof MobileApiError && err.uncertain) onUncertain(messageOf(err, "Chưa xác định yêu cầu đã gửi hay chưa."));
+    } finally {
       setBusy("");
     }
   }
+
+  async function cancelRequest() {
+    if (busy) return;
+    if (!window.confirm("Rút lại yêu cầu xóa tài khoản? Tài khoản của bạn sẽ được giữ nguyên.")) return;
+    setBusy("cancel");
+    setError("");
+    try {
+      await cancelDeletion();
+      setRequest(null);
+    } catch (err) {
+      if (isSessionExpired(err)) {
+        onExpired();
+        return;
+      }
+      setError(messageOf(err, "Chưa rút lại được yêu cầu."));
+    } finally {
+      setBusy("");
+    }
+  }
+
+  const pending = request?.status === "pending";
+  const rejected = request?.status === "rejected";
 
   return (
     <div className="rounded-xl border border-black/5 bg-white p-5">
@@ -747,6 +801,23 @@ function DangerZone({
           <Banner tone="error">{error}</Banner>
         </div>
       )}
+
+      {pending && (
+        <div className="mb-3">
+          <Banner tone="warn">
+            ⏳ Bạn đã gửi yêu cầu xóa tài khoản{request?.requested_at ? ` lúc ${formatDateTime(request.requested_at)}` : ""}. Tài khoản sẽ bị xóa khi
+            Admin xác nhận. Bạn vẫn dùng tài khoản bình thường trong lúc chờ.
+          </Banner>
+        </div>
+      )}
+      {rejected && (
+        <div className="mb-3">
+          <Banner tone="error">
+            Admin đã từ chối yêu cầu xóa tài khoản của bạn{request?.admin_note ? `: ${request.admin_note}` : "."} Tài khoản được giữ nguyên.
+          </Banner>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -756,14 +827,25 @@ function DangerZone({
         >
           {busy === "logout" ? "Đang đăng xuất…" : "Đăng xuất"}
         </button>
-        <button
-          type="button"
-          disabled={Boolean(busy) || locked}
-          onClick={doDelete}
-          className="rounded-xl border border-red-200 px-5 py-2.5 text-[13px] font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
-        >
-          {busy === "delete" ? "Đang xóa…" : "Xóa tài khoản"}
-        </button>
+        {pending ? (
+          <button
+            type="button"
+            disabled={Boolean(busy)}
+            onClick={cancelRequest}
+            className="rounded-xl border border-black/10 px-5 py-2.5 text-[13px] font-bold text-brand-navy/70 transition hover:border-brand-orange hover:text-brand-orange disabled:opacity-50"
+          >
+            {busy === "cancel" ? "Đang rút lại…" : "Rút lại yêu cầu xóa"}
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={Boolean(busy) || locked || !loaded}
+            onClick={requestDelete}
+            className="rounded-xl border border-red-200 px-5 py-2.5 text-[13px] font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+          >
+            {busy === "request" ? "Đang gửi yêu cầu…" : "Xóa tài khoản"}
+          </button>
+        )}
       </div>
     </div>
   );

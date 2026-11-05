@@ -88,11 +88,14 @@ function NavDropdown({
 function AuthNavButton({
   isAdminLoggedIn,
   isEmployerLoggedIn,
+  accountHref,
   variant,
   onNavigate,
 }: {
   isAdminLoggedIn: boolean;
   isEmployerLoggedIn: boolean;
+  /** Trang của tài khoản Công nhân hoặc Đối tác đang đăng nhập (nếu có). */
+  accountHref: string | null;
   variant: "desktop" | "mobile";
   onNavigate?: () => void;
 }) {
@@ -177,6 +180,14 @@ function AuthNavButton({
     );
   }
 
+  if (accountHref) {
+    return (
+      <Link href={accountHref} className={className} onClick={onNavigate}>
+        👤 Tài khoản
+      </Link>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -186,9 +197,8 @@ function AuthNavButton({
       }}
       className={className}
     >
-      {/* Thanh menu ngang để gọn là "Đăng nhập" ‑ hộp thoại mở ra đã có sẵn tab chọn Quản trị hay Nhà
-          tuyển dụng nên không mất thông tin. Trong menu ☰ thì ghi đủ vì ở đó không thiếu chỗ. */}
-      {variant === "desktop" ? "Đăng nhập" : "Quản trị / Nhà tuyển dụng"}
+      {/* Một nút "Đăng nhập" chung: hộp thoại tự nhận loại tài khoản (Admin, Nhà tuyển dụng, Đối tác, Công nhân). */}
+      Đăng nhập
     </button>
   );
 }
@@ -198,6 +208,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [employerCompanyName, setEmployerCompanyName] = useState<string | null>(null);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [accountHref, setAccountHref] = useState<string | null>(null);
   const isEmployerLoggedIn = Boolean(employerCompanyName);
 
   // Navbar sống xuyên suốt qua điều hướng client-side (nằm trong layout gốc,
@@ -212,6 +223,12 @@ export function Navbar() {
       .then((res) => res.json())
       .then((data) => {
         if (!cancelled) setEmployerCompanyName(data.loggedIn ? data.companyName : null);
+      })
+      .catch(() => {});
+    fetch("/api/auth/account")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setAccountHref(data.loggedIn && typeof data.href === "string" ? data.href : null);
       })
       .catch(() => {});
     fetch("/api/auth/admin/me")
@@ -261,7 +278,7 @@ export function Navbar() {
       </div>
 
       <div className="hidden items-center gap-2 min-[1280px]:flex">
-        <AuthNavButton isAdminLoggedIn={isAdminLoggedIn} isEmployerLoggedIn={isEmployerLoggedIn} variant="desktop" />
+        <AuthNavButton accountHref={accountHref} isAdminLoggedIn={isAdminLoggedIn} isEmployerLoggedIn={isEmployerLoggedIn} variant="desktop" />
         <Link
           href={ROUTES.ungVien}
           className="whitespace-nowrap rounded-lg bg-gradient-to-br from-brand-orange to-[#E06428] px-3.5 py-[9px] text-[12.5px] font-bold text-white shadow-sm transition-transform hover:brightness-105"
@@ -314,6 +331,7 @@ export function Navbar() {
           ))}
           <div className="mt-2 flex flex-col gap-2 border-t border-black/5 pt-3">
             <AuthNavButton
+              accountHref={accountHref}
               isAdminLoggedIn={isAdminLoggedIn}
               isEmployerLoggedIn={isEmployerLoggedIn}
               variant="mobile"

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { ROUTES } from "@/lib/routes";
 import { adminCan, type AdminCapability, type AdminRole } from "@/lib/admin-roles";
 
@@ -62,6 +63,8 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
           badge: counts.unverifiedEmployers || undefined,
         },
         { href: ROUTES.adminWorkerInquiries, icon: "🙋", label: "Yêu cầu dịch vụ công nhân" },
+        { href: ROUTES.adminCandidateAccounts, icon: "✅", label: "Xác nhận tài khoản công nhân", capability: "admin_users" },
+        { href: ROUTES.adminCandidateDeletions, icon: "🗑️", label: "Yêu cầu xóa tài khoản", capability: "admin_users" },
         { href: ROUTES.adminBlast, icon: "📲", label: "Blast campaigns" },
       ],
     },
@@ -126,7 +129,7 @@ function buildGroups(counts: AdminSidebarCounts): NavGroup[] {
 function AdminNavItem({ item, pathname, level = 0 }: { item: NavItem; pathname: string; level?: number }) {
   const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
   const classes = [
-    "flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-3.5 py-2.5 text-[13px] font-semibold transition",
+    "flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-lg px-3.5 py-2.5 text-[13px] font-semibold transition lg:min-w-0 lg:shrink lg:whitespace-normal",
     level > 0 ? "ml-2 text-[12.5px]" : "",
     active
       ? "bg-brand-orange-light text-brand-orange"
@@ -137,9 +140,9 @@ function AdminNavItem({ item, pathname, level = 0 }: { item: NavItem; pathname: 
 
   return (
     <>
-      <Link href={item.href} className={classes}>
+      <Link href={item.href} className={classes} data-active={active ? "true" : undefined}>
         <span>{item.icon}</span>
-        <span className="flex-1">{item.label}</span>
+        <span className="min-w-0 flex-1 leading-snug">{item.label}</span>
         {item.badge !== undefined && (
           <span className="rounded-full bg-brand-orange px-1.5 py-0.5 text-[10px] font-bold text-white">
             {item.badge.toLocaleString("vi-VN")}
@@ -159,12 +162,23 @@ function AdminNavItem({ item, pathname, level = 0 }: { item: NavItem; pathname: 
 
 export function AdminSidebar({ counts, adminRole }: { counts: AdminSidebarCounts; adminRole: AdminRole }) {
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
+
+  // Menu có thanh cuộn riêng và đứng yên khi chuyển trang (layout không tải lại). Chỉ khi mục đang chọn nằm ngoài vùng nhìn
+  // thấy (ví dụ mở thẳng một đường dẫn) mới cuộn tới đó; nếu đã thấy thì giữ nguyên vị trí.
+  useEffect(() => {
+    navRef.current?.querySelector<HTMLElement>("[data-active=true]")?.scrollIntoView({ block: "nearest" });
+  }, [pathname]);
+
   const groups = buildGroups(counts)
     .map((group) => ({ ...group, items: group.items.filter((item) => !item.capability || adminCan(adminRole, item.capability)) }))
     .filter((group) => group.items.length > 0);
 
   return (
-    <nav className="border-b border-black/5 bg-white px-2 py-3 lg:min-h-[calc(100vh-58px)] lg:border-b-0 lg:border-r lg:px-0 lg:py-4">
+    <nav
+      ref={navRef}
+      className="border-b border-black/5 bg-white px-2 py-3 lg:sticky lg:top-[60px] lg:h-[calc(100vh-60px)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:border-b-0 lg:border-r lg:px-0 lg:py-4"
+    >
       {groups.map((group) => (
         <div key={group.label} className="mb-1 lg:mb-3">
           <div className="hidden px-5 pb-1.5 pt-3 text-[10.5px] font-bold uppercase tracking-wider text-brand-navy/35 lg:block first:pt-0">

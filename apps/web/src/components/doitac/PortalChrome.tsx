@@ -121,7 +121,15 @@ export function PortalChrome({
           </div>
           <div className="truncate text-[12px] text-white/60">{providerName}</div>
         </div>
-        <PortalLogoutButton portal={portal} />
+        <div className="flex shrink-0 items-center gap-2">
+          <Link
+            href={ROUTES.baoLoi}
+            className="rounded-lg border border-white/25 px-3 py-1.5 text-[12px] font-bold text-white/85 transition hover:bg-white/10"
+          >
+            🐞 Báo lỗi
+          </Link>
+          <PortalLogoutButton portal={portal} />
+        </div>
       </div>
 
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 lg:grid-cols-[230px_1fr]">

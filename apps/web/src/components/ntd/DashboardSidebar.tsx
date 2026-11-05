@@ -13,6 +13,7 @@ const items = [
   { href: ROUTES.ntdDashboardOrders, label: "💳 Đơn hàng & Gói" },
   { href: ROUTES.ntdDashboardServices, label: "📦 Dịch vụ đã đặt" },
   { href: ROUTES.ntdDashboardProfile, label: "🧾 Thông tin tài khoản" },
+  { href: ROUTES.baoLoi, label: "🐞 Báo lỗi website" },
 ];
 
 export function DashboardSidebar() {
