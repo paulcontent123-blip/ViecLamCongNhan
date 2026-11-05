@@ -34,8 +34,16 @@ export type PartnerProviderConfig = {
   patchShape: ProviderPatchShape;
   /** Khu có hạn mức xem liên hệ do Admin cấp hay không. */
   hasContactLimit: boolean;
-  /** Khu có lưu giấy phép để Admin đối chiếu hay không. */
-  hasLicense: boolean;
+  /**
+   * Máy chủ CHẶN xác minh khi đối tác chưa khai số giấy phép và hồ sơ giấy phép (trả 400).
+   * Giao diện báo trước và khoá nút, để Admin không bấm vào chỗ chắc chắn hỏng.
+   */
+  requiresLicenseToVerify: boolean;
+  /**
+   * Đường dẫn lấy liên kết có chữ ký cho hồ sơ giấy phép lưu ở kho riêng (`private-storage:...`).
+   * Chỉ khu Tài chính có; các khu khác lưu liên kết https công khai nên mở thẳng được. `{id}` là mã đối tác.
+   */
+  evidenceSignedUrlPath: string | null;
 };
 
 export const PARTNER_PROVIDERS: Record<PartnerKind, PartnerProviderConfig> = {
@@ -47,7 +55,8 @@ export const PARTNER_PROVIDERS: Record<PartnerKind, PartnerProviderConfig> = {
     path: "admin/training-providers",
     patchShape: "verified",
     hasContactLimit: false,
-    hasLicense: true,
+    requiresLicenseToVerify: false,
+    evidenceSignedUrlPath: null,
   },
   rental: {
     kind: "rental",
@@ -57,7 +66,8 @@ export const PARTNER_PROVIDERS: Record<PartnerKind, PartnerProviderConfig> = {
     path: "admin/rental-providers",
     patchShape: "verified",
     hasContactLimit: false,
-    hasLicense: false,
+    requiresLicenseToVerify: false,
+    evidenceSignedUrlPath: null,
   },
   insurance: {
     kind: "insurance",
@@ -67,7 +77,8 @@ export const PARTNER_PROVIDERS: Record<PartnerKind, PartnerProviderConfig> = {
     path: "admin/insurance-providers",
     patchShape: "verifiedOrLimit",
     hasContactLimit: true,
-    hasLicense: true,
+    requiresLicenseToVerify: false,
+    evidenceSignedUrlPath: null,
   },
   finance: {
     kind: "finance",
@@ -77,7 +88,8 @@ export const PARTNER_PROVIDERS: Record<PartnerKind, PartnerProviderConfig> = {
     path: "admin/finance-providers",
     patchShape: "verifiedOrLimit",
     hasContactLimit: true,
-    hasLicense: true,
+    requiresLicenseToVerify: true,
+    evidenceSignedUrlPath: "admin/finance-providers/{id}/license-evidence",
   },
   health: {
     kind: "health",
@@ -87,7 +99,8 @@ export const PARTNER_PROVIDERS: Record<PartnerKind, PartnerProviderConfig> = {
     path: "admin/health-providers",
     patchShape: "health",
     hasContactLimit: true,
-    hasLicense: true,
+    requiresLicenseToVerify: true,
+    evidenceSignedUrlPath: null,
   },
 };
 

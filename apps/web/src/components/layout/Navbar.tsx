@@ -53,7 +53,7 @@ function NavDropdown({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 whitespace-nowrap rounded-[7px] px-[9px] py-[5px] text-[12px] font-semibold text-brand-navy/70 transition-colors hover:bg-brand-orange-light hover:text-brand-orange"
+        className="flex items-center gap-1 whitespace-nowrap rounded-[7px] px-[6px] py-[5px] text-[12px] font-semibold text-brand-navy/70 transition-colors hover:bg-brand-orange-light hover:text-brand-orange"
         aria-expanded={open}
       >
         <Link href={href} onClick={(e) => e.stopPropagation()}>
@@ -176,7 +176,9 @@ function AuthNavButton({
       }}
       className={className}
     >
-      Quản trị / Nhà tuyển dụng
+      {/* Thanh menu ngang để gọn là "Đăng nhập" ‑ hộp thoại mở ra đã có sẵn tab chọn Quản trị hay Nhà
+          tuyển dụng nên không mất thông tin. Trong menu ☰ thì ghi đủ vì ở đó không thiếu chỗ. */}
+      {variant === "desktop" ? "Đăng nhập" : "Quản trị / Nhà tuyển dụng"}
     </button>
   );
 }
@@ -214,18 +216,23 @@ export function Navbar() {
   }, [pathname]);
 
   return (
-    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-between border-b-[3px] border-brand-orange bg-[rgba(247,248,252,0.97)] px-4 shadow-sm backdrop-blur sm:px-8 lg:px-[52px]">
+    // Lề 52px chỉ bật ở màn thật rộng. Ngay trên ngưỡng hiện menu đầy đủ, lề rộng ăn mất 104px và đẩy
+    // nút "Để lại thông tin" ra ngoài màn hình; giữ 32px tới 1536px (2xl) rồi mới nới ra.
+    <nav className="sticky top-0 z-50 flex h-[60px] items-center justify-between border-b-[3px] border-brand-orange bg-[rgba(247,248,252,0.97)] px-4 shadow-sm backdrop-blur sm:px-8 xl:px-5 2xl:px-[52px]">
       <Link href={ROUTES.home} className="flex items-center gap-2 shrink-0">
         <span className="text-xl">🏭</span>
-        <span className="text-[15px] font-extrabold text-brand-navy">
-          ViecLam<span className="text-brand-orange">CongNhan</span>.com
+        <span className="text-[14px] font-extrabold text-brand-navy">
+          ViecLam<span className="text-brand-orange">CongNhan</span>
+          {/* Chỉ bỏ ".com" trong dải chật 1280‑1535px, nơi menu ngang vừa đủ chỗ. Hẹp hơn thì đã là menu ☰
+              (thừa chỗ), rộng hơn thì cũng thừa chỗ ‑ cả hai đều hiện đủ tên miền. */}
+          <span className="inline xl:hidden 2xl:inline">.com</span>
         </span>
       </Link>
 
-      <div className="hidden items-center gap-px min-[1360px]:flex">
+      <div className="hidden items-center gap-px min-[1280px]:flex">
         <Link
           href={ROUTES.home}
-          className="whitespace-nowrap rounded-[7px] px-[9px] py-[5px] text-[12px] font-semibold text-brand-navy/70 transition-colors hover:bg-brand-orange-light hover:text-brand-orange"
+          className="whitespace-nowrap rounded-[7px] px-[6px] py-[5px] text-[12px] font-semibold text-brand-navy/70 transition-colors hover:bg-brand-orange-light hover:text-brand-orange"
         >
           Trang chủ
         </Link>
@@ -236,18 +243,18 @@ export function Navbar() {
           <Link
             key={link.href}
             href={link.href}
-            className="whitespace-nowrap rounded-[7px] px-[9px] py-[5px] text-[12px] font-semibold text-brand-navy/70 transition-colors hover:bg-brand-orange-light hover:text-brand-orange"
+            className="whitespace-nowrap rounded-[7px] px-[6px] py-[5px] text-[12px] font-semibold text-brand-navy/70 transition-colors hover:bg-brand-orange-light hover:text-brand-orange"
           >
             {link.label}
           </Link>
         ))}
       </div>
 
-      <div className="hidden items-center gap-2 min-[1360px]:flex">
+      <div className="hidden items-center gap-2 min-[1280px]:flex">
         <AuthNavButton isAdminLoggedIn={isAdminLoggedIn} isEmployerLoggedIn={isEmployerLoggedIn} variant="desktop" />
         <Link
           href={ROUTES.ungVien}
-          className="whitespace-nowrap rounded-lg bg-gradient-to-br from-brand-orange to-[#E06428] px-5 py-[9px] text-[13px] font-bold text-white shadow-sm transition-transform hover:brightness-105"
+          className="whitespace-nowrap rounded-lg bg-gradient-to-br from-brand-orange to-[#E06428] px-3.5 py-[9px] text-[12.5px] font-bold text-white shadow-sm transition-transform hover:brightness-105"
         >
           Để lại thông tin →
         </Link>
@@ -255,7 +262,7 @@ export function Navbar() {
 
       <button
         type="button"
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 text-lg min-[1360px]:hidden"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 text-lg min-[1280px]:hidden"
         onClick={() => setMobileOpen((v) => !v)}
         aria-label={mobileOpen ? "Đóng menu" : "Mở menu"}
         aria-expanded={mobileOpen}
@@ -264,7 +271,7 @@ export function Navbar() {
       </button>
 
       {mobileOpen && (
-        <div className="mobile-menu-panel absolute left-0 top-[60px] flex w-full flex-col gap-1 border-b border-black/5 bg-white p-3 shadow-lg min-[1360px]:hidden">
+        <div className="mobile-menu-panel absolute left-0 top-[60px] flex w-full flex-col gap-1 border-b border-black/5 bg-white p-3 shadow-lg min-[1280px]:hidden">
           <Link href={ROUTES.home} className="rounded-lg px-3 py-2.5 text-[14px] font-semibold text-brand-navy" onClick={() => setMobileOpen(false)}>
             Trang chủ
           </Link>

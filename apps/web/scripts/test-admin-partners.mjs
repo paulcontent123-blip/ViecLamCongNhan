@@ -59,8 +59,12 @@ function load(path, dependencies) {
   return exports;
 }
 
-const { adminList, adminPatch, buildAdminQuery } = load('../src/lib/mobile-admin-client.ts', {
+// Nạp theo chuỗi phụ thuộc: nhà máy dùng chung trước, rồi client Quản trị gắn lên nó.
+const sessionClient = load('../src/lib/mobile-session-client.ts', {
   '@/lib/worker-service-client': workerServiceClient,
+});
+const { adminList, adminPatch, buildAdminQuery } = load('../src/lib/mobile-admin-client.ts', {
+  '@/lib/mobile-session-client': sessionClient,
 });
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -154,6 +158,34 @@ test('ba thao tác duyệt đều nằm trong enum status của route', () => {
     for (const decision of CONTENT_DECISIONS) {
       assert.ok(source.includes(`"${decision}"`), `route ${kind} không nhận trạng thái ${decision}`);
     }
+  }
+});
+
+test('khu nào máy chủ chặn xác minh vì thiếu giấy phép thì cấu hình phải ghi nhận', () => {
+  for (const kind of PARTNER_KINDS) {
+    const config = PARTNER_PROVIDERS[kind];
+    const source = routeText(`${config.path}/[id]`);
+    // Route chặn bằng cách đọc license_number / license_evidence_url trước khi cho xác minh.
+    const gated = source.includes('license_number') || source.includes('license_evidence_url');
+    assert.equal(config.requiresLicenseToVerify, gated, `${config.path} lệch về điều kiện giấy phép`);
+  }
+  assert.equal(PARTNER_PROVIDERS.finance.requiresLicenseToVerify, true);
+  assert.equal(PARTNER_PROVIDERS.health.requiresLicenseToVerify, true);
+  assert.equal(PARTNER_PROVIDERS.training.requiresLicenseToVerify, false);
+});
+
+test('chỉ khu nào có route liên kết ký mới khai evidenceSignedUrlPath, và route đó có thật', () => {
+  for (const kind of PARTNER_KINDS) {
+    const config = PARTNER_PROVIDERS[kind];
+    if (!config.evidenceSignedUrlPath) continue;
+    // Đường dẫn chứa {id}; đổi về dạng thư mục route để kiểm tra tệp có tồn tại.
+    const routePath = config.evidenceSignedUrlPath.replace('{id}', '[id]');
+    assert.doesNotThrow(() => routeText(routePath), `không có route ${routePath}`);
+    assert.match(routeText(routePath), /createSignedUrl/);
+  }
+  assert.equal(PARTNER_PROVIDERS.finance.evidenceSignedUrlPath, 'admin/finance-providers/{id}/license-evidence');
+  for (const kind of ['training', 'rental', 'insurance', 'health']) {
+    assert.equal(PARTNER_PROVIDERS[kind].evidenceSignedUrlPath, null, `${kind} không có route liên kết ký`);
   }
 });
 

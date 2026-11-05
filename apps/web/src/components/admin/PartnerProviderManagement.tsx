@@ -13,7 +13,7 @@ import {
 } from "@/components/admin/AdminMobileShared";
 import { StatusPill } from "@/components/admin/StatusPill";
 import { formatDate } from "@/lib/format-date";
-import { adminPatch } from "@/lib/mobile-admin-client";
+import { adminGet, adminPatch } from "@/lib/mobile-admin-client";
 import {
   PARTNER_KINDS,
   PARTNER_PROVIDERS,
@@ -121,6 +121,77 @@ function ContactLimitEditor({
   );
 }
 
+/**
+ * Liên kết mở hồ sơ giấy phép.
+ *
+ * Khu Tài chính có thể lưu hồ sơ ở kho riêng dưới dạng `private-storage:<đường dẫn>` ‑ không mở thẳng được.
+ * Khi đó phải hỏi máy chủ một liên kết có chữ ký (đúng cách app Admin làm), nên đây là nút chứ không phải thẻ <a>.
+ */
+function LicenseEvidence({ row, config }: { row: ProviderRow; config: PartnerProviderConfig }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const raw = (row.license_evidence_url ?? "").trim();
+
+  if (!raw) {
+    if (!config.requiresLicenseToVerify) return null;
+    return (
+      <p className="mt-1 text-[12px] font-semibold text-amber-700">
+        Thiếu hồ sơ giấy phép ‑ chưa xác minh được.
+      </p>
+    );
+  }
+
+  if (raw.startsWith("https://")) {
+    return (
+      <a
+        href={raw}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-1 inline-block text-[12px] font-bold text-brand-orange underline"
+      >
+        Xem giấy phép đã tải lên ↗
+      </a>
+    );
+  }
+
+  if (raw.startsWith("private-storage:") && config.evidenceSignedUrlPath) {
+    return (
+      <div className="mt-1">
+        <button
+          type="button"
+          disabled={loading}
+          onClick={async () => {
+            setLoading(true);
+            setError("");
+            try {
+              const path = config.evidenceSignedUrlPath!.replace("{id}", encodeURIComponent(row.id));
+              const result = await adminGet<{ url?: unknown }>(path);
+              const url = typeof result.url === "string" ? result.url : "";
+              if (!url) throw new Error("Máy chủ không trả về liên kết hồ sơ.");
+              window.open(url, "_blank", "noopener,noreferrer");
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Chưa mở được hồ sơ giấy phép.");
+            } finally {
+              setLoading(false);
+            }
+          }}
+          className="text-[12px] font-bold text-brand-orange underline disabled:opacity-50"
+        >
+          {loading ? "Đang lấy liên kết…" : "Mở hồ sơ giấy phép (lưu riêng) ↗"}
+        </button>
+        {error && <p className="mt-0.5 text-[11.5px] text-red-600">{error}</p>}
+      </div>
+    );
+  }
+
+  // Liên kết không phải https và không phải kho riêng: không tự mở, chỉ cho Admin thấy để tự đánh giá.
+  return (
+    <p className="mt-1 break-all text-[11.5px] text-amber-700">
+      Hồ sơ giấy phép không mở được tự động: <span className="font-semibold">{raw}</span>
+    </p>
+  );
+}
+
 function ProviderCard({
   row,
   config,
@@ -140,10 +211,11 @@ function ProviderCard({
   const license = [row.tax_code && `MST ${row.tax_code}`, row.license_number && `GP ${row.license_number}`]
     .filter(Boolean)
     .join(" · ");
-  const evidence =
-    typeof row.license_evidence_url === "string" && row.license_evidence_url.startsWith("https://")
-      ? row.license_evidence_url
-      : null;
+  // Máy chủ chặn xác minh khi thiếu số giấy phép hoặc hồ sơ (Tài chính, Y tế): báo trước thay vì để Admin ăn lỗi 400.
+  const missingLicense =
+    config.requiresLicenseToVerify &&
+    !row.is_verified &&
+    (!row.license_number?.trim() || !row.license_evidence_url?.trim());
 
   return (
     <article className="rounded-xl border border-black/5 bg-white p-4 shadow-sm">
@@ -173,15 +245,11 @@ function ProviderCard({
             Đăng ký {formatDate(row.created_at)}
             {row.account_tier_expires_at ? ` · gói hết hạn ${formatDate(row.account_tier_expires_at)}` : ""}
           </p>
-          {evidence && (
-            <a
-              href={evidence}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 inline-block text-[12px] font-bold text-brand-orange underline"
-            >
-              Xem giấy phép đã tải lên ↗
-            </a>
+          <LicenseEvidence row={row} config={config} />
+          {missingLicense && !row.license_number?.trim() && (
+            <p className="mt-1 text-[12px] font-semibold text-amber-700">
+              Thiếu số giấy phép ‑ chưa xác minh được.
+            </p>
           )}
         </div>
 
@@ -196,7 +264,8 @@ function ProviderCard({
           )}
           <button
             type="button"
-            disabled={disabled}
+            disabled={disabled || missingLicense}
+            title={missingLicense ? "Đối tác phải khai số giấy phép và hồ sơ giấy phép trước khi xác minh" : undefined}
             onClick={() => onVerify(row, !row.is_verified)}
             className={`rounded-lg px-3 py-1.5 text-[11.5px] font-bold transition disabled:opacity-40 ${
               row.is_verified

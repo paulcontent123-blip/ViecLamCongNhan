@@ -225,7 +225,7 @@ export function TextField({
   value: string;
   onChange: (value: string) => void;
   accent: WorkerServiceMeta["accent"];
-  type?: "text" | "tel" | "email" | "date";
+  type?: "text" | "tel" | "email" | "date" | "password";
   required?: boolean;
   disabled?: boolean;
   maxLength?: number;
