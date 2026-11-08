@@ -12,13 +12,16 @@ const SELECT = "id, type, service_name, company_name, phone, email, request, kcn
 const MAX_ITEMS = 100;
 const headers = { "Cache-Control": "private, no-store" };
 
+// Hai truy vấn riêng, KHÔNG nhúng users(...) vào truy vấn bảng đối tác: mỗi bảng đối tác có hai đường tới users
+// (trực tiếp qua user_id và vòng qua bảng yêu cầu có provider_id + user_id) nên PostgREST báo "nhiều quan hệ" (PGRST201).
 async function phoneKeys(table: ProviderInquiryTable, userId: string): Promise<string[]> {
-  const { data, error } = await createSupabaseAdminClient().from(table).select("contact_phone, users(phone)").eq("user_id", userId).maybeSingle();
+  const supabase = createSupabaseAdminClient();
+  const { data: provider, error } = await supabase.from(table).select("contact_phone").eq("user_id", userId).maybeSingle();
   if (error) throw error;
-  if (!data) return [];
-  const row = data as unknown as { contact_phone: string | null; users: { phone: string | null } | { phone: string | null }[] | null };
-  const linked = Array.isArray(row.users) ? row.users[0] : row.users;
-  return [...new Set([row.contact_phone, linked?.phone].map((phone) => normalizePhone(phone ?? "")).filter(Boolean))];
+  if (!provider) return [];
+  const { data: account, error: accountError } = await supabase.from("users").select("phone").eq("id", userId).maybeSingle();
+  if (accountError) throw accountError;
+  return [...new Set([provider.contact_phone, account?.phone].map((phone) => normalizePhone(phone ?? "")).filter(Boolean))];
 }
 
 export async function providerServiceInquiriesResponse(

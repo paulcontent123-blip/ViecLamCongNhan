@@ -125,12 +125,12 @@ test('employer service inquiries sanitize failures', async () => {
 });
 
 // ── Dịch vụ đã đặt của 5 loại đối tác ──
-function providerHelper({ providerRow = { data: { contact_phone: '0901 234 567', users: { phone: '+84 901 234 567' } }, error: null }, inquiryResult = { data: [inquiry], count: 1, error: null } } = {}) {
+function providerHelper({ providerRow = { data: { contact_phone: '0901 234 567' }, error: null }, usersRow = { data: { phone: '+84 901 234 567' }, error: null }, inquiryResult = { data: [inquiry], count: 1, error: null } } = {}) {
   const log = [];
   const helper = load('../src/lib/provider-service-inquiries.ts', {
     'next/server': nextServer,
     '@/lib/phone': { normalizePhone },
-    '@/lib/supabase/admin': { createSupabaseAdminClient: () => fakeClient({ training_providers: providerRow, rental_providers: providerRow, insurance_providers: providerRow, finance_providers: providerRow, health_providers: providerRow, service_inquiries: inquiryResult }, log) },
+    '@/lib/supabase/admin': { createSupabaseAdminClient: () => fakeClient({ training_providers: providerRow, rental_providers: providerRow, insurance_providers: providerRow, finance_providers: providerRow, health_providers: providerRow, users: usersRow, service_inquiries: inquiryResult }, log) },
   });
   return { helper, log };
 }
@@ -143,6 +143,11 @@ test('provider service inquiries match the account phone numbers, de-duplicated 
   const body = await response.json();
   assert.equal(body.total, 1); assert.equal(body.items.length, 1);
   assert.ok(api.log.some(entry => entry[0] === 'training_providers' && entry[1] === 'eq' && entry[2] === 'user_id' && entry[3] === 'u1'));
+  // Không được nhúng users(...) vào truy vấn bảng đối tác (gây lỗi nhiều quan hệ); số trên tài khoản đọc bằng truy vấn riêng.
+  const providerSelect = api.log.find(entry => entry[0] === 'training_providers' && entry[1] === 'select');
+  assert.equal(providerSelect[2].includes('users'), false);
+  assert.ok(api.log.some(entry => entry[0] === 'users' && entry[1] === 'select' && entry[2] === 'phone'));
+  assert.ok(api.log.some(entry => entry[0] === 'users' && entry[1] === 'eq' && entry[2] === 'id' && entry[3] === 'u1'));
   const match = api.log.find(entry => entry[0] === 'service_inquiries' && entry[1] === 'in');
   assert.equal(match[2], 'phone_normalized'); assert.deepEqual(plain(match[3]), ['0901234567']);
   assert.ok(api.log.some(entry => entry[0] === 'service_inquiries' && entry[1] === 'limit' && entry[2] === 100));
@@ -151,7 +156,7 @@ test('provider service inquiries match the account phone numbers, de-duplicated 
 });
 
 test('provider service inquiries use two keys when the account and unit numbers differ', async () => {
-  const api = providerHelper({ providerRow: { data: { contact_phone: '0911111111', users: [{ phone: '0922222222' }] }, error: null } });
+  const api = providerHelper({ providerRow: { data: { contact_phone: '0911111111' }, error: null }, usersRow: { data: { phone: '0922222222' }, error: null } });
   await api.helper.providerServiceInquiriesResponse(async () => ({ userId: 'u1' }), 'rental_providers');
   const match = api.log.find(entry => entry[0] === 'service_inquiries' && entry[1] === 'in');
   assert.deepEqual(plain(match[3]).sort(), ['0911111111', '0922222222']);
@@ -161,8 +166,8 @@ test('provider service inquiries refuse anonymous callers and never query for a 
   const anonymous = providerHelper();
   const denied = await anonymous.helper.providerServiceInquiriesResponse(async () => null, 'finance_providers');
   assert.equal(denied.status, 401); assert.equal(anonymous.log.length, 0);
-  for (const providerRow of [{ data: null, error: null }, { data: { contact_phone: '', users: { phone: null } }, error: null }]) {
-    const api = providerHelper({ providerRow });
+  for (const options of [{ providerRow: { data: null, error: null } }, { providerRow: { data: { contact_phone: '' }, error: null }, usersRow: { data: { phone: null }, error: null } }]) {
+    const api = providerHelper(options);
     const response = await api.helper.providerServiceInquiriesResponse(async () => ({ userId: 'u1' }), 'health_providers');
     assert.equal(response.status, 200);
     assert.deepEqual(plain(await response.json()), { ok: true, items: [], total: 0 });
@@ -171,7 +176,7 @@ test('provider service inquiries refuse anonymous callers and never query for a 
 });
 
 test('provider service inquiries sanitize database failures', async () => {
-  for (const options of [{ providerRow: { data: null, error: new Error('secret db detail') } }, { inquiryResult: { data: null, count: null, error: new Error('secret db detail') } }]) {
+  for (const options of [{ providerRow: { data: null, error: new Error('secret db detail') } }, { usersRow: { data: null, error: new Error('secret db detail') } }, { inquiryResult: { data: null, count: null, error: new Error('secret db detail') } }]) {
     const response = await providerHelper(options).helper.providerServiceInquiriesResponse(async () => ({ userId: 'u1' }), 'insurance_providers');
     assert.equal(response.status, 500);
     assert.equal(JSON.stringify(await response.json()).includes('secret db detail'), false);
