@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-audit";
-import { collectCandidateImageUrls, deleteCloudinaryImages } from "@/lib/candidate-account-cleanup";
+import { collectBusinessImageUrls, collectCandidateImageUrls, deleteCloudinaryImages } from "@/lib/candidate-account-cleanup";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
-// Admin xử lý một yêu cầu xóa tài khoản của người lao động. Route MỚI.
-//  approve: xóa tài khoản bằng hàm có sẵn `delete_candidate_account` (cùng cách app tự xóa), rồi đánh dấu đã xử lý.
+// Admin xử lý một yêu cầu xóa tài khoản (công nhân, nhà tuyển dụng, đối tác).
+//  approve: công nhân -> hàm `delete_candidate_account`; nhà tuyển dụng / đối tác -> hàm `delete_business_account` (ẩn danh hóa,
+//           giữ lịch sử đơn hàng), rồi đánh dấu đã xử lý.
 //  reject : từ chối, tài khoản giữ nguyên; kèm ghi chú để người dùng đọc.
 
 const headers = { "Cache-Control": "private, no-store" };
@@ -23,7 +24,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const supabase = createSupabaseAdminClient();
   const { data: current, error: loadError } = await supabase.from("candidate_deletion_requests")
-    .select("id,user_id,status").eq("id", id).maybeSingle();
+    .select("id,user_id,status,users!candidate_deletion_requests_user_id_fkey(role)").eq("id", id).maybeSingle();
   if (loadError) {
     const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-deletions/[id]", operation: "load_request", error: loadError });
     return NextResponse.json({ error: "Chưa tải được yêu cầu.", requestId }, { status: 503, headers: { ...headers, "X-Request-Id": requestId } });
@@ -37,14 +38,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const note = parsed.data.note || null;
 
   if (parsed.data.action === "approve") {
+    const owner = Array.isArray(current.users) ? current.users[0] : current.users;
+    const isCandidate = (owner?.role ?? "candidate") === "candidate";
     // Lấy danh sách ảnh trước khi xóa (hàm SQL xóa luôn các dòng chứa URL) để dọn trên Cloudinary sau đó.
-    const imageUrls = await collectCandidateImageUrls(current.user_id);
-    const { data: deleted, error } = await supabase.rpc("delete_candidate_account", { p_user_id: current.user_id });
+    const imageUrls = isCandidate ? await collectCandidateImageUrls(current.user_id) : await collectBusinessImageUrls(current.user_id);
+    const rpcName = isCandidate ? "delete_candidate_account" : "delete_business_account";
+    const { data: deleted, error } = await supabase.rpc(rpcName, { p_user_id: current.user_id });
     if (error?.message?.includes("CANDIDATE_HAS_OPEN_REDEMPTIONS")) {
       return NextResponse.json({ error: "Người dùng còn yêu cầu đổi quà đang chờ xử lý. Hãy xử lý xong rồi mới xóa tài khoản." }, { status: 409, headers });
     }
     if (error || deleted !== true) {
-      const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-deletions/[id]", operation: "delete_account", error: error ?? new Error("delete_candidate_account returned false") });
+      const requestId = logSafeSupabaseError({ route: "/api/mobile/admin/candidate-deletions/[id]", operation: "delete_account", error: error ?? new Error(`${rpcName} returned false`) });
       return NextResponse.json({ error: "Chưa xóa được tài khoản.", requestId }, { status: 503, headers: { ...headers, "X-Request-Id": requestId } });
     }
     await deleteCloudinaryImages(imageUrls);

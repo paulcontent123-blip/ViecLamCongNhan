@@ -4,12 +4,12 @@ import { parseEmployerListParams } from "@/lib/mobile-employer-list-params";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { logSafeSupabaseError } from "@/lib/supabase/safe-error-log";
 
-// Danh sách yêu cầu xóa tài khoản của người lao động cho Admin. Route MỚI.
+// Danh sách yêu cầu xóa tài khoản cho Admin: công nhân, nhà tuyển dụng và đối tác (trường `role` cho biết vai trò).
 //  GET ?status=pending|approved|rejected|cancelled&page&pageSize
 
 const headers = { "Cache-Control": "private, no-store" };
 const STATUSES = ["pending", "approved", "rejected", "cancelled"] as const;
-const FIELDS = "id,status,reason,requested_at,handled_at,admin_note,users!candidate_deletion_requests_user_id_fkey(id,full_name,phone,status)";
+const FIELDS = "id,status,reason,requested_at,handled_at,admin_note,users!candidate_deletion_requests_user_id_fkey(id,full_name,phone,status,role)";
 
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin("admin_users");
@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
         full_name: user?.full_name ?? null,
         phone: user?.phone ?? null,
         account_status: user?.status ?? null,
+        role: user?.role ?? null,
       };
     });
     return NextResponse.json({ ok: true, items, total: result.count, pendingCount: pending.count ?? 0, page, pageSize }, { headers });
